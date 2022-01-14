@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.140625" />
+        <entry key="app/src/main/res/drawable-xxhdpi/button_custom.xml" value="0.11979166666666667" />
+        <entry key="app/src/main/res/drawable/playcirclebutton.xml" value="0.13020833333333334" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_settings.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_spotify_login.xml" value="0.1140625" />
+        <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.1140625" />
+        <entry key="app/src/main/res/layout/cardview.xml" value="0.1140625" />
+        <entry key="app/src/main/res/layout/content_spotify_login.xml" value="0.1140625" />
+        <entry key="app/src/main/res/layout/fragment_first.xml" value="0.1140625" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.1140625" />
+        <entry key="app/src/main/res/layout/fragment_play_screen.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_search.xml" value="0.1140625" />
+        <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1140625" />
+        <entry key="app/src/main/res/menu/custom_menu.xml" value="0.10364583333333334" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
