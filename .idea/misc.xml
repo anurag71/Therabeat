@@ -4,6 +4,19 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.140625" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/circular_play_pause_background.xml" value="0.25052083333333336" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/ic_collapse_player.xml" value="0.25052083333333336" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/ic_library.xml" value="0.25052083333333336" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_main.xml" value="0.234375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_settings.xml" value="0.234375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/cardview.xml" value="0.234375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/detail_music_item_view.xml" value="0.2109375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_play_screen.xml" value="0.234375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_player.xml" value="0.234375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_video.xml" value="0.234375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/view_item_main.xml" value="0.234375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/view_item_player.xml" value="0.234375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/xml/play_screen_motion_scene.xml" value="0.2109375" />
         <entry key="app/src/main/res/drawable-xxhdpi/button_custom.xml" value="0.11979166666666667" />
         <entry key="app/src/main/res/drawable/playcirclebutton.xml" value="0.13020833333333334" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
@@ -22,7 +35,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

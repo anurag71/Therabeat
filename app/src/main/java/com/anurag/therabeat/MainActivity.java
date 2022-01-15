@@ -2,13 +2,12 @@ package com.anurag.therabeat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 		//Prepare noise track
 		InputStream inputStream = getResources().openRawResource(R.raw.pinkwave);
+
 	}
 
 	//Play button clicked
@@ -279,6 +280,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		editor = getSharedPreferences("SPOTIFY", 0).edit();
 		editor.putString("playlistId", playlistArrayList.get(position).getId());
 		editor.apply();
+		this.getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment)(new PlayScreenFragment())).commitAllowingStateLoss();
 		Toast toast = Toast.makeText(getApplicationContext(),"This playlist is selected to be played",Toast.LENGTH_SHORT);
 		toast.show();
 		isInitial=true;
