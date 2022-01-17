@@ -24,78 +24,154 @@ class PlayerScreenMotionLayout(
     attributeSet: AttributeSet? = null
 ) : MotionLayout(context, attributeSet) {
 
-    private val viewToDetectTouch by lazy {
-        findViewById<View>(R.id.player_background_view)
-    }
+//    private val viewToDetectTouch by lazy {
+//        findViewById<View>(R.id.player_background_view)
+//    }
+//    private val viewRect = Rect()
+//    private var hasTouchStarted = false
+//    private val transitionListenerList = mutableListOf<TransitionListener?>()
+//
+//    init {
+//        addTransitionListener(object : MotionLayout.TransitionListener {
+//            override fun onTransitionTrigger(
+//                p0: MotionLayout?,
+//                p1: Int,
+//                p2: Boolean,
+//                p3: Float
+//            ) {
+//            }
+//
+//            override fun onTransitionStarted(
+//                p0: MotionLayout?,
+//                p1: Int,
+//                p2: Int
+//            ) {
+//            }
+//
+//            override fun onTransitionChange(
+//                p0: MotionLayout?,
+//                p1: Int,
+//                p2: Int,
+//                p3: Float
+//            ) {
+//            }
+//
+//            override fun onTransitionCompleted(
+//                p0: MotionLayout?,
+//                p1: Int
+//            ) {
+//                hasTouchStarted = false
+//            }
+//        })
+//
+//        super.setTransitionListener(object : MotionLayout.TransitionListener {
+//            override fun onTransitionTrigger(
+//                p0: MotionLayout?,
+//                p1: Int,
+//                p2: Boolean,
+//                p3: Float
+//            ) {
+//            }
+//
+//            override fun onTransitionStarted(
+//                p0: MotionLayout?,
+//                p1: Int,
+//                p2: Int
+//            ) {
+//            }
+//
+//            override fun onTransitionChange(
+//                p0: MotionLayout?,
+//                p1: Int,
+//                p2: Int,
+//                p3: Float
+//            ) {
+//                transitionListenerList.filterNotNull()
+//                    .forEach { it.onTransitionChange(p0, p1, p2, p3) }
+//            }
+//
+//            override fun onTransitionCompleted(
+//                p0: MotionLayout?,
+//                p1: Int
+//            ) {
+//                transitionListenerList.filterNotNull()
+//                    .forEach { it.onTransitionCompleted(p0, p1) }
+//            }
+//        })
+//    }
+//
+//    override fun setTransitionListener(listener: TransitionListener?) {
+//        addTransitionListener(listener)
+//    }
+//
+//    override fun addTransitionListener(listener: TransitionListener?) {
+//        transitionListenerList += listener
+//    }
+//
+//    private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+//        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+//            transitionToStart()
+//            return false
+//        }
+//    })
+//
+//    override fun onTouchEvent(event: MotionEvent): Boolean {
+//        gestureDetector.onTouchEvent(event)   //This ensures the Mini Player is maximised on single tap
+//        when (event.actionMasked) {
+//            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_CANCEL -> {
+//                hasTouchStarted = false
+//                return super.onTouchEvent(event)
+//            }
+//        }
+//        if (!hasTouchStarted) {
+//            viewToDetectTouch.getHitRect(viewRect)
+//            hasTouchStarted = viewRect.contains(event.x.toInt(), event.y.toInt())
+//        }
+//        return hasTouchStarted && super.onTouchEvent(event)
+//    }
+//}
+private val viewToDetectTouch by lazy {
+    findViewById<View>(R.id.player_background_view) //TODO move to Attributes
+}
     private val viewRect = Rect()
-    private var hasTouchStarted = false
+    private var touchStarted = false
     private val transitionListenerList = mutableListOf<TransitionListener?>()
 
     init {
         addTransitionListener(object : MotionLayout.TransitionListener {
-            override fun onTransitionTrigger(
-                p0: MotionLayout?,
-                p1: Int,
-                p2: Boolean,
-                p3: Float
-            ) {
+            override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
+
             }
 
-            override fun onTransitionStarted(
-                p0: MotionLayout?,
-                p1: Int,
-                p2: Int
-            ) {
+            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
             }
 
-            override fun onTransitionChange(
-                p0: MotionLayout?,
-                p1: Int,
-                p2: Int,
-                p3: Float
-            ) {
+            override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
+                touchStarted = false
             }
 
-            override fun onTransitionCompleted(
-                p0: MotionLayout?,
-                p1: Int
-            ) {
-                hasTouchStarted = false
+            override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
+
             }
         })
 
         super.setTransitionListener(object : MotionLayout.TransitionListener {
-            override fun onTransitionTrigger(
-                p0: MotionLayout?,
-                p1: Int,
-                p2: Boolean,
-                p3: Float
-            ) {
+            override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
+
             }
 
-            override fun onTransitionStarted(
-                p0: MotionLayout?,
-                p1: Int,
-                p2: Int
-            ) {
-            }
-
-            override fun onTransitionChange(
-                p0: MotionLayout?,
-                p1: Int,
-                p2: Int,
-                p3: Float
-            ) {
+            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
                 transitionListenerList.filterNotNull()
                     .forEach { it.onTransitionChange(p0, p1, p2, p3) }
             }
 
-            override fun onTransitionCompleted(
-                p0: MotionLayout?,
-                p1: Int
-            ) {
+            override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
                 transitionListenerList.filterNotNull()
                     .forEach { it.onTransitionCompleted(p0, p1) }
+            }
+
+            override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
+
             }
         })
     }
@@ -116,17 +192,18 @@ class PlayerScreenMotionLayout(
     })
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        gestureDetector.onTouchEvent(event)   //This ensures the Mini Player is maximised on single tap
+        //gestureDetector.onTouchEvent(event)
+        gestureDetector.onTouchEvent(event)
         when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_CANCEL -> {
-                hasTouchStarted = false
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                touchStarted = false
                 return super.onTouchEvent(event)
             }
         }
-        if (!hasTouchStarted) {
+        if (!touchStarted) {
             viewToDetectTouch.getHitRect(viewRect)
-            hasTouchStarted = viewRect.contains(event.x.toInt(), event.y.toInt())
+            touchStarted = viewRect.contains(event.x.toInt(), event.y.toInt())
         }
-        return hasTouchStarted && super.onTouchEvent(event)
+        return touchStarted && super.onTouchEvent(event)
     }
 }

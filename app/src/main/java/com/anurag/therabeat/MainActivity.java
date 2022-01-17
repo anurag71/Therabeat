@@ -6,15 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,14 +23,12 @@ import java.util.ArrayList;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.anurag.therabeat.connectors.PlaylistService;
+import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.anurag.therabeat.connectors.UserService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationBarView;
-import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track;
-
 
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnNoteListener, NavigationBarView.OnItemSelectedListener{
 
@@ -48,13 +43,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 	private MaterialButton startStop;
 	private boolean isDataChanged = true, isCarrierValid = true, isBeatValid = true;
-	private BeatsEngine wave;
+	public static BeatsEngine wave;
 	private RequestQueue queue;
 
 	//Spotify
-	private static final String CLIENT_ID = "a98fdf7072d24d9dbf8999a6d74212b0";
-	private static final String REDIRECT_URI = "http://com.anurag.therabeat/callback";
 	private SpotifyAppRemote mSpotifyAppRemote;
+	SpotifyConnection spotifyConnection;
 
 	private String AUTH_TOKEN="";
 
@@ -73,7 +67,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		spotifyConnection = new SpotifyConnection();
+		mSpotifyAppRemote = spotifyConnection.getPlayerInstance(this);
 		setContentView(R.layout.activity_main);
 
 		toolbar = findViewById(R.id.toolbar);
@@ -89,12 +84,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		}
 
 		waitForUserInfo();
-
 		playlistService = new PlaylistService(getApplicationContext());
 		userView = (TextView) findViewById(R.id.user);
-
 		userView.setText("Please select a playlist from below");
-
 		getPlaylists();
 	}
 
@@ -152,35 +144,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	@Override
 	protected void onStart() {
 		super.onStart();
-		ConnectionParams connectionParams =
-				new ConnectionParams.Builder(CLIENT_ID)
-						.setRedirectUri(REDIRECT_URI)
-						.showAuthView(true)
-						.build();
-
-		SpotifyAppRemote.connect(this, connectionParams,
-				new Connector.ConnectionListener() {
-
-					public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-						mSpotifyAppRemote = spotifyAppRemote;
-						Log.d("MainActivity", "Connected! Yay!");
-
-					}
-
-					public void onFailure(Throwable throwable) {
-						Log.e("MyActivity", throwable.getMessage(), throwable);
-
-						// Something went wrong when attempting to connect! Handle errors here
-					}
-				});
 		Log.d("MainActivity",AUTH_TOKEN);
 	}
 
 	private void connected(String playlistId) {
-		mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:"+playlistId);
+		spotifyConnection.getPlayerInstance(this).getPlayerApi().play("spotify:playlist:"+playlistId);
 		isPlaying = true;
 		// Subscribe to PlayerState
-		mSpotifyAppRemote.getPlayerApi()
+		spotifyConnection.getPlayerInstance(this).getPlayerApi()
 				.subscribeToPlayerState()
 				.setEventCallback(playerState -> {
 					final Track track = playerState.track;
@@ -193,19 +164,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	@Override
 	protected void onStop() {
 		super.onStop();
-		SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+		spotifyConnection.getPlayerInstance(this).getPlayerApi().pause();
+		SpotifyAppRemote.disconnect(spotifyConnection.getPlayerInstance(this));
 	}
 
 	private void initializeView() {
 //		frequencyCarrierInput = (EditText) findViewById(R.id.etCarrierFrequency);
 //		frequencyBeatInput = (EditText) findViewById(R.id.etBeatFrequency);
-		startStop = (MaterialButton) findViewById(R.id.btnPlay);
-		startStop.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				clickPlay();
-			}
-		});
 //		displayCarrierFrequency = (TextView) findViewById(R.id.tvCarrierFrequency);
 
 		//By default, and when someone changes anything, denote that data has been updated
@@ -215,60 +180,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 	}
 
-	//Play button clicked
-	public void clickPlay() {
-		float beatFreq  = msharedPreferences.getFloat("beatFreq",0.0f);
-		String playlistId = msharedPreferences.getString("playlistId","No Id set");
-		Log.d("MainActivity",playlistId);
-		if(beatFreq==0.0){
-			Toast toast = Toast.makeText(getApplicationContext(),"Please set a beat frequency in settings",Toast.LENGTH_SHORT);
-			toast.show();
-		}
-		else if(playlistId==""){
-			Toast toast = Toast.makeText(getApplicationContext(),"No playlist selected",Toast.LENGTH_SHORT);
-			toast.show();
-		}
-		else{
-			togglePlay(beatFreq,playlistId);
-		}
-	}
-
 	private void togglePlay(float beatFreq, String playlistId) {
-			if (startStop.isChecked()) {
-				startStop.setIcon(ContextCompat.getDrawable(this,R.drawable.ic_baseline_pause_circle_filled_24));
-				if(isInitial && !isPlaying){
-					isInitial=false;
-					connected(playlistId);
-				}
-				else{
-					isPlaying=true;
-					mSpotifyAppRemote.getPlayerApi().resume();
-				}
-				//wave.start();
-				attemptStartWave(beatFreq);
-			} else {
-				startStop.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_round_play_circle_filled_24));
-				isPlaying = false;
-				mSpotifyAppRemote.getPlayerApi().pause();
-				wave.stop();
-			}
-		}
+		connected(playlistId);
+		attemptStartWave(beatFreq);
+	}
 
 	//if user goes too fast
 	private void attemptStartWave(float beatFreq) {
-		if (wave != null) {
-			wave.release();
-		}
 		Log.d("MainActivity", String.valueOf(beatFreq));
 		wave = new Binaural(200, beatFreq);
-		if (!wave.getIsPlaying()) {
-			wave.start();
-			startStop.setActivated(true);
-			startStop.setChecked(true);
-		} else {
-			startStop.setActivated(false);
-			startStop.setChecked(false);
-		}
+		wave.start();
 	}
 
 	@Override
@@ -277,13 +198,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	}
 
 	public void onNoteClick(int position) {
-		editor = getSharedPreferences("SPOTIFY", 0).edit();
-		editor.putString("playlistId", playlistArrayList.get(position).getId());
-		editor.apply();
-		this.getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment)(new PlayScreenFragment())).commitAllowingStateLoss();
-		Toast toast = Toast.makeText(getApplicationContext(),"This playlist is selected to be played",Toast.LENGTH_SHORT);
-		toast.show();
-		isInitial=true;
+		float beatFreq  = msharedPreferences.getFloat("beatFreq",0.0f);
+		if(beatFreq==0.0){
+			Toast toast = Toast.makeText(getApplicationContext(),"Please set a beat frequency in settings",Toast.LENGTH_SHORT);
+			toast.show();
+		}
+		else{
+			togglePlay(beatFreq,playlistArrayList.get(position).getId());
+			this.getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment)(new PlayerFragment())).commitAllowingStateLoss();
+		}
 	}
 
 	@Override

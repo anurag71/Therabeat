@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.140625" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/drawable-xxhdpi/button_custom.xml" value="0.25052083333333336" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/circular_play_pause_background.xml" value="0.25052083333333336" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/ic_collapse_player.xml" value="0.25052083333333336" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/ic_library.xml" value="0.25052083333333336" />
@@ -11,6 +12,7 @@
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_settings.xml" value="0.234375" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/cardview.xml" value="0.234375" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/detail_music_item_view.xml" value="0.2109375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_blank.xml" value="0.234375" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_play_screen.xml" value="0.234375" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_player.xml" value="0.234375" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_video.xml" value="0.234375" />

@@ -12,24 +12,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class SplashActivity extends AppCompatActivity {
-
-    private static final String CLIENT_ID = "a98fdf7072d24d9dbf8999a6d74212b0";
-    private static final String REDIRECT_URI = "http://com.anurag.therabeat/callback";
-    private static final int REQUEST_CODE = 1337;
-    private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-read-private";
-    public static final String AUTH_TOKEN = "AUTH_TOKEN";
-
-    private boolean isSingleLight;
-
-    int position;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences msharedPreferences;
+    SpotifyConnection spotifyConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +36,12 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        spotifyConnection = new SpotifyConnection();
+        spotifyConnection.openLoginWindow(this);
         PackageManager pm = this.getPackageManager();
         boolean isInstalled = isPackageInstalled("com.spotify.music", pm);
         if(isInstalled){
-            openLoginWindow();
+            spotifyConnection.openLoginWindow(this);
             msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         }
         else{
@@ -66,18 +64,6 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-    private void openLoginWindow() {
-
-        AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN,REDIRECT_URI);
-
-        builder.setScopes(new String[]{SCOPES});
-
-        AuthorizationRequest request = builder.build();
-
-        AuthorizationClient.openLoginActivity(this,REQUEST_CODE,request);
-
-    }
-
     private boolean isPackageInstalled(String packageName, PackageManager packageManager) {
         try {
             packageManager.getPackageInfo(packageName, 0);
@@ -93,7 +79,7 @@ public class SplashActivity extends AppCompatActivity {
 
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == REQUEST_CODE)
+        if(requestCode == 1337)
 
         {
 

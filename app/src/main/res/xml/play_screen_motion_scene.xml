@@ -53,25 +53,25 @@
 
         <KeyFrameSet>
             <KeyAttribute
+                app:framePosition="0"
+                app:motionTarget="@id/top_frame_layout">
+                <CustomAttribute
+                    app:attributeName="alpha"
+                    app:customFloatValue="1.0" />
+            </KeyAttribute>
+
+            <KeyAttribute
+                app:framePosition="30"
+                app:motionTarget="@id/top_frame_layout">
+                <CustomAttribute
+                    app:attributeName="alpha"
+                    app:customFloatValue="0.0" />
+            </KeyAttribute>
+        </KeyFrameSet>
+
+        <KeyFrameSet>
+            <KeyAttribute
                 app:framePosition="100"
-                app:motionTarget="@id/top_frame_layout">
-                <CustomAttribute
-                    app:attributeName="alpha"
-                    app:customFloatValue="1.0" />
-            </KeyAttribute>
-
-            <KeyAttribute
-                app:framePosition="70"
-                app:motionTarget="@id/top_frame_layout">
-                <CustomAttribute
-                    app:attributeName="alpha"
-                    app:customFloatValue="0.0" />
-            </KeyAttribute>
-        </KeyFrameSet>
-
-        <KeyFrameSet>
-            <KeyAttribute
-                app:framePosition="0"
                 app:motionTarget="@id/audio_name_text_view_min">
                 <CustomAttribute
                     app:attributeName="alpha"
@@ -79,7 +79,7 @@
             </KeyAttribute>
 
             <KeyAttribute
-                app:framePosition="70"
+                app:framePosition="30"
                 app:motionTarget="@id/audio_name_text_view_min">
                 <CustomAttribute
                     app:attributeName="alpha"
@@ -89,7 +89,7 @@
 
         <KeyFrameSet>
             <KeyAttribute
-                app:framePosition="0"
+                app:framePosition="100"
                 app:motionTarget="@id/artist_name_text_view_min">
                 <CustomAttribute
                     app:attributeName="alpha"
@@ -97,7 +97,7 @@
             </KeyAttribute>
 
             <KeyAttribute
-                app:framePosition="70"
+                app:framePosition="30"
                 app:motionTarget="@id/artist_name_text_view_min">
                 <CustomAttribute
                     app:attributeName="alpha"
@@ -238,6 +238,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             />
+
 
         <Constraint
             android:id="@id/play_pause_bottom_space"

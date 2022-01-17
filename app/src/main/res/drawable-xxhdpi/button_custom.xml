@@ -3,11 +3,11 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 <item android:state_checked="true"
     android:state_pressed="true"
-    android:drawable="@drawable/ic_round_play_circle_filled_24" /> //currently pressed turning the toggle on
+    android:drawable="@drawable/ic_round_play_arrow_24_white" /> //currently pressed turning the toggle on
 <item android:state_pressed="true"
-    android:drawable="@drawable/ic_baseline_pause_circle_filled_24" /> //currently pressed turning the toggle off
+    android:drawable="@drawable/ic_round_pause_24_white" /> //currently pressed turning the toggle off
 <item android:state_checked="true"
-    android:drawable="@drawable/ic_baseline_pause_circle_filled_24"/> //not pressed default checked state
-<item android:drawable="@drawable/ic_round_play_circle_filled_24" /> //default non-pressed non-checked
+    android:drawable="@drawable/ic_round_pause_24_white"/> //not pressed default checked state
+<item android:drawable="@drawable/ic_round_play_arrow_24_white" /> //default non-pressed non-checked
 
 </selector>
