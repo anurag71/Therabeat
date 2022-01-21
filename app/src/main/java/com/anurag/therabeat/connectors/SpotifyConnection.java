@@ -11,12 +11,6 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import dagger.Module;
-import dagger.Provides;
-
 public class SpotifyConnection {
 
     private static final String CLIENT_ID = "a98fdf7072d24d9dbf8999a6d74212b0";
@@ -25,14 +19,15 @@ public class SpotifyConnection {
     private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-read-private";
     public static final String AUTH_TOKEN = "AUTH_TOKEN";
 
-    public static SpotifyAppRemote mSpotifyAppRemote=null;
+    public static SpotifyAppRemote mSpotifyAppRemote;
     public static String webApiError;
     public static String playerConnectionError;
 
-    public SpotifyConnection() {};
+    public SpotifyConnection(Context context) {
+        getPlayerInstance(context);
+    };
 
-    public SpotifyAppRemote getPlayerInstance(Context context){
-        if(mSpotifyAppRemote==null) {
+    public void getPlayerInstance(Context context){
             Log.d("SpotifyConnector","Inside");
             ConnectionParams connectionParams =
                     new ConnectionParams.Builder(CLIENT_ID)
@@ -52,15 +47,11 @@ public class SpotifyConnection {
                         }
 
                         public void onFailure(Throwable throwable) {
-                            playerConnectionError = throwable.getMessage();
-                            Log.d("SpotifyConnection", playerConnectionError);
                             Log.d("MyActivity", throwable.getMessage(), throwable);
 
                             // Something went wrong when attempting to connect! Handle errors here
                         }
                     });
-        }
-            return mSpotifyAppRemote;
     }
 
     public void openLoginWindow(Context context) {

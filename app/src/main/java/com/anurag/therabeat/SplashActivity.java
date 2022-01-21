@@ -17,12 +17,10 @@ import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-@Singleton
 public class SplashActivity extends AppCompatActivity {
 
+    //Class Variables
+    private String TAG = getClass().getSimpleName().toString();
     private SharedPreferences.Editor editor;
     private SharedPreferences msharedPreferences;
     SpotifyConnection spotifyConnection;
@@ -36,7 +34,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        spotifyConnection = new SpotifyConnection();
+        spotifyConnection = new SpotifyConnection(this);
         spotifyConnection.openLoginWindow(this);
         PackageManager pm = this.getPackageManager();
         boolean isInstalled = isPackageInstalled("com.spotify.music", pm);
@@ -91,11 +89,9 @@ public class SplashActivity extends AppCompatActivity {
 
                 case TOKEN:
 
-                    Log.i("SplashActivity","Auth token: " + response.getAccessToken());
-
                     Intent intent = new Intent(SplashActivity.this,
 
-                            MainActivity.class);
+                            UserMoodChoice.class);
                     editor = getSharedPreferences("SPOTIFY", 0).edit();
                     editor.putString("token", response.getAccessToken());
                     editor.apply();
@@ -109,7 +105,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 case ERROR:
 
-                    Log.e("SplashActivity","Auth error: " + response.getError());
+                    Log.e(TAG,"Auth error: " + response.getError());
 
                     break;
 
@@ -117,7 +113,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 default:
 
-                    Log.d("SplashActivity","Auth result: " + response.getType());
+                    Log.d(TAG,"Auth result: " + response.getType());
 
             }
 

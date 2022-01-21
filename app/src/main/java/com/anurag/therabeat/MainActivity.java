@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -33,21 +34,20 @@ import com.spotify.protocol.types.Track;
 public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnNoteListener, NavigationBarView.OnItemSelectedListener{
 
 	//Class variables
+	private String TAG = getClass().getSimpleName().toString();
+
 	private Toolbar toolbar;
 
 	private TextView userView;
 	private RecyclerView myView;
 
 	private PlaylistService playlistService;
-	private ArrayList<Playlist> playlistArrayList;
+	public ArrayList<Playlist> playlistArrayList;
 
-	private MaterialButton startStop;
-	private boolean isDataChanged = true, isCarrierValid = true, isBeatValid = true;
 	public static BeatsEngine wave;
 	private RequestQueue queue;
 
 	//Spotify
-	private SpotifyAppRemote mSpotifyAppRemote;
 	SpotifyConnection spotifyConnection;
 
 	private String AUTH_TOKEN="";
@@ -67,10 +67,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		spotifyConnection = new SpotifyConnection();
-		mSpotifyAppRemote = spotifyConnection.getPlayerInstance(this);
 		setContentView(R.layout.activity_main);
-
+		spotifyConnection = new SpotifyConnection(this);
 		toolbar = findViewById(R.id.toolbar);
 		toolbar.setTitle("");
 		setSupportActionBar(toolbar);
@@ -78,13 +76,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
 		queue = Volley.newRequestQueue(this);
 		AUTH_TOKEN = msharedPreferences.getString("token", "");
-		if(!AUTH_TOKEN.equals("")){
-			Toast toast = Toast.makeText(getApplicationContext(),"Successfully Connected to Spotify",Toast.LENGTH_SHORT);
-			toast.show();
-		}
-
 		waitForUserInfo();
-		playlistService = new PlaylistService(getApplicationContext());
+		playlistService = new PlaylistService(MainActivity.this);
 		userView = (TextView) findViewById(R.id.user);
 		userView.setText("Please select a playlist from below");
 		getPlaylists();
@@ -107,25 +100,26 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void setPlaylist(ArrayList<Playlist> playlist){
+		playlistArrayList=playlist;
+	}
 
 
 	private void getPlaylists() {
-		playlistService.getAllPlaylists(() -> {
-			playlistArrayList = playlistService.getPlaylists();
-			updatePlaylist();
-		});
+		final ProgressDialog progressDialog = new ProgressDialog(this);
+		progressDialog.setMessage("Fetching your Spotify Playlists");
+		progressDialog.show();
+		updatePlaylist();
+		playlistArrayList = playlistService.getPlaylists(this.getApplicationContext(),this, myView, progressDialog);
 	}
 
-	private void updatePlaylist() {
-		if (playlistArrayList.size() > 0) {
-			RecyclerViewAdapter adapter = new RecyclerViewAdapter(playlistArrayList,this);
+	public void updatePlaylist() {
+		Log.d(TAG,"inside update playlsit");
 			myView =  (RecyclerView)findViewById(R.id.recyclerview);
 			myView.setHasFixedSize(true);
-			myView.setAdapter(adapter);
 			LinearLayoutManager llm = new LinearLayoutManager(this);
 			llm.setOrientation(LinearLayoutManager.VERTICAL);
 			myView.setLayoutManager(llm);
-		}
 	}
 
 	private void waitForUserInfo() {
@@ -134,8 +128,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 			User user = userService.getUser();
 			editor = getSharedPreferences("SPOTIFY", 0).edit();
 			editor.putString("userid", user.id);
-			Log.d("STARTING", "GOT USER INFORMATION");
-			Log.d("STARTING",user.display_name);
+			Log.d(TAG, "GOT USER INFORMATION");
+			Log.d(TAG,user.display_name);
 			// We use commit instead of apply because we need the information stored immediately
 			editor.apply();
 		});
@@ -144,19 +138,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.d("MainActivity",AUTH_TOKEN);
+		Log.d(TAG,AUTH_TOKEN);
 	}
 
 	private void connected(String playlistId) {
-		spotifyConnection.getPlayerInstance(this).getPlayerApi().play("spotify:playlist:"+playlistId);
+		spotifyConnection.mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:"+playlistId);
 		isPlaying = true;
 		// Subscribe to PlayerState
-		spotifyConnection.getPlayerInstance(this).getPlayerApi()
+		spotifyConnection.mSpotifyAppRemote.getPlayerApi()
 				.subscribeToPlayerState()
 				.setEventCallback(playerState -> {
 					final Track track = playerState.track;
 					if (track != null) {
-						Log.d("MainActivity", track.name + " by " + track.artist.name);
+						Log.d(TAG, track.name + " by " + track.artist.name);
 					}
 				});
 	}
@@ -164,8 +158,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	@Override
 	protected void onStop() {
 		super.onStop();
-		spotifyConnection.getPlayerInstance(this).getPlayerApi().pause();
-		SpotifyAppRemote.disconnect(spotifyConnection.getPlayerInstance(this));
+		SpotifyAppRemote.disconnect(spotifyConnection.mSpotifyAppRemote);
 	}
 
 	private void initializeView() {
@@ -187,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 	//if user goes too fast
 	private void attemptStartWave(float beatFreq) {
-		Log.d("MainActivity", String.valueOf(beatFreq));
+		Log.d(TAG, String.valueOf(beatFreq));
 		wave = new Binaural(200, beatFreq);
 		wave.start();
 	}
@@ -205,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		}
 		else{
 			togglePlay(beatFreq,playlistArrayList.get(position).getId());
-			this.getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment)(new PlayerFragment())).commitAllowingStateLoss();
+			this.getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment)(new PlayerFragment())).setReorderingAllowed(true).commitAllowingStateLoss();
 		}
 	}
 
