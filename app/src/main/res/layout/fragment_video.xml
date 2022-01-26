@@ -131,7 +131,6 @@
             app:layout_constraintTop_toBottomOf="@id/audio_name_text_view_min"
             />
     <com.google.android.material.button.MaterialButton
-        android:backgroundTint="@color/black"
         android:layout_gravity="center"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -156,7 +155,6 @@
         app:layout_constraintTop_toTopOf="@+id/play_pause_layout"
         app:srcCompat="@drawable/ic_round_skip_previous_24_white"/>
     <com.google.android.material.button.MaterialButton
-        android:backgroundTint="@color/black"
         android:layout_gravity="center"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -197,7 +195,7 @@
             android:background="@drawable/circular_play_pause_background"
             android:elevation="10dp"
             android:outlineProvider="none"
-            app:layout_constraintBottom_toTopOf="@id/play_pause_bottom_space"
+            app:layout_constraintBottom_toTopOf="@id/beatVolumeSlider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/ic_round_skip_previous_24_white"
@@ -219,17 +217,16 @@
                 app:iconTint="@color/white"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
         </FrameLayout>
-        <Space
-            android:id="@+id/play_pause_bottom_space"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent=".1"
-            app:layout_constraintStart_toStartOf="parent"
-            />
+
+    <Space
+        android:id="@+id/play_pause_bottom_space"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".1"
+        app:layout_constraintStart_toStartOf="parent" />
     <com.google.android.material.button.MaterialButton
-        android:backgroundTint="@color/black"
         android:layout_gravity="center"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -253,18 +250,17 @@
         app:layout_constraintStart_toEndOf="@+id/play_pause_layout"
         app:layout_constraintTop_toTopOf="@+id/play_pause_layout"
         app:srcCompat="@drawable/ic_round_forward_10_24_white"/>
+
     <com.google.android.material.button.MaterialButton
-        android:backgroundTint="@color/black"
-        android:layout_gravity="center"
+        android:id="@+id/next_image_view"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_marginStart="8dp"
+        android:layout_gravity="center"
         android:layout_marginEnd="8dp"
-        android:id="@+id/next_image_view"
         android:checkable="true"
+        android:elevation="10dp"
         android:insetLeft="0dp"
         android:insetTop="0dp"
-        android:elevation="10dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
         app:icon="@drawable/ic_round_skip_next_24"
@@ -272,9 +268,29 @@
         app:iconPadding="0dp"
         app:iconSize="32dp"
         app:iconTint="@color/white"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-        app:layout_constraintBottom_toBottomOf="@+id/play_pause_layout"
+        app:layout_constraintBottom_toTopOf="@+id/play_pause_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/play_pause_layout"
-        app:srcCompat="@drawable/ic_round_skip_next_24"/>
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+        app:srcCompat="@drawable/ic_round_skip_next_24" />
+
+    <TextView
+        android:id="@+id/beatVolumeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Beat"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintBottom_toTopOf="@+id/play_pause_bottom_space"
+        app:layout_constraintEnd_toStartOf="@id/beatVolumeSlider"
+        app:layout_constraintStart_toStartOf="@id/parent" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/beatVolumeSlider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:valueFrom="0.0"
+        android:valueTo="100.0"
+        app:layout_constraintBottom_toTopOf="@+id/play_pause_bottom_space"
+        app:layout_constraintEnd_toEndOf="@id/next_image_view"
+        app:layout_constraintStart_toEndOf="@id/beatVolumeTextView" />
     </com.anurag.therabeat.PlayerScreenMotionLayout>

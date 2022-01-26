@@ -65,6 +65,7 @@ public class Binaural implements BeatsEngine {
 		isPlaying = true;
 		mAudio.play();
 		Helpers.napThread();
+//		mAudio.setVolume()
 		mAudio.setVolume(1f);
 	}
 
