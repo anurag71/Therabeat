@@ -2,9 +2,13 @@ package com.anurag.therabeat;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +28,8 @@ public class SplashActivity extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private SharedPreferences msharedPreferences;
     SpotifyConnection spotifyConnection;
+    private boolean exception = false;
+    private String errorMsg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,27 +40,26 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        errorMsg="";
         spotifyConnection = new SpotifyConnection(this);
-        spotifyConnection.openLoginWindow(this);
         PackageManager pm = this.getPackageManager();
-        boolean isInstalled = isPackageInstalled("com.spotify.music", pm);
-        if(isInstalled){
+        isPackageInstalled("com.spotify.music", pm);
+        isNetworkAvailable();
+        if(!exception){
             spotifyConnection.openLoginWindow(this);
             msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         }
         else{
-            TextView spotifyError = findViewById(R.id.spotifyErrorTextView);
+            displayError();
             Button playstoreRedirect = findViewById(R.id.playstoreRedirect);
-            spotifyError.setVisibility(View.VISIBLE);
             playstoreRedirect.setVisibility(View.VISIBLE);
-
             playstoreRedirect.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     final String appPackageName = "com.spotify.music"; // getPackageName() from Context or Activity object
                     try {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-                    } catch (android.content.ActivityNotFoundException anfe) {
+                    } catch (ActivityNotFoundException anfe) {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
                     }
                 }
@@ -62,12 +67,12 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isPackageInstalled(String packageName, PackageManager packageManager) {
+    private void isPackageInstalled(String packageName, PackageManager packageManager) {
         try {
             packageManager.getPackageInfo(packageName, 0);
-            return true;
         } catch (PackageManager.NameNotFoundException e) {
-            return false;
+            errorMsg+=getResources().getString(R.string.spotifyError)+"\n";
+            exception=true;
         }
     }
 
@@ -104,21 +109,38 @@ public class SplashActivity extends AppCompatActivity {
                 // Auth flow returned an error
 
                 case ERROR:
-
                     Log.e(TAG,"Auth error: " + response.getError());
-
+                    errorMsg+= response.getError();
+                    displayError();
                     break;
 
                 // Most likely auth flow was cancelled
 
                 default:
-
                     Log.d(TAG,"Auth result: " + response.getType());
+                    errorMsg+= response.getError();
+                    displayError();
 
             }
 
         }
 
+    }
+
+    private void isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        if(!(activeNetworkInfo != null && activeNetworkInfo.isConnected())){
+            errorMsg+=getResources().getString(R.string.networkError)+"\n";
+            exception=true;
+        }
+    }
+
+    private void displayError(){
+        TextView errorTextView = findViewById(R.id.SplashActivityErrorTextView);
+        errorTextView.setText(errorMsg);
+        errorTextView.setVisibility(View.VISIBLE);
     }
 
     public void destroy(){

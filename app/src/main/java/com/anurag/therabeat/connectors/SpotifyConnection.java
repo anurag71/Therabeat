@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -48,6 +50,17 @@ public class SpotifyConnection {
 
                         public void onFailure(Throwable throwable) {
                             Log.d("MyActivity", throwable.getMessage(), throwable);
+                            new AlertDialog.Builder(context)
+                                    .setTitle("Spotify Player Error")
+                                    .setMessage(throwable.getMessage())
+
+                                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                                    // The dialog is automatically dismissed when a dialog button is clicked.
+                                    .setPositiveButton(android.R.string.yes, null)
+
+                                    // A null listener allows the button to dismiss the dialog and take no further action.
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
 
                             // Something went wrong when attempting to connect! Handle errors here
                         }

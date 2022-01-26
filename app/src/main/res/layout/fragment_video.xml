@@ -131,6 +131,7 @@
             app:layout_constraintTop_toBottomOf="@id/audio_name_text_view_min"
             />
     <com.google.android.material.button.MaterialButton
+        android:backgroundTint="@color/black"
         android:layout_gravity="center"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -155,6 +156,7 @@
         app:layout_constraintTop_toTopOf="@+id/play_pause_layout"
         app:srcCompat="@drawable/ic_round_skip_previous_24_white"/>
     <com.google.android.material.button.MaterialButton
+        android:backgroundTint="@color/black"
         android:layout_gravity="center"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -227,6 +229,7 @@
         app:layout_constraintHeight_percent=".1"
         app:layout_constraintStart_toStartOf="parent" />
     <com.google.android.material.button.MaterialButton
+        android:backgroundTint="@color/black"
         android:layout_gravity="center"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -252,6 +255,7 @@
         app:srcCompat="@drawable/ic_round_forward_10_24_white"/>
 
     <com.google.android.material.button.MaterialButton
+        android:backgroundTint="@color/black"
         android:id="@+id/next_image_view"
         android:layout_width="32dp"
         android:layout_height="32dp"

@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -61,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 	private SharedPreferences.Editor editor;
 	private SharedPreferences msharedPreferences;
+	private boolean exception = false;
+	private String errorMsg="";
+
 
 
 
@@ -76,6 +81,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
 		queue = Volley.newRequestQueue(this);
 		AUTH_TOKEN = msharedPreferences.getString("token", "");
+		if(AUTH_TOKEN.equals("")){
+			new AlertDialog.Builder(this)
+					.setTitle("Auth Token Error")
+					.setMessage("Could not fetch AUTH TOKEN")
+
+					// Specifying a listener allows you to take an action before dismissing the dialog.
+					// The dialog is automatically dismissed when a dialog button is clicked.
+					.setPositiveButton(android.R.string.yes, null)
+
+					// A null listener allows the button to dismiss the dialog and take no further action.
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.show();
+		}
 		waitForUserInfo();
 		playlistService = new PlaylistService(MainActivity.this);
 		userView = (TextView) findViewById(R.id.user);
@@ -200,6 +218,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 			togglePlay(beatFreq,playlistArrayList.get(position).getId());
 			this.getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment)(new PlayerFragment())).setReorderingAllowed(true).commitAllowingStateLoss();
 		}
+	}
+
+	private void displayError(){
+		TextView errorTextView = findViewById(R.id.SplashActivityErrorTextView);
+		errorTextView.setText(errorMsg);
+		errorTextView.setVisibility(View.VISIBLE);
 	}
 
 	@Override

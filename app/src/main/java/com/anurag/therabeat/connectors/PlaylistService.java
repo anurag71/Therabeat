@@ -2,9 +2,11 @@ package com.anurag.therabeat.connectors;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -60,9 +62,14 @@ public class PlaylistService {
                                 progressDialog.dismiss();
                             }
                         }
-                        Log.d("playlist",playlists.get(0).getName());
-                        myView.setAdapter(new RecyclerViewAdapter(playlists,listener));
-                        progressDialog.dismiss();
+                        if(playlists.size()==0){
+
+                        }
+                       else{
+                            Log.d("playlist",playlists.get(0).getName());
+                            myView.setAdapter(new RecyclerViewAdapter(playlists,listener));
+                            progressDialog.dismiss();
+                        }
                     }
                 }, new Response.ErrorListener() {
 
