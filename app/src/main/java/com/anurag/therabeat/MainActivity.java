@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 					.setIcon(android.R.drawable.ic_dialog_alert)
 					.show();
 		}
-		waitForUserInfo();
+//		waitForUserInfo();
 		playlistService = new PlaylistService(MainActivity.this);
 		userView = (TextView) findViewById(R.id.user);
 		userView.setText("Please select a playlist from below");

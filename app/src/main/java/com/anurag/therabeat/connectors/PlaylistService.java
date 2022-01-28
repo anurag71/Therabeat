@@ -62,14 +62,10 @@ public class PlaylistService {
                                 progressDialog.dismiss();
                             }
                         }
-                        if(playlists.size()==0){
-
-                        }
-                       else{
                             Log.d("playlist",playlists.get(0).getName());
                             myView.setAdapter(new RecyclerViewAdapter(playlists,listener));
                             progressDialog.dismiss();
-                        }
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -86,6 +82,7 @@ public class PlaylistService {
                 String token = sharedPreferences.getString("token", "");
                 String auth = "Bearer " + token;
                 headers.put("Authorization", auth);
+                headers.put("Content-Type", "application/json");
                 return headers;
             }};
         MySingleton.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);

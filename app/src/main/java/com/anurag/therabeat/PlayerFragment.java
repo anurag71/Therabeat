@@ -21,7 +21,6 @@ import com.spotify.protocol.client.CallResult;
 import com.spotify.protocol.types.Empty;
 import com.spotify.protocol.types.Image;
 import com.spotify.protocol.types.Track;
-import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
