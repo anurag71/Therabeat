@@ -1,15 +1,16 @@
 package com.anurag.therabeat;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -19,32 +20,30 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-
-//Spotify
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.anurag.therabeat.connectors.UserService;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track;
 
-public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnNoteListener, NavigationBarView.OnItemSelectedListener{
+import java.io.InputStream;
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnNoteListener, NavigationBarView.OnItemSelectedListener {
 
 	//Class variables
 	private String TAG = getClass().getSimpleName().toString();
 
 	private Toolbar toolbar;
 
-	private TextView userView;
+	public ArrayList<Song> playlistArrayList = new ArrayList<>();
 	private RecyclerView myView;
 
 	private PlaylistService playlistService;
-	public ArrayList<Playlist> playlistArrayList;
+	protected EditText searchEditText;
 
 	public static BeatsEngine wave;
 	private RequestQueue queue;
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	//Spotify
 	SpotifyConnection spotifyConnection;
 
-	private String AUTH_TOKEN="";
+	private String AUTH_TOKEN = "";
 
 	int position;
 
@@ -66,9 +65,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	private boolean exception = false;
 	private String errorMsg="";
 
-
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
 		queue = Volley.newRequestQueue(this);
 		AUTH_TOKEN = msharedPreferences.getString("token", "");
-		if(AUTH_TOKEN.equals("")){
+		Log.d(TAG, AUTH_TOKEN);
+		if (AUTH_TOKEN.equals("")) {
 			new AlertDialog.Builder(this)
 					.setTitle("Auth Token Error")
 					.setMessage("Could not fetch AUTH TOKEN")
@@ -96,9 +93,25 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		}
 //		waitForUserInfo();
 		playlistService = new PlaylistService(MainActivity.this);
-		userView = (TextView) findViewById(R.id.user);
-		userView.setText("Please select a playlist from below");
-		getPlaylists();
+		searchEditText = findViewById(R.id.songSearch);
+		searchEditText.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void afterTextChanged(Editable s) {
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start,
+										  int count, int after) {
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start,
+									  int before, int count) {
+				if (s.length() != 0)
+					getPlaylists(s.toString());
+			}
+		});
 	}
 
 	@Override
@@ -109,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 
 	@Override
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-		if (item.getItemId() == R.id.nav_settings){
+		if (item.getItemId() == R.id.nav_settings) {
 			Intent intent = new Intent(MainActivity.this,
 
 					SettingsActivity.class);
@@ -118,22 +131,22 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void setPlaylist(ArrayList<Playlist> playlist){
-		playlistArrayList=playlist;
+	public void setPlaylist(ArrayList<Song> playlist) {
+		playlistArrayList = playlist;
 	}
 
 
-	private void getPlaylists() {
-		final ProgressDialog progressDialog = new ProgressDialog(this);
-		progressDialog.setMessage("Fetching your Spotify Playlists");
-		progressDialog.show();
+	private void getPlaylists(String searchQuery) {
 		updatePlaylist();
-		playlistArrayList = playlistService.getPlaylists(this.getApplicationContext(),this, myView, progressDialog);
+		RecyclerViewAdapter adapter = new RecyclerViewAdapter(playlistArrayList, this);
+		myView.setAdapter(adapter);
+		playlistArrayList = playlistService.getPlaylists(this.getApplicationContext(), searchQuery, this, adapter);
+
 	}
 
 	public void updatePlaylist() {
-		Log.d(TAG,"inside update playlsit");
-			myView =  (RecyclerView)findViewById(R.id.recyclerview);
+		Log.d(TAG, "inside update playlsit");
+		myView = (RecyclerView) findViewById(R.id.recyclerview);
 			myView.setHasFixedSize(true);
 			LinearLayoutManager llm = new LinearLayoutManager(this);
 			llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -156,13 +169,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.d(TAG,AUTH_TOKEN);
+		Log.d(TAG, AUTH_TOKEN);
 	}
 
-	private void connected(String playlistId) {
-		spotifyConnection.mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:"+playlistId);
-		isPlaying = true;
-		// Subscribe to PlayerState
+	private void connected(String uri) {
+		spotifyConnection.mSpotifyAppRemote.getPlayerApi().play(uri);
 		spotifyConnection.mSpotifyAppRemote.getPlayerApi()
 				.subscribeToPlayerState()
 				.setEventCallback(playerState -> {
@@ -171,6 +182,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 						Log.d(TAG, track.name + " by " + track.artist.name);
 					}
 				});
+		isPlaying = true;
+		// Subscribe to PlayerState
+
 	}
 
 	@Override
@@ -199,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	//if user goes too fast
 	private void attemptStartWave(float beatFreq) {
 		Log.d(TAG, String.valueOf(beatFreq));
-		wave = new Binaural(200, beatFreq);
+		wave = new Binaural(200, beatFreq, 50);
 		wave.start();
 	}
 
@@ -209,15 +223,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewAdapt
 	}
 
 	public void onNoteClick(int position) {
-		float beatFreq  = msharedPreferences.getFloat("beatFreq",0.0f);
-		if(beatFreq==0.0){
-			Toast toast = Toast.makeText(getApplicationContext(),"Please set a beat frequency in settings",Toast.LENGTH_SHORT);
-			toast.show();
-		}
-		else{
-			togglePlay(beatFreq,playlistArrayList.get(position).getId());
-			this.getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment)(new PlayerFragment())).setReorderingAllowed(true).commitAllowingStateLoss();
-		}
+		float beatFreq = msharedPreferences.getFloat("beatFreq", 0.0f);
+		Log.d(TAG, playlistArrayList.get(position).getName());
+		togglePlay(beatFreq, playlistArrayList.get(position).getUri());
+		this.getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment) (new PlayerFragment())).setReorderingAllowed(true).commitAllowingStateLoss();
 	}
 
 	private void displayError(){

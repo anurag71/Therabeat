@@ -1,21 +1,21 @@
 package com.anurag.therabeat;
 
-public class Playlist {
+public class Song {
 
-    private String id;
+    private String uri;
     private String name;
 
-    public Playlist(String id, String name) {
+    public Song(String uri, String name) {
         this.name = name;
-        this.id = id;
+        this.uri = uri;
     }
 
-    public String getId() {
-        return id;
+    public String getUri() {
+        return uri;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
     public String getName() {

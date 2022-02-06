@@ -7,14 +7,14 @@ public class Helpers {
 
     private static final int AMPLITUDE_MAX = 32767;
 
-    public static int getAdjustedAmplitudeMax(float frequency) {
+    public static int getAdjustedAmplitudeMax(float factor) {
         //scale amplitude for human perception. 100hz or less = max
         int amplitudeMax;
-        float amplitudeScale = 100 / frequency;
-        if (frequency <= 100)
+        float amplitudeScale = 100 / factor;
+        if (factor <= 100) {
             amplitudeMax = AMPLITUDE_MAX;
-        else {
-            amplitudeMax = (int)(AMPLITUDE_MAX * amplitudeScale);
+        } else {
+            amplitudeMax = (int) (AMPLITUDE_MAX * amplitudeScale);
         }
         return amplitudeMax;
     }

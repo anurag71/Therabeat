@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.appcompat.app.AlertDialog;
-
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -18,7 +16,7 @@ public class SpotifyConnection {
     private static final String CLIENT_ID = "a98fdf7072d24d9dbf8999a6d74212b0";
     private static final String REDIRECT_URI = "http://com.anurag.therabeat/callback";
     private static final int REQUEST_CODE = 1337;
-    private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-read-private";
+    private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-read-private,streaming";
     public static final String AUTH_TOKEN = "AUTH_TOKEN";
 
     public static SpotifyAppRemote mSpotifyAppRemote;
@@ -50,17 +48,6 @@ public class SpotifyConnection {
 
                         public void onFailure(Throwable throwable) {
                             Log.d("MyActivity", throwable.getMessage(), throwable);
-                            new AlertDialog.Builder(context)
-                                    .setTitle("Spotify Player Error")
-                                    .setMessage(throwable.getMessage())
-
-                                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                                    // The dialog is automatically dismissed when a dialog button is clicked.
-                                    .setPositiveButton(android.R.string.yes, null)
-
-                                    // A null listener allows the button to dismiss the dialog and take no further action.
-                                    .setIcon(android.R.drawable.ic_dialog_alert)
-                                    .show();
 
                             // Something went wrong when attempting to connect! Handle errors here
                         }

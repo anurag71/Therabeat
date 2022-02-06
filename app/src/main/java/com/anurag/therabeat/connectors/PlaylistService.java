@@ -1,26 +1,19 @@
 package com.anurag.therabeat.connectors;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.util.Log;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.anurag.therabeat.MainActivity;
-import com.anurag.therabeat.MySingleton;
-import com.anurag.therabeat.Playlist;
 import com.anurag.therabeat.RecyclerViewAdapter;
+import com.anurag.therabeat.SingletonInstances;
+import com.anurag.therabeat.Song;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -32,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlaylistService {
-    private ArrayList<Playlist> playlists = new ArrayList<>();
+    private ArrayList<Song> playlists = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
     private String endpoint;
@@ -40,31 +33,35 @@ public class PlaylistService {
     public PlaylistService(Context context) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(context);
-        endpoint = "https://api.spotify.com/v1/me/playlists";
+        endpoint = "https://api.spotify.com/v1/search?type=track&q=";
     }
 
-    public ArrayList<Playlist> getPlaylists(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, ProgressDialog progressDialog) {
+    public ArrayList<Song> getPlaylists(Context context, String searchQuery, RecyclerViewAdapter.OnNoteListener listener, RecyclerViewAdapter adapter) {
+        Log.d("Playlist", endpoint + searchQuery);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, endpoint, null, new Response.Listener<JSONObject>() {
+                (Request.Method.GET, endpoint + searchQuery, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("Response: ",response.toString());
+                        playlists.clear();
+                        Log.d("Response: ", response.toString());
                         Gson gson = new Gson();
-                        JSONArray jsonArray = response.optJSONArray("items");
+                        JSONObject jsonObject = response.optJSONObject("tracks");
+                        JSONArray jsonArray = jsonObject.optJSONArray("items");
+                        Log.d("Playlist", jsonArray.toString());
                         for (int n = 0; n < jsonArray.length(); n++) {
                             try {
                                 JSONObject object = jsonArray.getJSONObject(n);
-                                Playlist playlist = gson.fromJson(object.toString(), Playlist.class);
-                                playlists.add(playlist);
+                                Song song = gson.fromJson(object.toString(), Song.class);
+                                playlists.add(song);
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                progressDialog.dismiss();
+//                                progressDialog.dismiss();
                             }
                         }
-                            Log.d("playlist",playlists.get(0).getName());
-                            myView.setAdapter(new RecyclerViewAdapter(playlists,listener));
-                            progressDialog.dismiss();
+                        Log.d("playlist", playlists.get(0).getName());
+                        adapter.updateEmployeeListItems(playlists);
+//                            progressDialog.dismiss();
 
                     }
                 }, new Response.ErrorListener() {
@@ -72,7 +69,7 @@ public class PlaylistService {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Volley", error.toString());
-                        progressDialog.dismiss();
+//                        progressDialog.dismiss();
 
                     }
                 }) {
@@ -85,11 +82,11 @@ public class PlaylistService {
                 headers.put("Content-Type", "application/json");
                 return headers;
             }};
-        MySingleton.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+        SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
         return playlists;
     }
 
-    public ArrayList<Playlist> getAllPlaylists(final VolleyCallBack callBack) {
+    public ArrayList<Song> getAllPlaylists(final VolleyCallBack callBack) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, endpoint, null, response -> {
                     Gson gson = new Gson();
@@ -97,8 +94,8 @@ public class PlaylistService {
                     for (int n = 0; n < jsonArray.length(); n++) {
                         try {
                             JSONObject object = jsonArray.getJSONObject(n);
-                            Playlist playlist = gson.fromJson(object.toString(), Playlist.class);
-                            playlists.add(playlist);
+                            Song song = gson.fromJson(object.toString(), Song.class);
+                            playlists.add(song);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

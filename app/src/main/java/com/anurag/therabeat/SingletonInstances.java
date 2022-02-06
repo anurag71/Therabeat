@@ -1,29 +1,24 @@
 package com.anurag.therabeat;
 
-import android.app.Application;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.text.TextUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
-public class MySingleton {
-    private static MySingleton instance;
+public class SingletonInstances {
+    private static SingletonInstances instance;
     private RequestQueue requestQueue;
     private static Context ctx;
 
-    private MySingleton(Context context) {
+    private SingletonInstances(Context context) {
         ctx = context;
         requestQueue = getRequestQueue();
     }
 
-    public static synchronized MySingleton getInstance(Context context) {
+    public static synchronized SingletonInstances getInstance(Context context) {
         if (instance == null) {
-            instance = new MySingleton(context);
+            instance = new SingletonInstances(context);
         }
         return instance;
     }
