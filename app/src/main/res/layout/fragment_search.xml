@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <EditText
         android:id="@+id/songSearch"
         android:layout_width="match_parent"

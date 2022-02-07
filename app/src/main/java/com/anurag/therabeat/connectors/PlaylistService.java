@@ -54,6 +54,7 @@ public class PlaylistService {
                                 JSONObject object = jsonArray.getJSONObject(n);
                                 Song song = gson.fromJson(object.toString(), Song.class);
                                 playlists.add(song);
+                                Log.d("playlist",playlists.toString());
                             } catch (JSONException e) {
                                 e.printStackTrace();
 //                                progressDialog.dismiss();
@@ -61,6 +62,7 @@ public class PlaylistService {
                         }
                         Log.d("playlist", playlists.get(0).getName());
                         adapter.updateEmployeeListItems(playlists);
+
 //                            progressDialog.dismiss();
 
                     }

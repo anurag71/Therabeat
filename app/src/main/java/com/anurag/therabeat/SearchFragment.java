@@ -60,16 +60,6 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     public SearchFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SearchFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static SearchFragment newInstance(String param1, String param2) {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
@@ -88,18 +78,17 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_video, container, false);
-        spotifyConnection = new SpotifyConnection(getContext());
-        msharedPreferences = getContext().getSharedPreferences("SPOTIFY", 0);
-        queue = Volley.newRequestQueue(getContext());
+        View inflatedView = inflater.inflate(R.layout.fragment_search, container, false);
+        spotifyConnection = new SpotifyConnection(getActivity());
+        msharedPreferences = getActivity().getSharedPreferences("SPOTIFY", 0);
+        queue = Volley.newRequestQueue(getActivity());
         AUTH_TOKEN = msharedPreferences.getString("token", "");
         Log.d(TAG, AUTH_TOKEN);
 //		waitForUserInfo();
-        playlistService = new PlaylistService(getContext());
-        searchEditText = inflatedView.findViewById(R.id.songSearch);
+        playlistService = new PlaylistService(getActivity());
+        searchEditText = (EditText) inflatedView.findViewById(R.id.songSearch);
         myView = (RecyclerView) inflatedView.findViewById(R.id.recyclerview);
         searchEditText.addTextChangedListener(new TextWatcher() {
-
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -116,14 +105,18 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                     getPlaylists(s.toString());
             }
         });
+        searchEditText.setText("starboy"
+        );
+        getPlaylists(searchEditText.getText().toString());
         return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
     private void getPlaylists(String searchQuery) {
+        Log.d(TAG,"inside get playlist");
         updatePlaylist();
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(playlistArrayList, this);
         myView.setAdapter(adapter);
-        playlistArrayList = playlistService.getPlaylists(getContext(), searchQuery, this, adapter);
+        playlistArrayList = playlistService.getPlaylists(getActivity(), searchQuery, this, adapter);
 
     }
 
@@ -131,7 +124,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         Log.d(TAG, "inside update playlsit");
 
         myView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
     }
