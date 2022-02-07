@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlaylistService {
+public class SongSearchService {
     private ArrayList<Song> playlists = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
     private String endpoint;
 
-    public PlaylistService(Context context) {
+    public SongSearchService(Context context) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(context);
         endpoint = "https://api.spotify.com/v1/search?type=track&q=";

@@ -7,6 +7,21 @@
         app:constraintSetStart="@id/expanded">
 
         <KeyFrameSet>
+            <KeyAttribute
+                app:framePosition="0"
+                app:motionTarget="@id/navigation">
+                <CustomAttribute
+                    app:attributeName="translationY"
+                    app:customDimension="0dp" />
+            </KeyAttribute>
+
+            <KeyAttribute
+                app:framePosition="75"
+                app:motionTarget="@id/navigation">
+                <CustomAttribute
+                    app:attributeName="translationY"
+                    app:customDimension="55dp" />
+            </KeyAttribute>
 
             <KeyAttribute
                 app:framePosition="100"

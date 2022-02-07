@@ -3,36 +3,18 @@ package com.anurag.therabeat;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
-import com.anurag.therabeat.connectors.PlaylistService;
-import com.anurag.therabeat.connectors.SpotifyConnection;
-import com.anurag.therabeat.connectors.UserService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.types.Track;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 

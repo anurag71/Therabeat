@@ -17,16 +17,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
-import com.anurag.therabeat.connectors.PlaylistService;
+import com.anurag.therabeat.connectors.SongSearchService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.navigation.NavigationBarView;
 import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,8 +43,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     SpotifyConnection spotifyConnection;
     int position;
     private RecyclerView myView;
-    private PlaylistService playlistService;
-    private RequestQueue queue;
+    private SongSearchService playlistService;
     private String AUTH_TOKEN = "";
     //Refresh waveform if user changes frequencies
     private String TAG = getClass().getSimpleName().toString();
@@ -85,11 +80,10 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         View inflatedView = inflater.inflate(R.layout.fragment_search, container, false);
         spotifyConnection = new SpotifyConnection(getActivity());
         msharedPreferences = getActivity().getSharedPreferences("SPOTIFY", 0);
-        queue = Volley.newRequestQueue(getActivity());
         AUTH_TOKEN = msharedPreferences.getString("token", "");
         Log.d(TAG, AUTH_TOKEN);
 //		waitForUserInfo();
-        playlistService = new PlaylistService(getActivity());
+        playlistService = new SongSearchService(getActivity());
         return inflatedView;
     }
 
@@ -118,8 +112,8 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-//                if (s.length() != 0)
-//                    getPlaylists(s.toString());
+                if (s.length() != 0)
+                    getPlaylists(s.toString());
             }
         });
     }
@@ -128,7 +122,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         Log.d(TAG,"inside get playlist");
         adapter = new RecyclerViewAdapter(playlistArrayList, this);
         myView.setAdapter(adapter);
-        playlistArrayList = playlistService.getPlaylists(getActivity(), searchQuery, this, adapter);
+        playlistArrayList = playlistService.getPlaylists(getActivity().getApplicationContext(), searchQuery, this, adapter);
 
 
     }
