@@ -61,7 +61,7 @@ public class PlaylistService {
                             }
                         }
                         Log.d("playlist", playlists.get(0).getName());
-                        adapter.updateEmployeeListItems(playlists);
+//                        adapter.updateEmployeeListItems(playlists);
 
 //                            progressDialog.dismiss();
 

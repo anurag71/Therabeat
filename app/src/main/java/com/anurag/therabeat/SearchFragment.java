@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +25,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +56,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     private boolean isPlaying = false;
 
     private SharedPreferences.Editor editor;
+    RecyclerViewAdapter adapter;
     private SharedPreferences msharedPreferences;
     private boolean exception = false;
     private String errorMsg = "";
@@ -86,8 +90,21 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         Log.d(TAG, AUTH_TOKEN);
 //		waitForUserInfo();
         playlistService = new PlaylistService(getActivity());
-        searchEditText = (EditText) inflatedView.findViewById(R.id.songSearch);
-        myView = (RecyclerView) inflatedView.findViewById(R.id.recyclerview);
+        return inflatedView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        searchEditText = (EditText) view.findViewById(R.id.songSearch);
+        myView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        myView.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        myView.setLayoutManager(llm);
+        ArrayList<Integer> list = new ArrayList<>();
+
+
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable s) {
@@ -101,32 +118,19 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                if (s.length() != 0)
-                    getPlaylists(s.toString());
+//                if (s.length() != 0)
+//                    getPlaylists(s.toString());
             }
         });
-        searchEditText.setText("starboy"
-        );
-        getPlaylists(searchEditText.getText().toString());
-        return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
     private void getPlaylists(String searchQuery) {
         Log.d(TAG,"inside get playlist");
-        updatePlaylist();
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(playlistArrayList, this);
+        adapter = new RecyclerViewAdapter(playlistArrayList, this);
         myView.setAdapter(adapter);
         playlistArrayList = playlistService.getPlaylists(getActivity(), searchQuery, this, adapter);
 
-    }
 
-    public void updatePlaylist() {
-        Log.d(TAG, "inside update playlsit");
-
-        myView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(getActivity());
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        myView.setLayoutManager(llm);
     }
 
     private void connected(String uri) {
