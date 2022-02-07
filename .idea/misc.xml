@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.140625" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/content_main.xml" value="0.21354166666666666" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_search.xml" value="0.359375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/menu/navigation.xml" value="0.21354166666666666" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/menu/recycler_view_options_menu.xml" value="0.17864583333333334" />
         <entry key="app/src/main/res/drawable-xxhdpi/button_custom.xml" value="0.11979166666666667" />
         <entry key="app/src/main/res/drawable/playcirclebutton.xml" value="0.13020833333333334" />
