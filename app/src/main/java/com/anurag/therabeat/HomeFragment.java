@@ -96,8 +96,8 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
-        adapter = new RecyclerViewAdapter(playlistArrayList, this);
-        playlistArrayList = playlistService.getPlaylistSongs(getActivity().getApplicationContext(),this, myView, progressDialog);
+        adapter = new RecyclerViewAdapter(playlistArrayList, this, R.menu.playlist_list_songs_recycler_view_menu);
+        playlistArrayList = playlistService.getPlaylistSongs(getActivity().getApplicationContext(), this, myView, progressDialog);
 
     }
 

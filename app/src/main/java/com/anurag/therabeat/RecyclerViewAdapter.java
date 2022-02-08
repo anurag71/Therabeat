@@ -19,10 +19,12 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
     private OnNoteListener onNoteListener;
     public ArrayList<Song> myValues = new ArrayList<>();
+    int menuLayout;
 
-    public RecyclerViewAdapter(ArrayList<Song> myValues, OnNoteListener onNoteListener) {
+    public RecyclerViewAdapter(ArrayList<Song> myValues, OnNoteListener onNoteListener, int menuLayout) {
         this.myValues.addAll(myValues);
         this.onNoteListener = onNoteListener;
+        this.menuLayout = menuLayout;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 //creating a popup menu
                 PopupMenu popup = new PopupMenu(view.getContext(), holder.buttonViewOption);
                 //inflating menu from xml resource
-                popup.inflate(R.menu.recycler_view_options_menu);
+                popup.inflate(menuLayout);
                 //adding click listener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override

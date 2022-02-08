@@ -118,8 +118,8 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     }
 
     private void getPlaylists(String searchQuery) {
-        Log.d(TAG,"inside get playlist");
-        adapter = new RecyclerViewAdapter(playlistArrayList, this);
+        Log.d(TAG, "inside get playlist");
+        adapter = new RecyclerViewAdapter(playlistArrayList, this, R.menu.recycler_view_options_menu);
         myView.setAdapter(adapter);
         playlistArrayList = playlistService.getPlaylists(getActivity().getApplicationContext(), searchQuery, this, adapter);
 
