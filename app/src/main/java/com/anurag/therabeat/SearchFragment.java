@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.anurag.therabeat.connectors.SongSearchService;
+import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.navigation.NavigationBarView;
 import com.spotify.protocol.types.Track;
@@ -43,7 +43,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     SpotifyConnection spotifyConnection;
     int position;
     private RecyclerView myView;
-    private SongSearchService playlistService;
+    private SongService playlistService;
     private String AUTH_TOKEN = "";
     //Refresh waveform if user changes frequencies
     private String TAG = getClass().getSimpleName().toString();
@@ -83,7 +83,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         AUTH_TOKEN = msharedPreferences.getString("token", "");
         Log.d(TAG, AUTH_TOKEN);
 //		waitForUserInfo();
-        playlistService = new SongSearchService(getActivity());
+        playlistService = new SongService(getActivity());
         return inflatedView;
     }
 
@@ -96,7 +96,6 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
-        ArrayList<Integer> list = new ArrayList<>();
 
 
         searchEditText.addTextChangedListener(new TextWatcher() {

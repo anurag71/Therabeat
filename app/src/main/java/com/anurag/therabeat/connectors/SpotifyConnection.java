@@ -16,7 +16,7 @@ public class SpotifyConnection {
     private static final String CLIENT_ID = "a98fdf7072d24d9dbf8999a6d74212b0";
     private static final String REDIRECT_URI = "http://com.anurag.therabeat/callback";
     private static final int REQUEST_CODE = 1337;
-    private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-read-private,streaming";
+    private static final String SCOPES = "user-read-recently-played,user-library-modify,user-read-email,user-read-private,playlist-read-private,streaming,playlist-modify-public,playlist-modify-private";
     public static final String AUTH_TOKEN = "AUTH_TOKEN";
 
     public static SpotifyAppRemote mSpotifyAppRemote;

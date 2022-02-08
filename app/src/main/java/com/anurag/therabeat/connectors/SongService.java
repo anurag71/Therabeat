@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SongSearchService {
+public class SongService {
     private ArrayList<Song> playlists = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
     private String endpoint;
 
-    public SongSearchService(Context context) {
+    public SongService(Context context) {
         sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
         queue = Volley.newRequestQueue(context);
         endpoint = "https://api.spotify.com/v1/search?type=track&q=";
@@ -88,24 +88,44 @@ public class SongSearchService {
         return playlists;
     }
 
-    public ArrayList<Song> getAllPlaylists(final VolleyCallBack callBack) {
+    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerViewAdapter adapter) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, endpoint, null, response -> {
-                    Gson gson = new Gson();
-                    JSONArray jsonArray = response.optJSONArray("items");
-                    for (int n = 0; n < jsonArray.length(); n++) {
-                        try {
-                            JSONObject object = jsonArray.getJSONObject(n);
-                            Song song = gson.fromJson(object.toString(), Song.class);
-                            playlists.add(song);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    callBack.onSuccess();
-                }, error -> {
-                    // TODO: Handle error
+                (Request.Method.GET, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks", null, new Response.Listener<JSONObject>() {
 
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        playlists.clear();
+                        Log.d("Response: ", response.toString());
+                        Gson gson = new Gson();
+                        JSONArray jsonArray = response.optJSONArray("items");
+                        Log.d("Playlist", jsonArray.toString());
+                        for (int n = 0; n < jsonArray.length(); n++) {
+                            try {
+                                JSONObject object = jsonArray.getJSONObject(n);
+                                object = object.optJSONObject("track");
+                                Log.d("object", object.toString());
+                                Song song = gson.fromJson(object.toString(), Song.class);
+                                playlists.add(song);
+                                Log.d("playlist", playlists.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+//                                progressDialog.dismiss();
+                            }
+                        }
+                        Log.d("playlist", playlists.get(0).getName());
+//                        adapter.updateEmployeeListItems(playlists);
+
+//                            progressDialog.dismiss();
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley", error.toString());
+//                        progressDialog.dismiss();
+
+                    }
                 }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
@@ -113,11 +133,14 @@ public class SongSearchService {
                 String token = sharedPreferences.getString("token", "");
                 String auth = "Bearer " + token;
                 headers.put("Authorization", auth);
+                headers.put("Content-Type", "application/json");
                 return headers;
             }
         };
-        queue.add(jsonObjectRequest);
+        SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
         return playlists;
     }
+
+
 
 }

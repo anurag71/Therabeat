@@ -1,7 +1,5 @@
 package com.anurag.therabeat;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -16,9 +14,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
+import com.anurag.therabeat.connectors.UserService;
 import com.spotify.sdk.android.auth.AuthorizationClient;
-import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
 
 public class SplashActivity extends AppCompatActivity {
@@ -30,6 +31,9 @@ public class SplashActivity extends AppCompatActivity {
     SpotifyConnection spotifyConnection;
     private boolean exception = false;
     private String errorMsg;
+    PlaylistService playlistService;
+    String playlistId;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,8 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        errorMsg="";
+        playlistService = new PlaylistService(this);
+        errorMsg = "";
         spotifyConnection = new SpotifyConnection(this);
         PackageManager pm = this.getPackageManager();
         isPackageInstalled("com.spotify.music", pm);
@@ -48,6 +53,7 @@ public class SplashActivity extends AppCompatActivity {
         if(!exception){
             spotifyConnection.openLoginWindow(this);
             msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
+            playlistId = msharedPreferences.getString("playlistId", "");
         }
         else{
             displayError();
@@ -100,6 +106,11 @@ public class SplashActivity extends AppCompatActivity {
                     editor = getSharedPreferences("SPOTIFY", 0).edit();
                     editor.putString("token", response.getAccessToken());
                     editor.apply();
+                    Log.d(TAG, playlistId);
+                    if (playlistId.equals("")) {
+                        waitForUserInfo();
+                    }
+
                     startActivity(intent);
 
                     destroy();
@@ -143,9 +154,19 @@ public class SplashActivity extends AppCompatActivity {
         errorTextView.setVisibility(View.VISIBLE);
     }
 
-    public void destroy(){
+    public void destroy() {
 
         SplashActivity.this.finish();
 
+    }
+
+    private void waitForUserInfo() {
+        UserService userService = new UserService(SingletonInstances.getInstance(this.getApplicationContext()).getRequestQueue(), msharedPreferences);
+        userService.get(() -> {
+            User user = userService.getUser();
+            userId = user.id;
+            playlistService.createPlaylist(userId, this, editor);
+
+        });
     }
 }
