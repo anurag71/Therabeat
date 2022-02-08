@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -87,14 +88,17 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        myView = (RecyclerView) view.findViewById(R.id.playlistsongrecyclerview);
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Fetching your Spotify Playlists");
+        progressDialog.show();
+        myView =  (RecyclerView)view.findViewById(R.id.playlistsongrecyclerview);
         myView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
         adapter = new RecyclerViewAdapter(playlistArrayList, this);
-        myView.setAdapter(adapter);
-        playlistArrayList = playlistService.getPlaylistSongs(getActivity().getApplicationContext(), this, adapter);
+        playlistArrayList = playlistService.getPlaylistSongs(getActivity().getApplicationContext(),this, myView, progressDialog);
+
     }
 
     public void onNoteClick(int position) {

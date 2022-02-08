@@ -1,8 +1,11 @@
 package com.anurag.therabeat.connectors;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -26,6 +29,7 @@ import java.util.Map;
 
 public class SongService {
     private ArrayList<Song> playlists = new ArrayList<>();
+    private ArrayList<Song> playlistssongs = new ArrayList<>();
     private SharedPreferences sharedPreferences;
     private RequestQueue queue;
     private String endpoint;
@@ -61,7 +65,7 @@ public class SongService {
                             }
                         }
                         Log.d("playlist", playlists.get(0).getName());
-//                        adapter.updateEmployeeListItems(playlists);
+                        adapter.updateEmployeeListItems(playlists);
 
 //                            progressDialog.dismiss();
 
@@ -88,13 +92,12 @@ public class SongService {
         return playlists;
     }
 
-    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerViewAdapter adapter) {
+    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, ProgressDialog progressDialog) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks", null, new Response.Listener<JSONObject>() {
-
                     @Override
                     public void onResponse(JSONObject response) {
-                        playlists.clear();
+                        playlistssongs.clear();
                         Log.d("Response: ", response.toString());
                         Gson gson = new Gson();
                         JSONArray jsonArray = response.optJSONArray("items");
@@ -105,16 +108,17 @@ public class SongService {
                                 object = object.optJSONObject("track");
                                 Log.d("object", object.toString());
                                 Song song = gson.fromJson(object.toString(), Song.class);
-                                playlists.add(song);
-                                Log.d("playlist", playlists.toString());
+                                playlistssongs.add(song);
+                                Log.d("playlist", playlistssongs.toString());
                             } catch (JSONException e) {
                                 e.printStackTrace();
-//                                progressDialog.dismiss();
+                                progressDialog.dismiss();
                             }
                         }
-                        Log.d("playlist", playlists.get(0).getName());
+                        Log.d("playlist",playlistssongs.get(0).getName());
+                        myView.setAdapter(new RecyclerViewAdapter(playlistssongs,listener));
+                        progressDialog.dismiss();
 //                        adapter.updateEmployeeListItems(playlists);
-
 //                            progressDialog.dismiss();
 
                     }
@@ -123,7 +127,7 @@ public class SongService {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Volley", error.toString());
-//                        progressDialog.dismiss();
+                        progressDialog.dismiss();
 
                     }
                 }) {
@@ -138,7 +142,7 @@ public class SongService {
             }
         };
         SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
-        return playlists;
+        return playlistssongs;
     }
 
 
