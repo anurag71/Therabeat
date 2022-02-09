@@ -165,7 +165,7 @@ public class SplashActivity extends AppCompatActivity {
         userService.get(() -> {
             User user = userService.getUser();
             userId = user.id;
-            playlistService.createPlaylist(userId, this, editor);
+            playlistService.getPlaylists(userId, this, editor);
 
         });
     }
