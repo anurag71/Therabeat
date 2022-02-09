@@ -1,7 +1,5 @@
 package com.anurag.therabeat;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class UserMoodChoice extends AppCompatActivity implements View.OnClickListener {
 
@@ -22,11 +22,13 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
     Button attentionButton;
     Button memoryButton;
 
+    public static BeatsEngine wave;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSharedPreferences = this.getSharedPreferences("SPOTIFY",0);
+        mSharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
         editor = this.getSharedPreferences("SPOTIFY", 0).edit();
         setContentView(R.layout.activity_user_mood_choice);
         initializeView();
@@ -54,14 +56,17 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
             case R.id.anxietyChoiceButton:
                 Log.d(TAG,"Anxiety Button pressed");
                 editor.putFloat("beatFreq", 4.00F);
+                wave = new Binaural(200, 4.00F, 50);
                 break;
             case R.id.attentionChoiceButton:
                 Log.d(TAG,"Attention Button pressed");
                 editor.putFloat("beatFreq", 6.00F);
+                wave = new Binaural(200, 4.00F, 50);
                 break;
             case R.id.memoryChoiceButton:
                 Log.d(TAG,"Memory Button pressed");
                 editor.putFloat("beatFreq", 19.00F);
+                wave = new Binaural(200, 4.00F, 50);
                 break;
             default:
                 break;

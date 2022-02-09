@@ -81,4 +81,42 @@ public class PlaylistService {
         };
         SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
     }
+
+    public void addToPlaylist(String uri, Context context) {
+        HashMap<String, String[]> params = new HashMap<String, String[]>();
+        params.put("uri", new String[]{uri});
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.POST, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/playlists", new JSONObject(params), new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response: ", response.toString());
+                        Log.d("PlaylistService", "Added to playlist");
+
+                        Gson gson = new Gson();
+                        JSONObject jsonObject = response.optJSONObject("tracks");
+
+//                            progressDialog.dismiss();
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley", error.toString());
+//                        progressDialog.dismiss();
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = sharedPreferences.getString("token", "");
+                String auth = "Bearer " + token;
+                headers.put("Authorization", auth);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+    }
 }

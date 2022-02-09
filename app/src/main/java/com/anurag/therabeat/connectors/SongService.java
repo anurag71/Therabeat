@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.anurag.therabeat.R;
 import com.anurag.therabeat.RecyclerViewAdapter;
 import com.anurag.therabeat.SingletonInstances;
 import com.anurag.therabeat.Song;
@@ -92,7 +95,7 @@ public class SongService {
         return playlists;
     }
 
-    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, ProgressDialog progressDialog) {
+    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, ProgressDialog progressDialog, TextView viewById) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks", null, new Response.Listener<JSONObject>() {
                     @Override
@@ -115,8 +118,12 @@ public class SongService {
                                 progressDialog.dismiss();
                             }
                         }
-                        Log.d("playlist",playlistssongs.get(0).getName());
-                        myView.setAdapter(new RecyclerViewAdapter(playlistssongs,listener));
+                        if (playlistssongs.size() != 0) {
+                            Log.d("playlist", playlistssongs.get(0).getName());
+                            myView.setAdapter(new RecyclerViewAdapter(playlistssongs, listener, R.menu.playlist_list_songs_recycler_view_menu));
+                            viewById.setVisibility(View.GONE);
+                            myView.setVisibility(View.VISIBLE);
+                        }
                         progressDialog.dismiss();
 //                        adapter.updateEmployeeListItems(playlists);
 //                            progressDialog.dismiss();

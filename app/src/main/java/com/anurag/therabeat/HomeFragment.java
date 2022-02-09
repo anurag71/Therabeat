@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +37,6 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
 
     public static BeatsEngine wave;
     public ArrayList<Song> playlistArrayList = new ArrayList<>();
-    RecyclerViewAdapter adapter;
     SpotifyConnection spotifyConnection;
     // TODO: Rename and change types of parameters
     private RecyclerView myView;
@@ -71,6 +71,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        wave = UserMoodChoice.wave;
         super.onCreate(savedInstanceState);
         spotifyConnection = new SpotifyConnection(getActivity());
         msharedPreferences = getActivity().getSharedPreferences("SPOTIFY", 0);
@@ -96,8 +97,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
-        adapter = new RecyclerViewAdapter(playlistArrayList, this, R.menu.playlist_list_songs_recycler_view_menu);
-        playlistArrayList = playlistService.getPlaylistSongs(getActivity().getApplicationContext(), this, myView, progressDialog);
+        playlistArrayList = playlistService.getPlaylistSongs(getActivity().getApplicationContext(), this, myView, progressDialog, (TextView) view.findViewById(R.id.textView1));
 
     }
 
@@ -110,7 +110,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
 
     private void attemptStartWave(float beatFreq) {
         Log.d(TAG, String.valueOf(beatFreq));
-        wave = new Binaural(200, beatFreq, 50);
+
         wave.start();
     }
 

@@ -71,6 +71,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        wave = UserMoodChoice.wave;
     }
 
     @Override
@@ -150,7 +151,6 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
 
     private void attemptStartWave(float beatFreq) {
         Log.d(TAG, String.valueOf(beatFreq));
-        wave = new Binaural(200, beatFreq, 50);
         wave.start();
     }
 

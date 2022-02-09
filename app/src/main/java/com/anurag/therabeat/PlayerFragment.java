@@ -107,7 +107,7 @@ public class PlayerFragment extends Fragment {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_play_arrow_24_white));
 
                     mSpotifyAppRemote.getPlayerApi().pause();
-                    SearchFragment.wave.stop();
+                    UserMoodChoice.wave.stop();
                 } else {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_pause_24_white));
                     if (beatFreq > 0.0) {
@@ -172,13 +172,13 @@ public class PlayerFragment extends Fragment {
     }
 
     private void attemptStartwave(boolean calledFromSlider) {
-        if (SearchFragment.wave != null) {
-            SearchFragment.wave.release();
+        if (UserMoodChoice.wave != null) {
+            UserMoodChoice.wave.release();
         }
-        SearchFragment.wave = new Binaural(200, beatFreq, amplitudeFactor);
+        UserMoodChoice.wave = new Binaural(200, beatFreq, amplitudeFactor);
         if (!calledFromSlider) {
-            if (!SearchFragment.wave.getIsPlaying()) {
-                SearchFragment.wave.start();
+            if (!UserMoodChoice.wave.getIsPlaying()) {
+                UserMoodChoice.wave.start();
                 play_pause_image_view.setActivated(true);
                 play_pause_image_view.setChecked(true);
             } else {
@@ -186,7 +186,7 @@ public class PlayerFragment extends Fragment {
                 play_pause_image_view.setChecked(false);
             }
         } else {
-            SearchFragment.wave.start();
+            UserMoodChoice.wave.start();
         }
     }
 }
