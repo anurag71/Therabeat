@@ -71,10 +71,10 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        wave = UserMoodChoice.wave;
+        wave = MainActivity.wave;
         super.onCreate(savedInstanceState);
         spotifyConnection = new SpotifyConnection(getActivity());
-        msharedPreferences = getActivity().getSharedPreferences("SPOTIFY", 0);
+        msharedPreferences = getActivity().getSharedPreferences("Therebeat", 0);
         AUTH_TOKEN = msharedPreferences.getString("token", "");
     }
 

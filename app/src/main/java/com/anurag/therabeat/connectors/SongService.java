@@ -38,7 +38,7 @@ public class SongService {
     private String endpoint;
 
     public SongService(Context context) {
-        sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
+        sharedPreferences = context.getSharedPreferences("Therabeat", 0);
         queue = Volley.newRequestQueue(context);
         endpoint = "https://api.spotify.com/v1/search?type=track&q=";
     }
@@ -123,6 +123,8 @@ public class SongService {
                             myView.setAdapter(new RecyclerViewAdapter(playlistssongs, listener, R.menu.playlist_list_songs_recycler_view_menu));
                             viewById.setVisibility(View.GONE);
                             myView.setVisibility(View.VISIBLE);
+                        } else {
+                            viewById.setVisibility(View.VISIBLE);
                         }
                         progressDialog.dismiss();
 //                        adapter.updateEmployeeListItems(playlists);

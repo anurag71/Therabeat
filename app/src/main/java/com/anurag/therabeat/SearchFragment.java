@@ -71,7 +71,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        wave = UserMoodChoice.wave;
+        wave = MainActivity.wave;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.fragment_search, container, false);
         spotifyConnection = new SpotifyConnection(getActivity());
-        msharedPreferences = getActivity().getSharedPreferences("SPOTIFY", 0);
+        msharedPreferences = getActivity().getSharedPreferences("Therabeat", 0);
         AUTH_TOKEN = msharedPreferences.getString("token", "");
         Log.d(TAG, AUTH_TOKEN);
 //		waitForUserInfo();

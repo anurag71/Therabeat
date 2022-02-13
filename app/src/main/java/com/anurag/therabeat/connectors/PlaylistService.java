@@ -28,7 +28,7 @@ public class PlaylistService {
     private String endpoint;
 
     public PlaylistService(Context context) {
-        sharedPreferences = context.getSharedPreferences("SPOTIFY", 0);
+        sharedPreferences = context.getSharedPreferences("Therabeat", 0);
         endpoint = "\thttps://api.spotify.com/v1/users/";
     }
 

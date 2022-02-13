@@ -66,14 +66,14 @@ public class PlayerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         spotifyConnection = new SpotifyConnection(getContext());
         mSpotifyAppRemote = spotifyConnection.mSpotifyAppRemote;
-        msharedPreferences = getActivity().getSharedPreferences("SPOTIFY", 0);
+        msharedPreferences = getActivity().getSharedPreferences("Therabeat", 0);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_video, container, false);
+        View inflatedView = inflater.inflate(R.layout.fragment_player, container, false);
         play_pause_image_view = inflatedView.findViewById(R.id.play_pause_image_view);
         next_image_view = inflatedView.findViewById(R.id.nextSongButton);
         prev_image_view = inflatedView.findViewById(R.id.prevSongButton);
@@ -107,7 +107,7 @@ public class PlayerFragment extends Fragment {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_play_arrow_24_white));
 
                     mSpotifyAppRemote.getPlayerApi().pause();
-                    UserMoodChoice.wave.stop();
+                    MainActivity.wave.stop();
                 } else {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_pause_24_white));
                     if (beatFreq > 0.0) {
@@ -172,13 +172,13 @@ public class PlayerFragment extends Fragment {
     }
 
     private void attemptStartwave(boolean calledFromSlider) {
-        if (UserMoodChoice.wave != null) {
-            UserMoodChoice.wave.release();
+        if (MainActivity.wave != null) {
+            MainActivity.wave.release();
         }
-        UserMoodChoice.wave = new Binaural(200, beatFreq, amplitudeFactor);
+        MainActivity.wave = new Binaural(200, beatFreq, amplitudeFactor);
         if (!calledFromSlider) {
-            if (!UserMoodChoice.wave.getIsPlaying()) {
-                UserMoodChoice.wave.start();
+            if (!MainActivity.wave.getIsPlaying()) {
+                MainActivity.wave.start();
                 play_pause_image_view.setActivated(true);
                 play_pause_image_view.setChecked(true);
             } else {
@@ -186,7 +186,7 @@ public class PlayerFragment extends Fragment {
                 play_pause_image_view.setChecked(false);
             }
         } else {
-            UserMoodChoice.wave.start();
+            MainActivity.wave.start();
         }
     }
 }

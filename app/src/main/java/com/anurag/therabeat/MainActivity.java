@@ -1,9 +1,7 @@
 package com.anurag.therabeat;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -23,10 +21,12 @@ public class MainActivity extends AppCompatActivity {
 
 	private Toolbar toolbar;
 
-	final Fragment fragment1 = new HomeFragment();
-	final Fragment fragment2 = new SearchFragment();
+	public static BeatsEngine wave;
+	final Fragment homeFragment = new HomeFragment();
+	final Fragment searchFragment = new SearchFragment();
 	final FragmentManager fm = getSupportFragmentManager();
-	Fragment active = fragment1;
+	final Fragment settingsFragment = new SettingsFragment();
+	Fragment active = homeFragment;
 
 	//Refresh waveform if user changes frequencies
 
@@ -36,26 +36,7 @@ public class MainActivity extends AppCompatActivity {
 	private SharedPreferences.Editor editor;
 	private SharedPreferences msharedPreferences;
 	private boolean exception = false;
-	private String errorMsg="";
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		toolbar = findViewById(R.id.toolbar);
-		toolbar.setTitle("");
-		setSupportActionBar(toolbar);
-		initializeView();
-		msharedPreferences = this.getSharedPreferences("SPOTIFY", 0);
-//		waitForUserInfo();
-//		fm.beginTransaction().add(R.id.main_container, fragment3, "3").hide(fragment3).commit();
-		BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-		fm.beginTransaction().add(R.id.main_container, fragment2, "2").hide(fragment2).commit();
-		fm.beginTransaction().add(R.id.main_container,fragment1, "1").commit();
-	}
-
+	private String errorMsg = "";
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
 			= new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -63,13 +44,18 @@ public class MainActivity extends AppCompatActivity {
 		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 			switch (item.getItemId()) {
 				case R.id.home:
-					fm.beginTransaction().hide(active).show(fragment1).commit();
-					active = fragment1;
+					fm.beginTransaction().hide(active).show(homeFragment).commit();
+					active = homeFragment;
 					return true;
 
 				case R.id.search:
-					fm.beginTransaction().hide(active).show(fragment2).commit();
-					active = fragment2;
+					fm.beginTransaction().hide(active).show(searchFragment).commit();
+					active = searchFragment;
+					return true;
+
+				case R.id.settings:
+					fm.beginTransaction().hide(active).show(settingsFragment).commit();
+					active = settingsFragment;
 					return true;
 			}
 			return false;
@@ -77,20 +63,20 @@ public class MainActivity extends AppCompatActivity {
 	};
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.custom_menu,menu);
-		return super.onCreateOptionsMenu(menu);
-	}
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		initializeView();
+		msharedPreferences = this.getSharedPreferences("Therabeat", 0);
+//		waitForUserInfo();
+//		fm.beginTransaction().add(R.id.main_container, fragment3, "3").hide(fragment3).commit();
+		BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+		wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
 
-	@Override
-	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-		if (item.getItemId() == R.id.nav_settings) {
-			Intent intent = new Intent(MainActivity.this,
-
-					SettingsActivity.class);
-			startActivity(intent);
-		}
-		return super.onOptionsItemSelected(item);
+		fm.beginTransaction().add(R.id.main_container, searchFragment, "2").hide(searchFragment).commit();
+		fm.beginTransaction().add(R.id.main_container, settingsFragment, "3").hide(settingsFragment).commit();
+		fm.beginTransaction().add(R.id.main_container, homeFragment, "1").commit();
 	}
 
 //	public void setPlaylist(ArrayList<Song> playlist) {
