@@ -28,6 +28,7 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
+            android:configChanges="orientation"
             android:windowSoftInputMode="adjustPan" />
 
         <meta-data
@@ -41,7 +42,7 @@
         <package android:name="com.spotify.music" />
     </queries>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

@@ -51,6 +51,7 @@ public class PlayerFragment extends Fragment {
 
     private float amplitudeFactor;
     private float beatFreq;
+    public boolean isPlaying = true;
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -108,11 +109,14 @@ public class PlayerFragment extends Fragment {
 
                     mSpotifyAppRemote.getPlayerApi().pause();
                     MainActivity.wave.stop();
+                    msharedPreferences.edit().putLong("timeListened", msharedPreferences.getLong("timeListened", (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).apply();
+                    isPlaying = false;
                 } else {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_pause_24_white));
                     if (beatFreq > 0.0) {
                         attemptStartwave(false);
                         mSpotifyAppRemote.getPlayerApi().resume();
+                        isPlaying = true;
                     }
                     play_pause_image_view.setChecked(false);
                 }
@@ -179,6 +183,7 @@ public class PlayerFragment extends Fragment {
         if (!calledFromSlider) {
             if (!MainActivity.wave.getIsPlaying()) {
                 MainActivity.wave.start();
+                msharedPreferences.edit().putLong("startTime", System.currentTimeMillis() / 1000).apply();
                 play_pause_image_view.setActivated(true);
                 play_pause_image_view.setChecked(true);
             } else {

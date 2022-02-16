@@ -122,7 +122,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         Log.d(TAG, "inside get playlist");
         adapter = new RecyclerViewAdapter(playlistArrayList, this, R.menu.recycler_view_options_menu);
         myView.setAdapter(adapter);
-        playlistArrayList = playlistService.getPlaylists(getActivity().getApplicationContext(), searchQuery, this, adapter);
+        playlistArrayList = playlistService.searchSongs(getActivity().getApplicationContext(), searchQuery, this, adapter);
 
 
     }
@@ -150,8 +150,12 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     }
 
     private void attemptStartWave(float beatFreq) {
+        if (wave.getIsPlaying()) {
+            msharedPreferences.edit().putLong("timeListened", msharedPreferences.getLong("timeListened", (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).apply();
+        }
         Log.d(TAG, String.valueOf(beatFreq));
         wave.start();
+        msharedPreferences.edit().putLong("startTime", System.currentTimeMillis() / 1000).apply();
     }
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

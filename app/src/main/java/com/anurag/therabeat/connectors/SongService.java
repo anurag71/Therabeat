@@ -1,6 +1,5 @@
 package com.anurag.therabeat.connectors;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -8,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -43,7 +43,7 @@ public class SongService {
         endpoint = "https://api.spotify.com/v1/search?type=track&q=";
     }
 
-    public ArrayList<Song> getPlaylists(Context context, String searchQuery, RecyclerViewAdapter.OnNoteListener listener, RecyclerViewAdapter adapter) {
+    public ArrayList<Song> searchSongs(Context context, String searchQuery, RecyclerViewAdapter.OnNoteListener listener, RecyclerViewAdapter adapter) {
         Log.d("Playlist", endpoint + searchQuery);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, endpoint + searchQuery, null, new Response.Listener<JSONObject>() {
@@ -55,19 +55,28 @@ public class SongService {
                         Gson gson = new Gson();
                         JSONObject jsonObject = response.optJSONObject("tracks");
                         JSONArray jsonArray = jsonObject.optJSONArray("items");
-                        Log.d("Playlist", jsonArray.toString());
                         for (int n = 0; n < jsonArray.length(); n++) {
                             try {
                                 JSONObject object = jsonArray.getJSONObject(n);
+                                JSONArray artistObj = object.optJSONArray("artists");
+                                JSONArray imageObj = object.optJSONObject("album").optJSONArray("images");
+                                Log.d("check length", String.valueOf(artistObj.length()));
+                                StringBuilder artists = new StringBuilder();
+                                artists.append(artistObj.getJSONObject(0).getString("name"));
+                                for (int i = 1; i < artistObj.length(); i++) {
+                                    JSONObject obj1 = artistObj.getJSONObject(i);
+                                    artists.append(", " + obj1.get("name"));
+//                                    Log.d("check name",obj1.optJSONObject("name").toString());
+                                }
                                 Song song = gson.fromJson(object.toString(), Song.class);
+                                song.setArtist(artists.toString());
+                                song.setImageUrl(imageObj.getJSONObject(1).getString("url"));
                                 playlists.add(song);
-                                Log.d("playlist",playlists.toString());
                             } catch (JSONException e) {
                                 e.printStackTrace();
 //                                progressDialog.dismiss();
                             }
                         }
-                        Log.d("playlist", playlists.get(0).getName());
                         adapter.updateEmployeeListItems(playlists);
 
 //                            progressDialog.dismiss();
@@ -95,38 +104,48 @@ public class SongService {
         return playlists;
     }
 
-    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, ProgressDialog progressDialog, TextView viewById) {
+    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, SwipeRefreshLayout mSwipeRefreshLayout, TextView viewById) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks", null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        playlistssongs.clear();
                         Log.d("Response: ", response.toString());
+                        playlistssongs.clear();
                         Gson gson = new Gson();
                         JSONArray jsonArray = response.optJSONArray("items");
-                        Log.d("Playlist", jsonArray.toString());
                         for (int n = 0; n < jsonArray.length(); n++) {
                             try {
                                 JSONObject object = jsonArray.getJSONObject(n);
                                 object = object.optJSONObject("track");
                                 Log.d("object", object.toString());
+                                JSONArray artistObj = object.optJSONArray("artists");
+                                JSONArray imageObj = object.optJSONObject("album").optJSONArray("images");
+                                Log.d("check length", String.valueOf(artistObj.length()));
+                                StringBuilder artists = new StringBuilder();
+                                artists.append(artistObj.getJSONObject(0).getString("name"));
+                                for (int i = 1; i < artistObj.length(); i++) {
+                                    JSONObject obj1 = artistObj.getJSONObject(i);
+                                    artists.append(", " + obj1.get("name"));
+//                                    Log.d("check name",obj1.optJSONObject("name").toString());
+                                }
                                 Song song = gson.fromJson(object.toString(), Song.class);
+                                song.setArtist(artists.toString());
+                                song.setImageUrl(imageObj.getJSONObject(1).getString("url"));
                                 playlistssongs.add(song);
-                                Log.d("playlist", playlistssongs.toString());
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                progressDialog.dismiss();
+                                mSwipeRefreshLayout.setRefreshing(false);
                             }
                         }
                         if (playlistssongs.size() != 0) {
-                            Log.d("playlist", playlistssongs.get(0).getName());
                             myView.setAdapter(new RecyclerViewAdapter(playlistssongs, listener, R.menu.playlist_list_songs_recycler_view_menu));
                             viewById.setVisibility(View.GONE);
                             myView.setVisibility(View.VISIBLE);
                         } else {
+                            myView.setVisibility(View.GONE);
                             viewById.setVisibility(View.VISIBLE);
                         }
-                        progressDialog.dismiss();
+                        mSwipeRefreshLayout.setRefreshing(false);
 //                        adapter.updateEmployeeListItems(playlists);
 //                            progressDialog.dismiss();
 
@@ -136,7 +155,7 @@ public class SongService {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Volley", error.toString());
-                        progressDialog.dismiss();
+                        mSwipeRefreshLayout.setRefreshing(false);
 
                     }
                 }) {

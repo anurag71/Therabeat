@@ -1,6 +1,5 @@
 package com.anurag.therabeat;
 
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,7 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.navigation.NavigationBarView;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNoteListener, NavigationBarView.OnItemSelectedListener {
+public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNoteListener, NavigationBarView.OnItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,12 +42,17 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     SpotifyConnection spotifyConnection;
     // TODO: Rename and change types of parameters
     private RecyclerView myView;
-    private SongService playlistService;
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    ImageView playlistImageView;
     private SharedPreferences msharedPreferences;
     private String AUTH_TOKEN = "";
     private boolean isInitial = true;
     private boolean isPlaying = false;
     private String TAG = getClass().getSimpleName().toString();
+    RecyclerViewAdapter.OnNoteListener listener;
+    View view;
+    private SongService songService;
+    private PlaylistService playlistService;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -82,23 +89,50 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        playlistService = new SongService(getActivity());
+        songService = new SongService(getActivity());
+        playlistService = new PlaylistService(getActivity());
+
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        this.view = view;
+        listener = this;
         super.onViewCreated(view, savedInstanceState);
-        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Fetching your Spotify Playlists");
-        progressDialog.show();
-        myView =  (RecyclerView)view.findViewById(R.id.playlistsongrecyclerview);
+        playlistImageView = view.findViewById(R.id.playlistArtwork);
+        myView = (RecyclerView) view.findViewById(R.id.playlistsongrecyclerview);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.design_default_color_primary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
         myView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
-        playlistArrayList = playlistService.getPlaylistSongs(getActivity().getApplicationContext(), this, myView, progressDialog, (TextView) view.findViewById(R.id.textView1));
+        mSwipeRefreshLayout.post(new Runnable() {
 
+            @Override
+            public void run() {
+
+                mSwipeRefreshLayout.setRefreshing(true);
+
+                // Fetching data from server
+                playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1));
+                playlistService.getPlaylist(playlistImageView, getActivity().getApplicationContext());
+            }
+        });
+
+
+    }
+
+    public void onRefresh() {
+
+        // Fetching data from server
+        playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1));
+        playlistService.getPlaylist(playlistImageView, getActivity().getApplicationContext());
     }
 
     public void onNoteClick(int position) {
@@ -109,9 +143,12 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     }
 
     private void attemptStartWave(float beatFreq) {
+        if (wave.getIsPlaying()) {
+            msharedPreferences.edit().putLong("timeListened", msharedPreferences.getLong("timeListened", (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).apply();
+        }
         Log.d(TAG, String.valueOf(beatFreq));
-
         wave.start();
+        msharedPreferences.edit().putLong("startTime", System.currentTimeMillis() / 1000).apply();
     }
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

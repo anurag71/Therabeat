@@ -29,6 +29,6 @@
     <string name="memoryString">Memory</string>
     <string name="attentionString">Attention</string>
     <string name="networkError">Could not connect to the internet</string>
-    <string name="welcomeMsg">Welcome to Therabeat</string>
+    <string name="welcomeMsg">Welcome</string>
 
 </resources>

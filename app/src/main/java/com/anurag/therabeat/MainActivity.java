@@ -2,6 +2,7 @@ package com.anurag.therabeat;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -10,7 +11,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import java.io.InputStream;
 
@@ -138,6 +141,16 @@ public class MainActivity extends AppCompatActivity {
 	protected void onStop() {
 		super.onStop();
 //		SpotifyAppRemote.disconnect(spotifyConnection.mSpotifyAppRemote);
+		if (isChangingConfigurations() && PlayerFragment.newInstance().isPlaying) {
+			Log.d(TAG, "onStop: don't release MediaPlayer as screen is rotating & playing");
+		} else {
+			SpotifyConnection spotifyConnection = new SpotifyConnection(this);
+			spotifyConnection.getPlayerInstance(this);
+			spotifyConnection.mSpotifyAppRemote.getPlayerApi().pause();
+			MainActivity.wave.release();
+			SpotifyAppRemote.disconnect(spotifyConnection.mSpotifyAppRemote);
+		}
+
 	}
 
 	private void initializeView() {

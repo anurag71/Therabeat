@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.PopupMenu;
@@ -13,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongListDiffCallback;
+import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.myTextView.setText(myValues.get(position).getName());
+        holder.artistView.setText(myValues.get(position).getArtist());
+        Picasso.get().load(myValues.get(position).getImageUrl()).into(holder.artworkImageView);
+//        Log.d("check image",myValues.get(position).getImageUrl().toString());
         holder.buttonViewOption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,11 +59,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         switch (item.getItemId()) {
                             case R.id.addToPlayistOption:
                                 //handle menu1 click
-                                playlistService.addToPlaylist(myValues.get(holder.getAdapterPosition()).getUri(),holder.buttonViewOption.getContext().getApplicationContext());
-                                Log.d("RecyclerView", "Add to playlist clicked");
+                                playlistService.addToPlaylist(myValues.get(holder.getAdapterPosition()).getUri(), holder.buttonViewOption.getContext().getApplicationContext());
                                 return true;
                             case R.id.removeFromPlaylistOption:
-                                playlistService.removeFromPlaylist(myValues.get(holder.getAdapterPosition()).getUri(),holder.buttonViewOption.getContext().getApplicationContext());
+                                try {
+                                    playlistService.removeFromPlaylist(myValues.get(holder.getAdapterPosition()).getUri(), holder.buttonViewOption.getContext().getApplicationContext());
+                                    return true;
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                                 Log.d("RecyclerView", "Remove from playlist clicked");
                             default:
                                 return false;
@@ -91,12 +101,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView myTextView;
+        private TextView artistView;
         private TextView buttonViewOption;
+        private ImageView artworkImageView;
         OnNoteListener onNoteListener;
 
         public MyViewHolder(View itemView, OnNoteListener onNoteListener) {
             super(itemView);
             myTextView = (TextView) itemView.findViewById(R.id.text_cardview);
+            artistView = (TextView) itemView.findViewById(R.id.artistTextview);
+            artworkImageView = itemView.findViewById(R.id.artwork);
             buttonViewOption = itemView.findViewById(R.id.textViewOptions);
             itemView.setOnClickListener(this);
             this.onNoteListener = onNoteListener;

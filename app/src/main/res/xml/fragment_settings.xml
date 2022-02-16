@@ -1,18 +1,12 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <EditTextPreference
+        app:key="usageStats"
+        app:title="App Usage" />
+
     <Preference
         app:key="logout"
-        app:summary="Report technical issues or suggest new features"
+        app:summary="Disconnect your Spotify Account from Therabeat"
         app:title="Logout"></Preference>
-
-    <PreferenceCategory
-        app:key="notifications_category"
-        app:title="Notifications">
-
-        <SwitchPreferenceCompat
-            app:key="notifications"
-            app:title="Enable message notifications" />
-
-    </PreferenceCategory>
 
 </PreferenceScreen>
