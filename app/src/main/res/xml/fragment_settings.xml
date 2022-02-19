@@ -1,9 +1,5 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditTextPreference
-        app:key="usageStats"
-        app:title="App Usage" />
-
     <Preference
         app:key="logout"
         app:summary="Disconnect your Spotify Account from Therabeat"

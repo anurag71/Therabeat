@@ -99,51 +99,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/top_frame_layout"
             />
-        <TextView
-            android:textColor="@color/white"
-            android:id="@+id/audio_name_text_view_min"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:elevation="10dp"
-            android:ellipsize="end"
-            android:outlineProvider="none"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:singleLine="true"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@id/back_15_image_view"
-            app:layout_constraintStart_toEndOf="@id/album_art_image_view"
-            app:layout_constraintTop_toTopOf="@id/album_art_image_view"
-            />
-        <TextView
-            android:textColor="@color/white"
-            android:id="@+id/artist_name_text_view_min"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:elevation="10dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:outlineProvider="none"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@id/back_15_image_view"
-            app:layout_constraintStart_toEndOf="@id/album_art_image_view"
-            app:layout_constraintTop_toBottomOf="@id/audio_name_text_view_min"
-            />
-    <Button
-        android:backgroundTint="@color/black"
-        android:layout_gravity="center"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:id="@+id/prevSongButton"
-        android:checkable="true"
-        android:insetLeft="0dp"
-        android:insetTop="0dp"
+        <Button
+            android:backgroundTint="@color/black"
+            android:layout_gravity="center"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:id="@+id/back_15_image_view"
+            android:checkable="true"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
         android:elevation="10dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
@@ -153,9 +119,9 @@
         app:iconSize="32dp"
         app:iconTint="@color/white"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-        app:layout_constraintBottom_toBottomOf="@+id/play_pause_layout"
-        app:layout_constraintEnd_toStartOf="@id/back_15_image_view"
-        app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/play_pause_layout"
+            app:layout_constraintEnd_toStartOf="@id/prevSongButton"
+            app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/play_pause_layout"
         app:srcCompat="@drawable/ic_round_replay_10_24_white" />
 
@@ -166,7 +132,7 @@
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:id="@+id/back_15_image_view"
+        android:id="@+id/prevSongButton"
         android:checkable="true"
         android:insetLeft="0dp"
         android:insetTop="0dp"
@@ -183,16 +149,6 @@
         app:layout_constraintEnd_toStartOf="@id/play_pause_layout"
         app:layout_constraintTop_toTopOf="@id/play_pause_layout"
         app:srcCompat="@drawable/ic_round_skip_previous_24_white" />
-
-    <Space
-        android:id="@+id/play_pause_top_space"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/play_pause_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent=".03"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <Button
         android:backgroundTint="@color/black"
         android:layout_gravity="center"
@@ -200,7 +156,7 @@
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:id="@+id/forward_15_image_view"
+        android:id="@+id/nextSongButton"
         android:checkable="true"
         android:insetLeft="0dp"
         android:insetTop="0dp"
@@ -214,10 +170,69 @@
         app:iconTint="@color/white"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
         app:layout_constraintBottom_toBottomOf="@+id/play_pause_layout"
-        app:layout_constraintEnd_toStartOf="@+id/nextSongButton"
+        app:layout_constraintEnd_toStartOf="@+id/forward_15_image_view"
         app:layout_constraintStart_toEndOf="@+id/play_pause_layout"
         app:layout_constraintTop_toTopOf="@+id/play_pause_layout"
         app:srcCompat="@drawable/ic_round_skip_next_24" />
+
+    <FrameLayout
+        android:id="@+id/play_pause_layout"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/circular_play_pause_background"
+        android:elevation="10dp"
+        android:outlineProvider="none"
+        app:layout_constraintTop_toBottomOf="@id/play_pause_top_space"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_round_skip_previous_24_white">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_gravity="center"
+            android:hapticFeedbackEnabled="true"
+            android:id="@+id/play_pause_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:checkable="true"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            app:icon="@drawable/ic_round_pause_24_white"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconSize="32dp"
+            app:iconTint="@color/white"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
+    </FrameLayout>
+
+    <Space
+        android:id="@+id/play_pause_top_space"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/play_pause_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent=".03"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:textColor="@color/white"
+        android:id="@+id/audio_name_text_view_min"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        android:ellipsize="end"
+        android:outlineProvider="none"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:singleLine="true"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@id/prevSongButton"
+        app:layout_constraintStart_toEndOf="@id/album_art_image_view"
+        app:layout_constraintTop_toTopOf="@id/album_art_image_view" />
 
     <Space
         android:id="@+id/play_pause_bottom_space"
@@ -228,11 +243,29 @@
         app:layout_constraintHeight_percent=".1"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <TextView
+        android:textColor="@color/white"
+        android:id="@+id/artist_name_text_view_min"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:elevation="10dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:outlineProvider="none"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/prevSongButton"
+        app:layout_constraintStart_toEndOf="@id/album_art_image_view"
+        app:layout_constraintTop_toBottomOf="@id/audio_name_text_view_min" />
+
+    <com.google.android.material.button.MaterialButton
         android:backgroundTint="@color/black"
-        android:id="@+id/nextSongButton"
+        android:id="@+id/forward_15_image_view"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:hapticFeedbackEnabled="true"
         android:layout_gravity="center"
         android:layout_marginEnd="8dp"
         android:checkable="true"
@@ -252,38 +285,6 @@
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
         app:srcCompat="@drawable/ic_round_forward_10_24_white" />
 
-    <FrameLayout
-        android:id="@+id/play_pause_layout"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/circular_play_pause_background"
-        android:elevation="10dp"
-        android:outlineProvider="none"
-        app:layout_constraintTop_toBottomOf="@id/play_pause_top_space"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_round_skip_previous_24_white">
-
-        <com.google.android.material.button.MaterialButton
-            android:layout_gravity="center"
-            android:id="@+id/play_pause_image_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:checkable="true"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:icon="@drawable/ic_round_pause_24_white"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:iconSize="32dp"
-            app:iconTint="@color/white"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
-    </FrameLayout>
-
     <TextView
         android:paddingTop="8dp"
         android:textColor="@color/white"
@@ -301,8 +302,8 @@
         android:layout_height="wrap_content"
         android:valueFrom="0.0"
         android:valueTo="100.0"
-        app:layout_constraintEnd_toStartOf="@id/nextSongButton"
-        app:layout_constraintStart_toEndOf="@id/prevSongButton"
+        app:layout_constraintEnd_toStartOf="@id/forward_15_image_view"
+        app:layout_constraintStart_toEndOf="@id/back_15_image_view"
         app:layout_constraintBottom_toTopOf="@+id/play_pause_bottom_space"
         app:layout_constraintTop_toBottomOf="@id/beatVolumeTextView"
         app:tickVisible="false" />

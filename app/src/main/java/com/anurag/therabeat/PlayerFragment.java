@@ -18,10 +18,11 @@ import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.protocol.client.CallResult;
-import com.spotify.protocol.types.Empty;
 import com.spotify.protocol.types.Image;
 import com.spotify.protocol.types.Track;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +54,10 @@ public class PlayerFragment extends Fragment {
     private float beatFreq;
     public boolean isPlaying = true;
 
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    Calendar c = Calendar.getInstance();
+    String date = sdf.format(c.getTime());
+
     public PlayerFragment() {
         // Required empty public constructor
     }
@@ -67,13 +72,13 @@ public class PlayerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         spotifyConnection = new SpotifyConnection(getContext());
         mSpotifyAppRemote = spotifyConnection.mSpotifyAppRemote;
-        msharedPreferences = getActivity().getSharedPreferences("Therabeat", 0);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         View inflatedView = inflater.inflate(R.layout.fragment_player, container, false);
         play_pause_image_view = inflatedView.findViewById(R.id.play_pause_image_view);
         next_image_view = inflatedView.findViewById(R.id.nextSongButton);
@@ -87,7 +92,7 @@ public class PlayerFragment extends Fragment {
         beatVolumeSlider.setValue(50);
 
         amplitudeFactor = beatVolumeSlider.getValue();
-        beatFreq = beatFreq = msharedPreferences.getFloat("beatFreq", 0.0f);
+        beatFreq = beatFreq = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance().getFloat("beatFreq", 0.0f);
 
         updateTextViews();
 
@@ -109,7 +114,9 @@ public class PlayerFragment extends Fragment {
 
                     mSpotifyAppRemote.getPlayerApi().pause();
                     MainActivity.wave.stop();
-                    msharedPreferences.edit().putLong("timeListened", msharedPreferences.getLong("timeListened", (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).apply();
+                    Long end = System.currentTimeMillis() / 1000;
+                    Long start = msharedPreferences.getLong("startTime", (long) 0.0);
+                    msharedPreferences.edit().putLong(date, msharedPreferences.getLong(date, (long) 0.0) + (end - start)).apply();
                     isPlaying = false;
                 } else {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_pause_24_white));
@@ -126,24 +133,17 @@ public class PlayerFragment extends Fragment {
         next_image_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSpotifyAppRemote.getPlayerApi().skipNext().setResultCallback(new CallResult.ResultCallback<Empty>() {
-                    @Override
-                    public void onResult(Empty data) {
-                        updateTextViews();
-                    }
-                });
+
+                mSpotifyAppRemote.getPlayerApi().skipNext();
+                updateTextViews();
+//                Log.d("check Button","button pressed");
             }
         });
 
         prev_image_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSpotifyAppRemote.getPlayerApi().skipPrevious().setResultCallback(new CallResult.ResultCallback<Empty>() {
-                    @Override
-                    public void onResult(Empty data) {
-                        updateTextViews();
-                    }
-                });
+                mSpotifyAppRemote.getPlayerApi().skipPrevious();
             }
         });
 
@@ -176,10 +176,6 @@ public class PlayerFragment extends Fragment {
     }
 
     private void attemptStartwave(boolean calledFromSlider) {
-        if (MainActivity.wave != null) {
-            MainActivity.wave.release();
-        }
-        MainActivity.wave = new Binaural(200, beatFreq, amplitudeFactor);
         if (!calledFromSlider) {
             if (!MainActivity.wave.getIsPlaying()) {
                 MainActivity.wave.start();
@@ -191,7 +187,10 @@ public class PlayerFragment extends Fragment {
                 play_pause_image_view.setChecked(false);
             }
         } else {
-            MainActivity.wave.start();
+            MainActivity.wave = new Binaural(200, beatFreq, amplitudeFactor);
+            if (MainActivity.wave.getIsPlaying()) {
+                MainActivity.wave.start();
+            }
         }
     }
 }

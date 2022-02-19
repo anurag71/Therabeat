@@ -19,26 +19,27 @@ import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-	//Class variables
-	private String TAG = getClass().getSimpleName().toString();
+    //Class variables
+    private String TAG = getClass().getSimpleName().toString();
 
-	private Toolbar toolbar;
+    private Toolbar toolbar;
 
-	public static BeatsEngine wave;
-	final Fragment homeFragment = new HomeFragment();
-	final Fragment searchFragment = new SearchFragment();
-	final FragmentManager fm = getSupportFragmentManager();
-	final Fragment settingsFragment = new SettingsFragment();
-	Fragment active = homeFragment;
+    public static BeatsEngine wave;
+    final Fragment homeFragment = new HomeFragment();
+    final Fragment searchFragment = new SearchFragment();
+    final FragmentManager fm = getSupportFragmentManager();
+    final Fragment settingsFragment = new SettingsFragment();
+    final Fragment appUsageFragment = new appUsageFragment();
+    Fragment active = homeFragment;
 
-	//Refresh waveform if user changes frequencies
+    //Refresh waveform if user changes frequencies
 
-	private boolean isInitial = true;
-	private boolean isPlaying = false;
+    private boolean isInitial = true;
+    private boolean isPlaying = false;
 
-	private SharedPreferences.Editor editor;
-	private SharedPreferences msharedPreferences;
-	private boolean exception = false;
+    private SharedPreferences.Editor editor;
+    private SharedPreferences msharedPreferences;
+    private boolean exception = false;
 	private String errorMsg = "";
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
 			= new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -46,41 +47,45 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 			switch (item.getItemId()) {
-				case R.id.home:
-					fm.beginTransaction().hide(active).show(homeFragment).commit();
-					active = homeFragment;
-					return true;
+                case R.id.home:
+                    fm.beginTransaction().hide(active).show(homeFragment).commit();
+                    active = homeFragment;
+                    return true;
 
-				case R.id.search:
-					fm.beginTransaction().hide(active).show(searchFragment).commit();
-					active = searchFragment;
-					return true;
+                case R.id.search:
+                    fm.beginTransaction().hide(active).show(searchFragment).commit();
+                    active = searchFragment;
+                    return true;
 
-				case R.id.settings:
-					fm.beginTransaction().hide(active).show(settingsFragment).commit();
-					active = settingsFragment;
-					return true;
-			}
+                case R.id.appUsage:
+                    fm.beginTransaction().hide(active).show(appUsageFragment).commit();
+                    active = appUsageFragment;
+                    return true;
+
+                case R.id.settings:
+                    fm.beginTransaction().hide(active).show(settingsFragment).commit();
+                    active = settingsFragment;
+                    return true;
+            }
 			return false;
 		}
 	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		initializeView();
-		msharedPreferences = this.getSharedPreferences("Therabeat", 0);
-//		waitForUserInfo();
-//		fm.beginTransaction().add(R.id.main_container, fragment3, "3").hide(fragment3).commit();
-		BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-		wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        initializeView();
+        msharedPreferences = this.getSharedPreferences("Therabeat", 0);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
 
-		fm.beginTransaction().add(R.id.main_container, searchFragment, "2").hide(searchFragment).commit();
-		fm.beginTransaction().add(R.id.main_container, settingsFragment, "3").hide(settingsFragment).commit();
-		fm.beginTransaction().add(R.id.main_container, homeFragment, "1").commit();
-	}
+        fm.beginTransaction().add(R.id.main_container, searchFragment, "2").hide(searchFragment).commit();
+        fm.beginTransaction().add(R.id.main_container, settingsFragment, "3").hide(settingsFragment).commit();
+        fm.beginTransaction().add(R.id.main_container, appUsageFragment, "3").hide(appUsageFragment).commit();
+        fm.beginTransaction().add(R.id.main_container, homeFragment, "1").commit();
+    }
 
 //	public void setPlaylist(ArrayList<Song> playlist) {
 //		playlistArrayList = playlist;

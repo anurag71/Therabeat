@@ -31,7 +31,7 @@
             android:paddingStart="12dp"
             android:paddingEnd="10dp"
             app:layout_constraintBottom_toTopOf="@id/artist_name_text_view"
-            app:layout_constraintEnd_toStartOf="@id/back_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/prevSongButton"
             app:layout_constraintStart_toEndOf="@id/album_art_image_view"
             app:layout_constraintTop_toTopOf="@id/player_background_view"
             app:layout_constraintVertical_chainStyle="packed">
@@ -48,7 +48,7 @@
             android:paddingStart="12dp"
             android:paddingEnd="10dp"
             app:layout_constraintBottom_toBottomOf="@id/player_background_view"
-            app:layout_constraintEnd_toStartOf="@id/back_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/prevSongButton"
             app:layout_constraintStart_toEndOf="@id/album_art_image_view"
             app:layout_constraintTop_toBottomOf="@id/audio_name_text_view"
             app:layout_constraintVertical_chainStyle="packed">
@@ -62,7 +62,7 @@
             android:id="@id/audio_name_text_view_min"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/back_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/prevSongButton"
             app:layout_constraintStart_toEndOf="@id/album_art_image_view"
             app:layout_constraintTop_toTopOf="@id/album_art_image_view">
             <CustomAttribute
@@ -74,7 +74,7 @@
             android:id="@id/artist_name_text_view_min"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/back_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/prevSongButton"
             app:layout_constraintStart_toEndOf="@id/album_art_image_view"
             app:layout_constraintTop_toBottomOf="@id/audio_name_text_view_min">
             <CustomAttribute
@@ -84,7 +84,7 @@
         </Constraint>
 
         <Constraint
-            android:id="@id/back_15_image_view"
+            android:id="@id/prevSongButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="12dp"
@@ -99,11 +99,11 @@
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="@id/player_background_view"
-            app:layout_constraintEnd_toStartOf="@id/forward_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/nextSongButton"
             app:layout_constraintTop_toTopOf="@id/player_background_view" />
 
         <Constraint
-            android:id="@id/forward_15_image_view"
+            android:id="@id/nextSongButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
@@ -124,18 +124,18 @@
             app:layout_constraintTop_toBottomOf="@id/player_background_view" />
 
         <Constraint
-            android:id="@id/prevSongButton"
+            android:id="@id/back_15_image_view"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_marginStart="24dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
-            app:layout_constraintEnd_toStartOf="@id/back_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/prevSongButton"
             app:layout_constraintTop_toTopOf="@id/play_pause_layout" />
 
         <Constraint
-            android:id="@id/nextSongButton"
+            android:id="@id/forward_15_image_view"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"
@@ -160,9 +160,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/nextSongButton"
+            app:layout_constraintEnd_toStartOf="@id/forward_15_image_view"
             app:layout_constraintBottom_toTopOf="@+id/play_pause_bottom_space"
-            app:layout_constraintStart_toEndOf="@id/prevSongButton"
+            app:layout_constraintStart_toEndOf="@id/back_15_image_view"
             app:layout_constraintTop_toBottomOf="@id/beatVolumeTextView" />
 
         <Constraint
@@ -279,7 +279,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/forward_15_image_view"
+            app:layout_constraintStart_toEndOf="@id/nextSongButton"
             app:layout_constraintTop_toTopOf="@id/album_art_image_view">
             <CustomAttribute
                 app:attributeName="alpha"
@@ -291,7 +291,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/forward_15_image_view"
+            app:layout_constraintStart_toEndOf="@id/nextSongButton"
             app:layout_constraintTop_toBottomOf="@id/audio_name_text_view_min">
             <CustomAttribute
                 app:attributeName="alpha"
@@ -299,7 +299,7 @@
         </Constraint>
 
         <Constraint
-            android:id="@id/prevSongButton"
+            android:id="@id/back_15_image_view"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"
@@ -309,7 +309,7 @@
             app:layout_constraintTop_toTopOf="@id/play_pause_layout"
             />
         <Constraint
-            android:id="@id/back_15_image_view"
+            android:id="@id/prevSongButton"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"
@@ -317,7 +317,7 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
             app:layout_constraintEnd_toStartOf="@id/play_pause_layout"
-            app:layout_constraintStart_toEndOf="@id/prevSongButton"
+            app:layout_constraintStart_toEndOf="@id/back_15_image_view"
             app:layout_constraintTop_toTopOf="@id/play_pause_layout"
             />
         <Constraint
@@ -353,9 +353,9 @@
             android:id="@+id/beatVolumeSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/nextSongButton"
+            app:layout_constraintEnd_toStartOf="@id/forward_15_image_view"
             app:layout_constraintBottom_toTopOf="@+id/play_pause_bottom_space"
-            app:layout_constraintStart_toEndOf="@id/prevSongButton"
+            app:layout_constraintStart_toEndOf="@id/back_15_image_view"
             app:layout_constraintTop_toBottomOf="@id/beatVolumeTextView" />
 
 
@@ -369,19 +369,19 @@
             app:layout_constraintStart_toStartOf="parent"
             />
         <Constraint
-            android:id="@id/forward_15_image_view"
+            android:id="@id/nextSongButton"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
-            app:layout_constraintEnd_toStartOf="@id/nextSongButton"
+            app:layout_constraintEnd_toStartOf="@id/forward_15_image_view"
             app:layout_constraintStart_toEndOf="@id/play_pause_layout"
             app:layout_constraintTop_toTopOf="@id/play_pause_layout"
             />
         <Constraint
-            android:id="@id/nextSongButton"
+            android:id="@id/forward_15_image_view"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"

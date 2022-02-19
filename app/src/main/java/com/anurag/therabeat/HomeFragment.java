@@ -23,7 +23,9 @@ import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.navigation.NavigationBarView;
 import com.spotify.protocol.types.Track;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +55,9 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     View view;
     private SongService songService;
     private PlaylistService playlistService;
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    Calendar c = Calendar.getInstance();
+    String date = sdf.format(c.getTime());
 
     public HomeFragment() {
         // Required empty public constructor
@@ -81,8 +86,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
         wave = MainActivity.wave;
         super.onCreate(savedInstanceState);
         spotifyConnection = new SpotifyConnection(getActivity());
-        msharedPreferences = getActivity().getSharedPreferences("Therebeat", 0);
-        AUTH_TOKEN = msharedPreferences.getString("token", "");
+        Log.d("date", date);
     }
 
     @Override
@@ -97,6 +101,9 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
+        AUTH_TOKEN = msharedPreferences.getString("token", "");
         this.view = view;
         listener = this;
         super.onViewCreated(view, savedInstanceState);
@@ -139,16 +146,17 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
         float beatFreq = msharedPreferences.getFloat("beatFreq", 0.0f);
         Log.d(TAG, playlistArrayList.get(position).getName());
         togglePlay(beatFreq, playlistArrayList.get(position).getUri());
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment) (new PlayerFragment())).setReorderingAllowed(true).commitAllowingStateLoss();
     }
 
     private void attemptStartWave(float beatFreq) {
         if (wave.getIsPlaying()) {
-            msharedPreferences.edit().putLong("timeListened", msharedPreferences.getLong("timeListened", (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).apply();
+            msharedPreferences.edit().putLong(date, msharedPreferences.getLong(date, (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).apply();
         }
         Log.d(TAG, String.valueOf(beatFreq));
         wave.start();
-        msharedPreferences.edit().putLong("startTime", System.currentTimeMillis() / 1000).apply();
+        Long start = System.currentTimeMillis() / 1000;
+        msharedPreferences.edit().putLong("startTime", start).apply();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment) (new PlayerFragment())).setReorderingAllowed(true).commitAllowingStateLoss();
     }
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

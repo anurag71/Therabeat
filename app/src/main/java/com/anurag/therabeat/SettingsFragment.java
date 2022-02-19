@@ -109,7 +109,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -138,16 +137,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         });
 
-        EditTextPreference countingPreference = findPreference("usageStats");
-
-        if (countingPreference != null) {
-            countingPreference.setSummaryProvider(new Preference.SummaryProvider<EditTextPreference>() {
-                @Override
-                public CharSequence provideSummary(EditTextPreference preference) {
-                    String text = Long.toString(getActivity().getSharedPreferences("Therabeat", 0).getLong("timeListened", (long) 0.0));
-                    return text;
-                }
-            });
-        }
+//        if (countingPreference != null) {
+//            countingPreference.setSummaryProvider(new Preference.SummaryProvider<EditTextPreference>() {
+//                @Override
+//                public CharSequence provideSummary(EditTextPreference preference) {
+//                    String text = Long.toString(getActivity().getSharedPreferences("Therabeat", 0).getLong("timeListened", (long) 0.0));
+//                    return text;
+//                }
+//            });
+//        }
     }
 }

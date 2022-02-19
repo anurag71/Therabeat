@@ -22,7 +22,9 @@ import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.navigation.NavigationBarView;
 import com.spotify.protocol.types.Track;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,10 +57,15 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     private SharedPreferences msharedPreferences;
     private boolean exception = false;
     private String errorMsg = "";
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    Calendar c = Calendar.getInstance();
+    String date = sdf.format(c.getTime());
+
 
     public SearchFragment() {
         // Required empty public constructor
     }
+
     public static SearchFragment newInstance(String param1, String param2) {
         SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
@@ -80,7 +87,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.fragment_search, container, false);
         spotifyConnection = new SpotifyConnection(getActivity());
-        msharedPreferences = getActivity().getSharedPreferences("Therabeat", 0);
+        msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         AUTH_TOKEN = msharedPreferences.getString("token", "");
         Log.d(TAG, AUTH_TOKEN);
 //		waitForUserInfo();
@@ -151,11 +158,12 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
 
     private void attemptStartWave(float beatFreq) {
         if (wave.getIsPlaying()) {
-            msharedPreferences.edit().putLong("timeListened", msharedPreferences.getLong("timeListened", (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).apply();
+            msharedPreferences.edit().putLong(date, msharedPreferences.getLong(date, (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).commit();
         }
         Log.d(TAG, String.valueOf(beatFreq));
         wave.start();
-        msharedPreferences.edit().putLong("startTime", System.currentTimeMillis() / 1000).apply();
+        Long start = System.currentTimeMillis() / 1000;
+        msharedPreferences.edit().putLong("startTime", start).apply();
     }
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

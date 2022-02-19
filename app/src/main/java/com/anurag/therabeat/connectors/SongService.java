@@ -38,20 +38,18 @@ public class SongService {
     private String endpoint;
 
     public SongService(Context context) {
-        sharedPreferences = context.getSharedPreferences("Therabeat", 0);
+        sharedPreferences = SingletonInstances.getInstance(context.getApplicationContext()).getSharedPreferencesInstance();
         queue = Volley.newRequestQueue(context);
         endpoint = "https://api.spotify.com/v1/search?type=track&q=";
     }
 
     public ArrayList<Song> searchSongs(Context context, String searchQuery, RecyclerViewAdapter.OnNoteListener listener, RecyclerViewAdapter adapter) {
-        Log.d("Playlist", endpoint + searchQuery);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, endpoint + searchQuery, null, new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
                         playlists.clear();
-                        Log.d("Response: ", response.toString());
                         Gson gson = new Gson();
                         JSONObject jsonObject = response.optJSONObject("tracks");
                         JSONArray jsonArray = jsonObject.optJSONArray("items");
@@ -60,13 +58,11 @@ public class SongService {
                                 JSONObject object = jsonArray.getJSONObject(n);
                                 JSONArray artistObj = object.optJSONArray("artists");
                                 JSONArray imageObj = object.optJSONObject("album").optJSONArray("images");
-                                Log.d("check length", String.valueOf(artistObj.length()));
                                 StringBuilder artists = new StringBuilder();
                                 artists.append(artistObj.getJSONObject(0).getString("name"));
                                 for (int i = 1; i < artistObj.length(); i++) {
                                     JSONObject obj1 = artistObj.getJSONObject(i);
                                     artists.append(", " + obj1.get("name"));
-//                                    Log.d("check name",obj1.optJSONObject("name").toString());
                                 }
                                 Song song = gson.fromJson(object.toString(), Song.class);
                                 song.setArtist(artists.toString());
@@ -109,7 +105,6 @@ public class SongService {
                 (Request.Method.GET, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks", null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d("Response: ", response.toString());
                         playlistssongs.clear();
                         Gson gson = new Gson();
                         JSONArray jsonArray = response.optJSONArray("items");
@@ -117,16 +112,13 @@ public class SongService {
                             try {
                                 JSONObject object = jsonArray.getJSONObject(n);
                                 object = object.optJSONObject("track");
-                                Log.d("object", object.toString());
                                 JSONArray artistObj = object.optJSONArray("artists");
                                 JSONArray imageObj = object.optJSONObject("album").optJSONArray("images");
-                                Log.d("check length", String.valueOf(artistObj.length()));
                                 StringBuilder artists = new StringBuilder();
                                 artists.append(artistObj.getJSONObject(0).getString("name"));
                                 for (int i = 1; i < artistObj.length(); i++) {
                                     JSONObject obj1 = artistObj.getJSONObject(i);
                                     artists.append(", " + obj1.get("name"));
-//                                    Log.d("check name",obj1.optJSONObject("name").toString());
                                 }
                                 Song song = gson.fromJson(object.toString(), Song.class);
                                 song.setArtist(artists.toString());
