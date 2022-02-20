@@ -17,6 +17,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.anurag.therabeat.Database.AppDatabase;
+import com.anurag.therabeat.Database.AppExecutors;
+import com.anurag.therabeat.Database.Person;
+import com.anurag.therabeat.Database.PersonDao;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.navigation.NavigationBarView;
@@ -60,6 +64,9 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
+    AppDatabase db;
+
+    PersonDao appUsageDao;
 
 
     public SearchFragment() {
@@ -79,6 +86,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         wave = MainActivity.wave;
+
     }
 
     @Override
@@ -86,6 +94,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View inflatedView = inflater.inflate(R.layout.fragment_search, container, false);
+//        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
         spotifyConnection = new SpotifyConnection(getActivity());
         msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         AUTH_TOKEN = msharedPreferences.getString("token", "");
@@ -98,6 +107,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        db = AppDatabase.getInstance(getActivity().getApplicationContext());
         searchEditText = (EditText) view.findViewById(R.id.songSearch);
         myView = (RecyclerView) view.findViewById(R.id.recyclerview);
         myView.setHasFixedSize(true);
@@ -158,7 +168,17 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
 
     private void attemptStartWave(float beatFreq) {
         if (wave.getIsPlaying()) {
-            msharedPreferences.edit().putLong(date, msharedPreferences.getLong(date, (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).commit();
+//            Long usage = appUsageDao.fetchTimeForDate(date).getTimeUsed();
+//            appUsageDao.insert(new AppUsageHistory(date,usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0))));
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    Person p = db.personDao().loadPersonById(date);
+                    Long usage = Long.valueOf(p.getTimeUsed());
+                    usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                    db.personDao().insertPerson(new Person(date, usage.intValue()));
+                }
+            });
         }
         Log.d(TAG, String.valueOf(beatFreq));
         wave.start();

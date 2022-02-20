@@ -14,6 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.anurag.therabeat.Database.AppDatabase;
+import com.anurag.therabeat.Database.AppExecutors;
+import com.anurag.therabeat.Database.Person;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
@@ -57,6 +60,7 @@ public class PlayerFragment extends Fragment {
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
+    AppDatabase db;
 
     public PlayerFragment() {
         // Required empty public constructor
@@ -72,12 +76,14 @@ public class PlayerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         spotifyConnection = new SpotifyConnection(getContext());
         mSpotifyAppRemote = spotifyConnection.mSpotifyAppRemote;
+//        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        db = AppDatabase.getInstance(getActivity().getApplicationContext());
         msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         View inflatedView = inflater.inflate(R.layout.fragment_player, container, false);
         play_pause_image_view = inflatedView.findViewById(R.id.play_pause_image_view);
@@ -114,9 +120,20 @@ public class PlayerFragment extends Fragment {
 
                     mSpotifyAppRemote.getPlayerApi().pause();
                     MainActivity.wave.stop();
-                    Long end = System.currentTimeMillis() / 1000;
-                    Long start = msharedPreferences.getLong("startTime", (long) 0.0);
-                    msharedPreferences.edit().putLong(date, msharedPreferences.getLong(date, (long) 0.0) + (end - start)).apply();
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Person p = db.personDao().loadPersonById(date);
+                            if (p == null) {
+                                db.personDao().insertPerson(new Person(date, 0));
+                            }
+                            Long usage = Long.valueOf(p.getTimeUsed());
+                            usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                            db.personDao().insertPerson(new Person(date, usage.intValue()));
+                        }
+                    });
+//                    Long usage = appUsageDao.fetchTimeForDate(date).getTimeUsed();
+//                    appUsageDao.insert(new AppUsageHistory(date,usage + (end - start)));
                     isPlaying = false;
                 } else {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_pause_24_white));

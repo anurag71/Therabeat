@@ -1,6 +1,7 @@
 package com.anurag.therabeat;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,11 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.anurag.therabeat.Database.AppDatabase;
+import com.anurag.therabeat.Database.AppExecutors;
+import com.anurag.therabeat.Database.Person;
+import com.anurag.therabeat.Database.PersonDao;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,6 +35,8 @@ public class appUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
     SwipeRefreshLayout mSwipeRefreshLayout;
     TextView textView;
     TextView dateTextView;
+
+    PersonDao appUsageDao;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -63,6 +71,7 @@ public class appUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+//        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
     }
 
     @Override
@@ -94,7 +103,23 @@ public class appUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     private void updateTextViews() {
         dateTextView.setText(date);
-        textView.setText(Long.toString(getActivity().getSharedPreferences("Therabeat", 0).getLong(date, (long) 0.0)));
+//        textView.setText(Long.toString(appUsageDao.fetchTimeForDate(date).getTimeUsed()));
+
+        AppDatabase db = AppDatabase.getInstance(getActivity().getApplicationContext());
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                Person p = db.personDao().loadPersonById(date);
+//                for(Person p:mlist){
+                if (p != null) {
+                    Log.d("check list", String.valueOf(p.getTimeUsed()));
+//                }
+                    textView.setText(String.valueOf(p.getTimeUsed()));
+                }
+            }
+        });
+        Log.d("check", "check");
+
         mSwipeRefreshLayout.setRefreshing(false);
     }
 

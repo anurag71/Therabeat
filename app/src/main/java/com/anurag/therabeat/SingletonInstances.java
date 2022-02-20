@@ -3,20 +3,26 @@ package com.anurag.therabeat;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.room.Room;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.anurag.therabeat.Database.AppDatabase;
 
 public class SingletonInstances {
     private static SingletonInstances instance;
     private RequestQueue requestQueue;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    AppDatabase db;
     private static Context ctx;
 
     private SingletonInstances(Context context) {
         ctx = context;
         requestQueue = getRequestQueue();
+        sharedPreferences = getSharedPreferencesInstance();
+        db = getDbInstance();
     }
 
     public static synchronized SingletonInstances getInstance(Context context) {
@@ -42,6 +48,14 @@ public class SingletonInstances {
             sharedPreferences = ctx.getSharedPreferences("Therabeat", 0);
         }
         return sharedPreferences;
+    }
+
+    public AppDatabase getDbInstance() {
+        if (db == null) {
+            db = Room.databaseBuilder(ctx,
+                    AppDatabase.class, "AppUsageHistory_database").allowMainThreadQueries().build();
+        }
+        return db;
     }
 
     public <T> void addToRequestQueue(Request<T> req) {

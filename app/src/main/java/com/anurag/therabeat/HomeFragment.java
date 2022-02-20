@@ -17,6 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.anurag.therabeat.Database.AppDatabase;
+import com.anurag.therabeat.Database.AppExecutors;
+import com.anurag.therabeat.Database.Person;
+import com.anurag.therabeat.Database.PersonDao;
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
@@ -59,6 +63,9 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
 
+    PersonDao appUsageDao;
+    AppDatabase db;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -86,6 +93,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
         wave = MainActivity.wave;
         super.onCreate(savedInstanceState);
         spotifyConnection = new SpotifyConnection(getActivity());
+//        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
         Log.d("date", date);
     }
 
@@ -102,6 +110,8 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        db = AppDatabase.getInstance(getActivity().getApplicationContext());
+
         msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         AUTH_TOKEN = msharedPreferences.getString("token", "");
         this.view = view;
@@ -150,8 +160,21 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
 
     private void attemptStartWave(float beatFreq) {
         if (wave.getIsPlaying()) {
-            msharedPreferences.edit().putLong(date, msharedPreferences.getLong(date, (long) 0.0) + (System.currentTimeMillis() / 1000 - msharedPreferences.getLong("startTime", (long) 0.0))).apply();
+//            Long usage = appUsageDao.fetchTimeForDate(date).getTimeUsed();
+
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    Person p = db.personDao().loadPersonById(date);
+                    Long usage = Long.valueOf(p.getTimeUsed());
+                    usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                    db.personDao().insertPerson(new Person(date, usage.intValue()));
+                }
+            });
+//            appUsageDao.insert(new AppUsageHistory(date,));
         }
+
+
         Log.d(TAG, String.valueOf(beatFreq));
         wave.start();
         Long start = System.currentTimeMillis() / 1000;
