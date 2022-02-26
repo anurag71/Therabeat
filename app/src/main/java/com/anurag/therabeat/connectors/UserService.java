@@ -1,6 +1,7 @@
 package com.anurag.therabeat.connectors;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -31,8 +32,10 @@ public class UserService {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(ENDPOINT, null, response -> {
             Gson gson = new Gson();
             user = gson.fromJson(response.toString(), User.class);
+            Log.d("USER","Got user");
             callBack.onSuccess();
         }, error -> get(() -> {
+            Log.d("USER",error.toString());
 
         })) {
             @Override

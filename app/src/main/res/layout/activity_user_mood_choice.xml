@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_image"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:rotation="45">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_margin="5dp"
+                android:background="@color/design_default_color_secondary_variant"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/anxietyChoiceButton"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:backgroundTint="#006200EE"
+                    android:rotation="315"
+                    android:text="@string/anxietyString"
+                    android:textSize="15dp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/orange"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_margin="5dp"
+                android:background="@color/design_default_color_secondary_variant"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/attentionChoiceButton"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="#006200EE"
+                    android:elevation="0dp"
+                    android:rotation="315"
+                    android:text="@string/attentionString"
+                    android:textSize="15dp"></Button>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_margin="5dp"
+                android:background="@color/design_default_color_secondary_variant"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/memoryChoiceButton"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="#006200EE"
+                    android:orientation="horizontal"
+                    android:rotation="315"
+                    android:text="@string/memoryString"
+                    android:textSize="15dp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_margin="5dp"
+                android:background="@color/design_default_color_secondary_variant"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        android:text="@string/userMoodChoiceMessage"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
+</LinearLayout>
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--    xmlns:tools="http://schemas.android.com/tools"-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    tools:context=".UserMoodChoice">-->
+
+
+    <!--    <TextView-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:id="@+id/textView"-->
+    <!--        android:textSize="20dp"-->
+    <!--        android:text="@string/userMoodChoiceMessage"-->
+    <!--        android:textAlignment="center"-->
+    <!--        app:layout_constraintBottom_toTopOf="@id/anxietyChoiceButton"-->
+    <!--        app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--        app:layout_constraintRight_toRightOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintVertical_chainStyle="packed"/>-->
+
+    <!--    <Button-->
+    <!--        android:layout_marginTop="5dp"-->
+    <!--        android:backgroundTint="@color/design_default_color_primary"-->
+    <!--        android:id="@+id/anxietyChoiceButton"-->
+    <!--        android:text="@string/anxietyString"-->
+    <!--        android:textSize="15dp"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="?attr/actionBarSize"-->
+    <!--        app:layout_constraintBottom_toTopOf="@id/attentionChoiceButton"-->
+    <!--        app:layout_constraintLeft_toLeftOf="@id/textView"-->
+    <!--        app:layout_constraintRight_toRightOf="@id/textView"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/textView"/>-->
+
+    <!--    <Button-->
+    <!--        android:layout_marginTop="5dp"-->
+    <!--        android:backgroundTint="@color/design_default_color_primary"-->
+    <!--        android:id="@+id/attentionChoiceButton"-->
+    <!--        android:text="@string/attentionString"-->
+    <!--        android:textSize="15dp"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="?attr/actionBarSize"-->
+    <!--        app:layout_constraintBottom_toTopOf="@id/memoryChoiceButton"-->
+    <!--        app:layout_constraintLeft_toLeftOf="@id/textView"-->
+    <!--        app:layout_constraintRight_toRightOf="@id/textView"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/anxietyChoiceButton"/>-->
+    <!--    <Button-->
+    <!--        android:layout_marginTop="5dp"-->
+    <!--        android:backgroundTint="@color/design_default_color_primary"-->
+    <!--        android:id="@+id/memoryChoiceButton"-->
+    <!--        android:text="@string/memoryString"-->
+    <!--        android:textSize="15dp"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="?attr/actionBarSize"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintLeft_toLeftOf="@id/textView"-->
+    <!--        app:layout_constraintRight_toRightOf="@id/textView"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/attentionChoiceButton"/>-->
+
+
+    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->

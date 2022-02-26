@@ -11,12 +11,13 @@ public class Binaural implements BeatsEngine {
 	private boolean doRelease;
 	private AudioTrack mAudio;
 	private boolean isPlaying;
+	private float factor;
 
-	public Binaural(float frequency, float isoBeat) {
+	public Binaural(float frequency, float isoBeat, float factor) {
 		int amplitudeMax = Helpers.getAdjustedAmplitudeMax(frequency);
-
-		float freqLeft = frequency - (isoBeat/2);
-		float freqRight = frequency + (isoBeat/2);
+		this.factor = factor;
+		float freqLeft = frequency - (isoBeat / 2);
+		float freqRight = frequency + (isoBeat / 2);
 
 		//period of the sine waves
 		int sCountLeft = (int) ((float) SAMPLE_RATE / freqLeft);
@@ -65,7 +66,8 @@ public class Binaural implements BeatsEngine {
 		isPlaying = true;
 		mAudio.play();
 		Helpers.napThread();
-		mAudio.setVolume(1f);
+//		mAudio.setVolume()
+		mAudio.setVolume(factor / 100);
 	}
 
 	public void stop() {
