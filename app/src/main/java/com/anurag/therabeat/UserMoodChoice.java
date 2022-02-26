@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class UserMoodChoice extends AppCompatActivity implements View.OnClickListener {
 
@@ -26,6 +27,7 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         mSharedPreferences = this.getSharedPreferences("Therabeat", 0);
         editor = this.getSharedPreferences("Therabeat", 0).edit();
         setContentView(R.layout.activity_user_mood_choice);
@@ -60,14 +62,16 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
                 editor.putFloat("beatFreq", 6.00F);
                 break;
             case R.id.memoryChoiceButton:
-                Log.d(TAG,"Memory Button pressed");
+                Log.d(TAG, "Memory Button pressed");
                 editor.putFloat("beatFreq", 19.00F);
                 break;
             default:
                 break;
         }
         editor.apply();
-        Intent intent = new Intent(UserMoodChoice.this, MainActivity.class);
+        Intent intent = new Intent(UserMoodChoice.this,
+
+                LoginActivity.class);
         startActivity(intent);
     }
 }

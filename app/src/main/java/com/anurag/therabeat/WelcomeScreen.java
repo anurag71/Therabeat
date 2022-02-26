@@ -38,7 +38,7 @@ public class WelcomeScreen extends AppCompatActivity {
                                 editor.apply();
                                 Intent intent = new Intent(WelcomeScreen.this,
 
-                                        LoginActivity.class);
+                                        UserMoodChoice.class);
                                 startActivity(intent);
 
                                 destroy();

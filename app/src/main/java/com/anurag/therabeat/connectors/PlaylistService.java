@@ -262,10 +262,11 @@ public class PlaylistService {
                         JSONArray jsonObject = null;
                         try {
                             jsonObject = response.getJSONArray("images");
-                            JSONObject urlObject = jsonObject.optJSONObject(0);
-                            String url = urlObject.getString("url");//getJSONObject(0).getString("url");
-                            Picasso.get().load(url).into(playlistImageView);
-
+                            if (jsonObject.length() != 0) {
+                                JSONObject urlObject = jsonObject.optJSONObject(0);
+                                String url = urlObject.getString("url");//getJSONObject(0).getString("url");
+                                Picasso.get().load(url).into(playlistImageView);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

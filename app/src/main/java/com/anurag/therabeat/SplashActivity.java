@@ -48,10 +48,19 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
                 destroy();
             } else {
-                Intent intent = new Intent(SplashActivity.this,
+                Intent intent;
+//                    if (msharedPreferences.getFloat("beatFreq", 0.0F) == 0.0F) {
+                intent = new Intent(SplashActivity.this,
 
-                        LoginActivity.class);
+                        UserMoodChoice.class);
+
+//                    } else {
+//                        intent = new Intent(LoginActivity.this,
+//
+//                                MainActivity.class);
+//                    }
                 startActivity(intent);
+                destroy();
             }
         } else {
             displayError();

@@ -11,9 +11,11 @@
     >
     <EditText
         android:id="@+id/songSearch"
+        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:hint="Enter song name"
+        android:textColorHint="@color/white"
         android:imeOptions="actionDone"
         android:inputType="text"
         android:maxLines="1"

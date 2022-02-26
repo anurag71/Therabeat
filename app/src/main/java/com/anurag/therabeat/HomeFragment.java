@@ -137,7 +137,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
                 mSwipeRefreshLayout.setRefreshing(true);
 
                 // Fetching data from server
-                playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1));
+                playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1), (TextView) view.findViewById(R.id.playlistName), playlistImageView);
                 playlistService.getPlaylist(playlistImageView, getActivity().getApplicationContext());
             }
         });
@@ -148,7 +148,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     public void onRefresh() {
 
         // Fetching data from server
-        playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1));
+        playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1), (TextView) view.findViewById(R.id.playlistName), playlistImageView);
         playlistService.getPlaylist(playlistImageView, getActivity().getApplicationContext());
     }
 

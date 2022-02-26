@@ -127,6 +127,7 @@ public class PlayerFragment extends Fragment {
                             if (p == null) {
                                 db.personDao().insertPerson(new Person(date, 0));
                             }
+                            p = db.personDao().loadPersonById(date);
                             Long usage = Long.valueOf(p.getTimeUsed());
                             usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
                             db.personDao().insertPerson(new Person(date, usage.intValue()));

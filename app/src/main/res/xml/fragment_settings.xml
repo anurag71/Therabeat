@@ -2,6 +2,7 @@
 
     <Preference
         app:key="logout"
+
         app:summary="Disconnect your Spotify Account from Therabeat"
         app:title="Logout"></Preference>
 

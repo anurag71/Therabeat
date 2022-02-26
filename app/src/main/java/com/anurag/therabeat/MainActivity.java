@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     final Fragment searchFragment = new SearchFragment();
     final FragmentManager fm = getSupportFragmentManager();
     final Fragment settingsFragment = new SettingsFragment();
-    final Fragment appUsageFragment = new appUsageFragment();
+    final Fragment appUsageFragment = new AppUsageFragment();
     Fragment active = homeFragment;
 
     //Refresh waveform if user changes frequencies
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         initializeView();
         msharedPreferences = this.getSharedPreferences("Therabeat", 0);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);

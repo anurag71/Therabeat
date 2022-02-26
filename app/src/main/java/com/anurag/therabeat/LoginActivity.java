@@ -70,13 +70,7 @@ public class LoginActivity extends AppCompatActivity {
 //                    if (msharedPreferences.getFloat("beatFreq", 0.0F) == 0.0F) {
                     intent = new Intent(LoginActivity.this,
 
-                            UserMoodChoice.class);
-
-//                    } else {
-//                        intent = new Intent(LoginActivity.this,
-//
-//                                MainActivity.class);
-//                    }
+                            MainActivity.class);
                     startActivity(intent);
                     destroy();
 
