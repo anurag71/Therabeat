@@ -19,8 +19,7 @@
         app:layout_constraintBottom_toTopOf="@id/MusicChoiceButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/MusicChoiceButton"
@@ -33,7 +32,8 @@
         app:layout_constraintBottom_toTopOf="@id/AboutUsChoiceButton"
         app:layout_constraintLeft_toLeftOf="@id/textView"
         app:layout_constraintRight_toRightOf="@id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
 
     <Button

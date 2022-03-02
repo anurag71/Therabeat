@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.140625" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/ic_collapse_player.xml" value="0.1885" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/font/.xml" value="0.2203125" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_main.xml" value="0.19114583333333332" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_opening_screen.xml" value="0.18958333333333333" />
@@ -14,6 +15,7 @@
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/content_main.xml" value="0.21354166666666666" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_app_usage.xml" value="0.1796875" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_home.xml" value="0.22" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_player.xml" value="0.182370820668693" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_search.xml" value="0.33" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_settings.xml" value="0.19114583333333332" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/notification_layout.xml" value="0.375" />

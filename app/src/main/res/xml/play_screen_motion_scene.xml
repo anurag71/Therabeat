@@ -124,7 +124,7 @@
             app:layout_constraintTop_toBottomOf="@id/player_background_view" />
 
         <Constraint
-            android:id="@id/back_15_image_view"
+            android:id="@id/SetShuffle"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"
@@ -135,7 +135,7 @@
             app:layout_constraintTop_toTopOf="@id/play_pause_layout" />
 
         <Constraint
-            android:id="@id/forward_15_image_view"
+            android:id="@id/SetRepeat"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"
@@ -156,13 +156,20 @@
             app:layout_constraintTop_toBottomOf="@id/play_pause_layout" />
 
         <Constraint
+            android:id="@+id/SpotifyLink"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/artist_name_text_view" />
+
+        <Constraint
             android:id="@+id/beatVolumeSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/forward_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/SetRepeat"
             app:layout_constraintBottom_toTopOf="@+id/play_pause_bottom_space"
-            app:layout_constraintStart_toEndOf="@id/back_15_image_view"
+            app:layout_constraintStart_toEndOf="@id/SetShuffle"
             app:layout_constraintTop_toBottomOf="@id/beatVolumeTextView" />
 
         <Constraint
@@ -266,6 +273,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/audio_name_text_view"
+            app:layout_constraintBottom_toTopOf="@id/SpotifyLink"
             app:layout_constraintVertical_chainStyle="packed">
             <CustomAttribute
                 app:attributeName="alpha"
@@ -299,7 +307,7 @@
         </Constraint>
 
         <Constraint
-            android:id="@id/back_15_image_view"
+            android:id="@id/SetShuffle"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"
@@ -317,7 +325,7 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
             app:layout_constraintEnd_toStartOf="@id/play_pause_layout"
-            app:layout_constraintStart_toEndOf="@id/back_15_image_view"
+            app:layout_constraintStart_toEndOf="@id/SetShuffle"
             app:layout_constraintTop_toTopOf="@id/play_pause_layout"
             />
         <Constraint
@@ -353,10 +361,19 @@
             android:id="@+id/beatVolumeSlider"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/forward_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/SetRepeat"
             app:layout_constraintBottom_toTopOf="@+id/play_pause_bottom_space"
-            app:layout_constraintStart_toEndOf="@id/back_15_image_view"
+            app:layout_constraintStart_toEndOf="@id/SetShuffle"
             app:layout_constraintTop_toBottomOf="@id/beatVolumeTextView" />
+
+        <Constraint
+            android:id="@+id/SpotifyLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/play_pause_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/artist_name_text_view" />
 
 
         <Constraint
@@ -376,12 +393,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
-            app:layout_constraintEnd_toStartOf="@id/forward_15_image_view"
+            app:layout_constraintEnd_toStartOf="@id/SetRepeat"
             app:layout_constraintStart_toEndOf="@id/play_pause_layout"
             app:layout_constraintTop_toTopOf="@id/play_pause_layout"
             />
         <Constraint
-            android:id="@id/forward_15_image_view"
+            android:id="@id/SetRepeat"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_gravity="center"

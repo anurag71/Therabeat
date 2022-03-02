@@ -58,6 +58,11 @@ public class OpeningScreenActivity extends AppCompatActivity implements View.OnC
                 break;
             case R.id.FeedbackChoiceButton:
                 Log.d(TAG, "Memory Button pressed");
+                Intent feedbackEmail = new Intent(Intent.ACTION_SEND);
+                feedbackEmail.setType("text/email");
+                feedbackEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"sampleutd@gmail.com"});
+                feedbackEmail.putExtra(Intent.EXTRA_SUBJECT, "Therabeat Feedback");
+                startActivity(Intent.createChooser(feedbackEmail, "Send Feedback:"));
                 break;
             default:
                 break;
