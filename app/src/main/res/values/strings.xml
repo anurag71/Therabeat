@@ -35,4 +35,13 @@
     <string name="AboutUsButtonString">About Us</string>
     <string name="FeedbackButtonString">Give Feedback</string>
 
+    <string name="AboutUsText">
+  <![CDATA[
+    <br/><br/>Therabeat aims to provide a therapeutic music listening experience. It is geared towards helping patients get better while listening to the music that they enjoy.
+    <br/><br/>This project is headed by:<br/>Dr. Yune S. Lee<br/>Department of Speech, Language, and Hearing<br/>School of Behavioral and Brain Sciences<br/>The University of Texas at Dallas
+    <br/><br/>Dr. Dawn Owens<br/>Program Director, Business Analytics and Information Technology and Systems Programs<br/>Naveen Jindal School of Management<br/>The University of Texas at Dallas
+<br/><br/> Developer Contact:<br/>Anurag Wasankar<br/>Graduate Student<br/>Erik Jonsson School of Computer Science<br/>The University of Texas at Dallas
+<br/><br/>Special thanks to Jesper S Bajwa.]]>
+</string>
+
 </resources>

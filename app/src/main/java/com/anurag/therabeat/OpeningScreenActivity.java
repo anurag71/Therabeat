@@ -47,17 +47,19 @@ public class OpeningScreenActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View view) {
+        Intent intent;
         switch (view.getId()) {
             case R.id.MusicChoiceButton:
-                Log.d(TAG, "Anxiety Button pressed");
-                Intent intent = new Intent(OpeningScreenActivity.this, UserMoodChoice.class);
+                intent = new Intent(OpeningScreenActivity.this, UserMoodChoice.class);
                 startActivity(intent);
                 break;
             case R.id.AboutUsChoiceButton:
-                Log.d(TAG, "Attention Button pressed");
+                intent = new Intent(OpeningScreenActivity.this,
+
+                        AboutUsActivity.class);
+                startActivity(intent);
                 break;
             case R.id.FeedbackChoiceButton:
-                Log.d(TAG, "Memory Button pressed");
                 Intent feedbackEmail = new Intent(Intent.ACTION_SEND);
                 feedbackEmail.setType("text/email");
                 feedbackEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"sampleutd@gmail.com"});

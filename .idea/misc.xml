@@ -4,18 +4,15 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.140625" />
-        <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/ic_collapse_player.xml" value="0.1885" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/font/.xml" value="0.2203125" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_main.xml" value="0.19114583333333332" />
-        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_opening_screen.xml" value="0.18958333333333333" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_splash.xml" value="0.18177083333333333" />
-        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_user_mood_choice.xml" value="0.33" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_user_mood_choice.xml" value="0.1" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_welcome_screen.xml" value="0.3659942363112392" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/cardview.xml" value="0.184375" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/content_main.xml" value="0.21354166666666666" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_app_usage.xml" value="0.1796875" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_home.xml" value="0.22" />
-        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_player.xml" value="0.182370820668693" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_search.xml" value="0.33" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_settings.xml" value="0.19114583333333332" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/notification_layout.xml" value="0.375" />
@@ -25,6 +22,7 @@
         <entry key="..\:/Android/Therabeat/app/src/main/res/xml/fragment_settings.xml" value="0.375" />
         <entry key="app/src/main/res/drawable-xxhdpi/button_custom.xml" value="0.11979166666666667" />
         <entry key="app/src/main/res/drawable/playcirclebutton.xml" value="0.13020833333333334" />
+        <entry key="app/src/main/res/layout/activity_about_us.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.1" />
@@ -43,7 +41,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
