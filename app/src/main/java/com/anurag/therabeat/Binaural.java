@@ -67,7 +67,11 @@ public class Binaural implements BeatsEngine {
 		mAudio.play();
 		Helpers.napThread();
 //		mAudio.setVolume()
-		mAudio.setVolume(factor / 100);
+		int i=0;
+		while(i<=factor){
+			mAudio.setVolume(i/100);
+			i+=10;
+		}
 	}
 
 	public void stop() {
@@ -83,6 +87,16 @@ public class Binaural implements BeatsEngine {
 	}
 
 	public boolean getIsPlaying() { return isPlaying; }
+
+	@Override
+	public void setVolume(float volume) {
+		if(mAudio!=null){
+			mAudio.setVolume(volume/100);
+		}
+		else{
+			factor=volume;
+		}
+	}
 
 
 }

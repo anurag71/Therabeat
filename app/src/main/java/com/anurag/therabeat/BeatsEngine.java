@@ -9,5 +9,6 @@ public interface BeatsEngine
     void stop();
     void release();
     boolean getIsPlaying();
+    void setVolume(float volume);
 
 }

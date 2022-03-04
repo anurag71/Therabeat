@@ -116,8 +116,7 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
                 if (fromUser) {
-                    amplitudeFactor = value;
-                    attemptStartwave(true);
+                    MainActivity.wave.setVolume(value);
                 }
             }
         });
