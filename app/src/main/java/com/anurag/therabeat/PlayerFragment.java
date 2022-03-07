@@ -47,6 +47,7 @@ public class PlayerFragment extends Fragment {
     private MaterialButton SetShuffleButton;
     private Button SetRepeatButton;
     private Button SpotifyLinkingButton;
+    private Button ClosePlayerButton;
     private TextView songNameTextViewMin;
     private TextView songNameTextViewMax;
     private TextView artistNameTextViewMin;
@@ -94,6 +95,7 @@ public class PlayerFragment extends Fragment {
         msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         View inflatedView = inflater.inflate(R.layout.fragment_player, container, false);
         play_pause_image_view = inflatedView.findViewById(R.id.play_pause_image_view);
+        ClosePlayerButton = inflatedView.findViewById(R.id.closePlayerButton);
         NextSongButton = inflatedView.findViewById(R.id.nextSongButton);
         PrevSongButton = inflatedView.findViewById(R.id.prevSongButton);
         SetShuffleButton = inflatedView.findViewById(R.id.SetShuffle);
@@ -223,6 +225,15 @@ public class PlayerFragment extends Fragment {
                     startActivity(intent);
                 });
 
+            }
+        });
+
+        ClosePlayerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.wave.stop();
+                mSpotifyAppRemote.getPlayerApi().pause();
+                getActivity().getSupportFragmentManager().beginTransaction().remove(PlayerFragment.this).commit();
             }
         });
 

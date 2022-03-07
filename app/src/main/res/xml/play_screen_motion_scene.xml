@@ -108,6 +108,14 @@
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
+            app:layout_constraintEnd_toStartOf="@id/closePlayerButton"
+            app:layout_constraintTop_toTopOf="@id/play_pause_layout" />
+        <Constraint
+            android:id="@id/closePlayerButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
             app:layout_constraintEnd_toEndOf="@id/player_background_view"
             app:layout_constraintTop_toTopOf="@id/play_pause_layout" />
 
@@ -314,8 +322,16 @@
             android:layout_marginStart="24dp"
             app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/play_pause_layout"
-            />
+            app:layout_constraintTop_toTopOf="@id/play_pause_layout" />
+        <Constraint
+            android:id="@id/closePlayerButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
+            app:layout_constraintEnd_toEndOf="@id/player_background_view"
+            app:layout_constraintTop_toTopOf="@id/play_pause_layout" />
         <Constraint
             android:id="@id/prevSongButton"
             android:layout_width="32dp"

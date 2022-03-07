@@ -133,12 +133,11 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
 
             @Override
             public void run() {
-
                 mSwipeRefreshLayout.setRefreshing(true);
 
                 // Fetching data from server
-                playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1), (TextView) view.findViewById(R.id.playlistName), playlistImageView);
-                playlistService.getPlaylist(playlistImageView, getActivity().getApplicationContext());
+                onRefresh();
+
             }
         });
 
@@ -187,8 +186,8 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     }
 
     private void togglePlay(float beatFreq, String playlistId) {
-        connected(playlistId);
         attemptStartWave(beatFreq);
+        connected(playlistId);
     }
 
     private void connected(String uri) {

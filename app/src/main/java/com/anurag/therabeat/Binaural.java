@@ -4,6 +4,9 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class Binaural implements BeatsEngine {
 
 	private final int SAMPLE_RATE = 44100;
@@ -60,18 +63,50 @@ public class Binaural implements BeatsEngine {
 		stop();
 	}
 
+	float volume = 0;
+
 	public void start() {
 		mAudio.reloadStaticData();
 		mAudio.setLoopPoints(0, sampleCount / 2, -1);
 		isPlaying = true;
-		mAudio.play();
 		Helpers.napThread();
-//		mAudio.setVolume()
-		int i=0;
-		while(i<=factor){
-			mAudio.setVolume(i/100);
-			i+=10;
-		}
+		mAudio.play();
+//		mAudio.setVolume(1);
+		startFadeIn();
+
+	}
+
+	private void startFadeIn() {
+		volume = 0;
+		final int FADE_DURATION = 3000; //The duration of the fade
+		//The amount of time between volume changes. The smaller this is, the smoother the fade
+		final int FADE_INTERVAL = 1;
+		final float MAX_VOLUME = factor / 100; //The volume will increase from 0 to 1
+		int numberOfSteps = FADE_DURATION / FADE_INTERVAL; //Calculate the number of fade steps
+		//Calculate by how much the volume changes each step
+		final float deltaVolume = MAX_VOLUME / (float) numberOfSteps;
+
+		//Create a new Timer and Timer task to run the fading outside the main UI thread
+		final Timer timer = new Timer(true);
+		TimerTask timerTask = new TimerTask() {
+			@Override
+			public void run() {
+				fadeInStep(deltaVolume); //Do a fade step
+				//Cancel and Purge the Timer if the desired volume has been reached
+				if (volume >= MAX_VOLUME) {
+					timer.cancel();
+					timer.purge();
+				}
+			}
+		};
+
+		timer.schedule(timerTask, FADE_INTERVAL, FADE_INTERVAL);
+	}
+
+	private void fadeInStep(float deltaVolume) {
+		mAudio.setVolume(volume);
+		volume += deltaVolume;
+
 	}
 
 	public void stop() {
@@ -93,9 +128,7 @@ public class Binaural implements BeatsEngine {
 		if(mAudio!=null){
 			mAudio.setVolume(volume/100);
 		}
-		else{
 			factor=volume;
-		}
 	}
 
 

@@ -16,7 +16,6 @@ import com.anurag.therabeat.Database.AppDatabase;
 import com.anurag.therabeat.Database.Person;
 import com.anurag.therabeat.Database.PersonDao;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -133,7 +132,13 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
                         }
                         Log.d((String) "error", (String) String.valueOf((Object) ((Person) list.get(n)).getTimeUsed()));
                         AppUsageFragment.this.axisLabel.add(list.get(n).getDate());
-                        AppUsageFragment.this.values.add(new BarEntry(n2, list.get(n).getTimeUsed().intValue()));
+                        long usage = list.get(n).getTimeUsed().intValue();
+                        if (usage >= 3600) {
+                            usage *= (long) 0.000277778;
+                        } else if (usage >= 60 && usage < 3600) {
+                            usage *= (long) 0.0166667;
+                        }
+                        AppUsageFragment.this.values.add(new BarEntry(n2, usage));
                         n--;
                         n2++;
                     }
@@ -149,16 +154,19 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
             barDataSet.setColor(Color.rgb((int) 104, (int) 241, (int) 175));
             BarData barData = new BarData(barDataSet);
             this.chart.setData(barData);
-            Description description = new Description();
-            description.setText("My Chart");
-            this.chart.setDescription(description);
+
             this.chart.animateXY(2000, 2000);
             this.chart.getAxisLeft().setDrawGridLines(false);
             this.chart.getAxisRight().setDrawGridLines(false);
-            this.chart.getAxisRight().setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
+            this.chart.getAxisLeft().setTextSize(15);
+            this.chart.getAxisRight().setEnabled(false);
+            this.chart.getAxisLeft().setGranularity(1.0f);
+            this.chart.getAxisLeft().setGranularityEnabled(true);
+
             this.chart.getAxisLeft().setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
             XAxis xAxis = this.chart.getXAxis();
             xAxis.setTextSize(20.0f);
+            xAxis.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawGridLines(false);
             xAxis.setDrawLabels(true);

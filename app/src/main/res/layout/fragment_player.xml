@@ -139,6 +139,32 @@
             app:srcCompat="@drawable/ic_round_shuffle_24" />
 
     <Button
+        android:id="@+id/closePlayerButton"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="#006200EE"
+        android:checkable="true"
+        android:elevation="10dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:icon="@drawable/ic_round_close_24"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="32dp"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/play_pause_layout"
+        app:layout_constraintEnd_toEndOf="@id/player_background_view"
+        app:layout_constraintTop_toTopOf="@id/play_pause_layout"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+        app:srcCompat="@drawable/ic_round_close_24" />
+
+    <Button
         style="?android:attr/borderlessButtonStyle"
         android:layout_gravity="center"
         android:layout_width="32dp"

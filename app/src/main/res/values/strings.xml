@@ -43,5 +43,9 @@
 <br/><br/> Developer Contact:<br/>Anurag Wasankar<br/>Graduate Student<br/>Erik Jonsson School of Computer Science<br/>The University of Texas at Dallas
 <br/><br/>Special thanks to Jesper S Bajwa.]]>
 </string>
+    <string name="music_player_controls_heading">Music Player Controls</string>
+    <string name="music_player_description">Swipe down from the top to minimize the music player and continue using the app for viewing analytics, etc\nTap the player again to maximize it</string>
+    <string name="refresh_content_heading">Refresh Content</string>
+    <string name="refresh_layout_description">Refresh the layout by swiping down from the top of Home Page and Analytics Page to view the latest data</string>
 
 </resources>

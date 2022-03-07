@@ -66,6 +66,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     String date = sdf.format(c.getTime());
     AppDatabase db;
 
+
     PersonDao appUsageDao;
 
 
@@ -191,7 +192,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     }
 
     private void togglePlay(float beatFreq, String playlistId) {
-        connected(playlistId);
         attemptStartWave(beatFreq);
+        connected(playlistId);
     }
 }
