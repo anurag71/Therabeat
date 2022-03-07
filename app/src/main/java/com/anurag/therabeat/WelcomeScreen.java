@@ -178,8 +178,6 @@ public class WelcomeScreen extends AppIntro {
     @Override
     protected void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
-        editor.putBoolean("firstTime", false);
-        editor.apply();
         AlertDialog.Builder alertDialog;
         alertDialog = new AlertDialog.Builder(this);
         alertDialog

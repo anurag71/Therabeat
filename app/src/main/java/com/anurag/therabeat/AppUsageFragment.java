@@ -133,11 +133,11 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
                         Log.d((String) "error", (String) String.valueOf((Object) ((Person) list.get(n)).getTimeUsed()));
                         AppUsageFragment.this.axisLabel.add(list.get(n).getDate());
                         long usage = list.get(n).getTimeUsed().intValue();
-                        if (usage >= 3600) {
-                            usage *= (long) 0.000277778;
-                        } else if (usage >= 60 && usage < 3600) {
-                            usage *= (long) 0.0166667;
-                        }
+//                        if (usage >= 3600) {
+                        usage *= (long) 0.000277778;
+//                        } else if (usage >= 60 && usage < 3600) {
+//                            usage *= (long) 0.0166667;
+//                        }
                         AppUsageFragment.this.values.add(new BarEntry(n2, usage));
                         n--;
                         n2++;
