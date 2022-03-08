@@ -175,6 +175,10 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                 @Override
                 public void run() {
                     Person p = db.personDao().loadPersonById(date);
+                    if (p == null) {
+                        db.personDao().insertPerson(new Person(date, 0));
+                    }
+                    p = db.personDao().loadPersonById(date);
                     Long usage = Long.valueOf(p.getTimeUsed());
                     usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
                     db.personDao().insertPerson(new Person(date, usage.intValue()));

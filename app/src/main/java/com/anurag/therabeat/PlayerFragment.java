@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -147,6 +149,22 @@ public class PlayerFragment extends Fragment {
 //                    Long usage = appUsageDao.fetchTimeForDate(date).getTimeUsed();
 //                    appUsageDao.insert(new AppUsageHistory(date,usage + (end - start)));
                     isPlaying = false;
+                    AlertDialog.Builder alertDialog;
+                    alertDialog = new AlertDialog.Builder(getActivity());
+                    alertDialog
+                            .setTitle("Information")
+                            .setMessage("You can minimize the player to view your analytics or continue listening to music. ")
+
+                            // Specifying a listener allows you to take an action before dismissing the dialog.
+                            // The dialog is automatically dismissed when a dialog button is clicked.
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+
+                            // A null listener allows the button to dismiss the dialog and take no further action.
+                            .setIcon(android.R.drawable.ic_dialog_info)
+                            .show();
                 } else {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_pause_24_white));
                     if (beatFreq > 0.0) {
