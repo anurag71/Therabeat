@@ -149,6 +149,7 @@ public class PlayerFragment extends Fragment {
 //                    Long usage = appUsageDao.fetchTimeForDate(date).getTimeUsed();
 //                    appUsageDao.insert(new AppUsageHistory(date,usage + (end - start)));
                     isPlaying = false;
+                    msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
                     AlertDialog.Builder alertDialog;
                     alertDialog = new AlertDialog.Builder(getActivity());
                     alertDialog
@@ -171,6 +172,7 @@ public class PlayerFragment extends Fragment {
                         attemptStartwave(false);
                         mSpotifyAppRemote.getPlayerApi().resume();
                         isPlaying = true;
+                        msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
                     }
                     play_pause_image_view.setChecked(false);
                 }
@@ -190,7 +192,29 @@ public class PlayerFragment extends Fragment {
         PrevSongButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSpotifyAppRemote.getPlayerApi().skipPrevious();
+
+                mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(data -> {
+                    if (data.canPlayOnDemand) {
+                        mSpotifyAppRemote.getPlayerApi().skipPrevious();
+                    } else {
+                        AlertDialog.Builder alertDialog;
+                        alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog
+                                .setTitle("Information")
+                                .setMessage("Spotify Premium lets you play any track, ad-free and with better audio quality. Go to spotify.com/premium to try it for free.")
+
+                                // Specifying a listener allows you to take an action before dismissing the dialog.
+                                // The dialog is automatically dismissed when a dialog button is clicked.
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+
+                                // A null listener allows the button to dismiss the dialog and take no further action.
+                                .setIcon(android.R.drawable.ic_dialog_info)
+                                .show();
+                    }
+                });
             }
         });
 //        buttonEffect(SetShuffleButton);

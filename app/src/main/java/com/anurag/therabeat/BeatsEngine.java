@@ -11,4 +11,6 @@ public interface BeatsEngine
     boolean getIsPlaying();
     void setVolume(float volume);
 
+    float getFrequency();
+
 }

@@ -9,24 +9,26 @@ import java.util.TimerTask;
 
 public class Binaural implements BeatsEngine {
 
-	private final int SAMPLE_RATE = 44100;
-	private int sampleCount;
-	private boolean doRelease;
-	private AudioTrack mAudio;
-	private boolean isPlaying;
-	private float factor;
+    private final int SAMPLE_RATE = 44100;
+    private int sampleCount;
+    private boolean doRelease;
+    private AudioTrack mAudio;
+    private boolean isPlaying;
+    private float factor;
+    private float frequency;
 
-	public Binaural(float frequency, float isoBeat, float factor) {
-		int amplitudeMax = Helpers.getAdjustedAmplitudeMax(frequency);
-		this.factor = factor;
-		float freqLeft = frequency - (isoBeat / 2);
-		float freqRight = frequency + (isoBeat / 2);
+    public Binaural(float frequency, float isoBeat, float factor) {
+        this.frequency = frequency;
+        int amplitudeMax = Helpers.getAdjustedAmplitudeMax(frequency);
+        this.factor = factor;
+        float freqLeft = frequency - (isoBeat / 2);
+        float freqRight = frequency + (isoBeat / 2);
 
-		//period of the sine waves
-		int sCountLeft = (int) ((float) SAMPLE_RATE / freqLeft);
-		int sCountRight = (int) ((float) SAMPLE_RATE / freqRight);
+        //period of the sine waves
+        int sCountLeft = (int) ((float) SAMPLE_RATE / freqLeft);
+        int sCountRight = (int) ((float) SAMPLE_RATE / freqRight);
 
-		sampleCount = Helpers.getLCM(sCountLeft, sCountRight) * 2;
+        sampleCount = Helpers.getLCM(sCountLeft, sCountRight) * 2;
 		int buffSize = sampleCount * 4;
 
 		mAudio = new AudioTrack(AudioManager.STREAM_MUSIC, SAMPLE_RATE,
@@ -121,15 +123,22 @@ public class Binaural implements BeatsEngine {
 
 	}
 
-	public boolean getIsPlaying() { return isPlaying; }
+    public boolean getIsPlaying() {
+        return isPlaying;
+    }
 
-	@Override
-	public void setVolume(float volume) {
-		if(mAudio!=null){
-			mAudio.setVolume(volume/100);
-		}
-			factor=volume;
-	}
+    @Override
+    public void setVolume(float volume) {
+        if (mAudio != null) {
+            mAudio.setVolume(volume / 100);
+        }
+        factor = volume;
+    }
+
+    @Override
+    public float getFrequency() {
+        return this.frequency;
+    }
 
 
 }

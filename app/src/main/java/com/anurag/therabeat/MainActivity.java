@@ -79,7 +79,11 @@ public class MainActivity extends AppCompatActivity {
         msharedPreferences = this.getSharedPreferences("Therabeat", 0);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
         wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
+        if (msharedPreferences.getBoolean("isPlaying", false)) {
+            Log.d("check", "checking if playing");
+        }
 
         fm.beginTransaction().add(R.id.main_container, searchFragment, "2").hide(searchFragment).commit();
         fm.beginTransaction().add(R.id.main_container, settingsFragment, "3").hide(settingsFragment).commit();
