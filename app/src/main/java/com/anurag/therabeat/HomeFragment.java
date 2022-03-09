@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -133,12 +135,11 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
 
             @Override
             public void run() {
-
                 mSwipeRefreshLayout.setRefreshing(true);
 
                 // Fetching data from server
-                playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1), (TextView) view.findViewById(R.id.playlistName), playlistImageView);
-                playlistService.getPlaylist(playlistImageView, getActivity().getApplicationContext());
+                onRefresh();
+
             }
         });
 
@@ -166,6 +167,10 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
                 @Override
                 public void run() {
                     Person p = db.personDao().loadPersonById(date);
+                    if (p == null) {
+                        db.personDao().insertPerson(new Person(date, 0));
+                    }
+                    p = db.personDao().loadPersonById(date);
                     Long usage = Long.valueOf(p.getTimeUsed());
                     usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
                     db.personDao().insertPerson(new Person(date, usage.intValue()));
@@ -187,11 +192,31 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     }
 
     private void togglePlay(float beatFreq, String playlistId) {
-        connected(playlistId);
         attemptStartWave(beatFreq);
+        connected(playlistId);
     }
 
     private void connected(String uri) {
+        spotifyConnection.mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(data -> {
+            if (!data.canPlayOnDemand) {
+                AlertDialog.Builder alertDialog;
+                alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog
+                        .setTitle("Information")
+                        .setMessage("Spotify Premium lets you play any track, ad-free and with better audio quality. Go to spotify.com/premium to try it for free.")
+
+                        // Specifying a listener allows you to take an action before dismissing the dialog.
+                        // The dialog is automatically dismissed when a dialog button is clicked.
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+
+                        // A null listener allows the button to dismiss the dialog and take no further action.
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show();
+            }
+        });
         spotifyConnection.mSpotifyAppRemote.getPlayerApi().play(uri);
         spotifyConnection.mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
@@ -202,6 +227,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
                     }
                 });
         isPlaying = true;
+        msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
         // Subscribe to PlayerState
 
     }

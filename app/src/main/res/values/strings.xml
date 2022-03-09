@@ -24,11 +24,29 @@
     <string name="settings">Settings</string>
     <string name="spotifyError">Couldn\'t detect Spotify App\nPlease install the Spotify app to proceed further</string>
     <string name="playstoreRedirect">Install from PlayStore</string>
+    <string name="OpeningScreenMessage">Select an option to proceed</string>
     <string name="userMoodChoiceMessage">What can we help you with today?</string>
     <string name="anxietyString">Anxiety</string>
     <string name="memoryString">Memory</string>
     <string name="attentionString">Attention</string>
     <string name="networkError">Could not connect to the internet</string>
     <string name="welcomeMsg">Welcome</string>
+    <string name="MusicButtonString">Music</string>
+    <string name="AboutUsButtonString">About Us</string>
+    <string name="FeedbackButtonString">Give Feedback</string>
+
+    <string name="AboutUsText">
+  <![CDATA[
+    <br/><br/>Therabeat aims to provide a therapeutic music listening experience. It is geared towards helping patients get better while listening to the music that they enjoy.
+    <br/><br/>This project is headed by:<br/>Dr. Yune S. Lee<br/>Department of Speech, Language, and Hearing<br/>School of Behavioral and Brain Sciences<br/>The University of Texas at Dallas
+    <br/><br/>Dr. Dawn Owens<br/>Program Director, Business Analytics and Information Technology and Systems Programs<br/>Naveen Jindal School of Management<br/>The University of Texas at Dallas
+<br/><br/> Developer Contact:<br/>Anurag Wasankar<br/>Graduate Student<br/>Erik Jonsson School of Computer Science<br/>The University of Texas at Dallas
+<br/><br/>Special thanks to Jesper S Bajwa.]]>
+</string>
+    <string name="music_player_controls_heading">Music Player Controls</string>
+    <string name="music_player_description">Swipe down from the top to minimize the music player and continue using the app for viewing analytics, etc\nTap the player again to maximize it</string>
+    <string name="refresh_content_heading">Refresh Content</string>
+    <string name="refresh_layout_description">Refresh the layout by swiping down from the top of Home Page and Analytics Page to view the latest data</string>
+    <string name="logout_string">Disconnect your Spotify Account from Therabeat</string>
 
 </resources>

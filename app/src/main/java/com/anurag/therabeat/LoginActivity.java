@@ -108,16 +108,16 @@ public class LoginActivity extends AppCompatActivity {
                 // Most likely auth flow was cancelled
 
                 default:
-                    Log.d(TAG, "Auth result: " + response.getType());
-                    alertDialog
-                            .setTitle("Error")
-                            .setMessage(response.getError())
-
-                            // Specifying a listener allows you to take an action before dismissing the dialog.
-                            // The dialog is automatically dismissed when a dialog button is clicked.
-                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // Continue with delete operation
+//                    Log.d(TAG, "Auth result: " + response.getType());
+//                    alertDialog
+//                            .setTitle("Error")
+//                            .setMessage(response.getError())
+//
+//                            // Specifying a listener allows you to take an action before dismissing the dialog.
+//                            // The dialog is automatically dismissed when a dialog button is clicked.
+//                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+                    // Continue with delete operation
 //                                    editor.putBoolean("firstTime",false);
 //                                    editor.apply();
 //                                    Intent intent = new Intent(WelcomeScreen.this,
@@ -126,12 +126,12 @@ public class LoginActivity extends AppCompatActivity {
 //                                    startActivity(intent);
 //
 //                                    destroy();
-                                }
-                            })
-
-                            // A null listener allows the button to dismiss the dialog and take no further action.
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .show();
+//                                }
+//                            })
+//
+//                            // A null listener allows the button to dismiss the dialog and take no further action.
+//                            .setIcon(android.R.drawable.ic_dialog_alert)
+//                            .show();
 
             }
 

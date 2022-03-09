@@ -110,6 +110,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             super(itemView);
             myTextView = (TextView) itemView.findViewById(R.id.text_cardview);
             artistView = (TextView) itemView.findViewById(R.id.artistTextview);
+            myTextView.setSelected(true);
+            artistView.setSelected(true);
             artworkImageView = itemView.findViewById(R.id.artwork);
             buttonViewOption = itemView.findViewById(R.id.textViewOptions);
             itemView.setOnClickListener(this);

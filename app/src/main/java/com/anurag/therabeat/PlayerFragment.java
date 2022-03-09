@@ -1,6 +1,9 @@
 package com.anurag.therabeat;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,8 +12,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -22,6 +27,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Image;
+import com.spotify.protocol.types.Repeat;
 import com.spotify.protocol.types.Track;
 
 import java.text.SimpleDateFormat;
@@ -38,8 +44,12 @@ public class PlayerFragment extends Fragment {
     private String TAG = getClass().getSimpleName().toString();
 
     private MaterialButton play_pause_image_view;
-    private Button next_image_view;
-    private Button prev_image_view;
+    private Button NextSongButton;
+    private Button PrevSongButton;
+    private MaterialButton SetShuffleButton;
+    private Button SetRepeatButton;
+    private Button SpotifyLinkingButton;
+    private Button ClosePlayerButton;
     private TextView songNameTextViewMin;
     private TextView songNameTextViewMax;
     private TextView artistNameTextViewMin;
@@ -87,8 +97,12 @@ public class PlayerFragment extends Fragment {
         msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         View inflatedView = inflater.inflate(R.layout.fragment_player, container, false);
         play_pause_image_view = inflatedView.findViewById(R.id.play_pause_image_view);
-        next_image_view = inflatedView.findViewById(R.id.nextSongButton);
-        prev_image_view = inflatedView.findViewById(R.id.prevSongButton);
+        ClosePlayerButton = inflatedView.findViewById(R.id.closePlayerButton);
+        NextSongButton = inflatedView.findViewById(R.id.nextSongButton);
+        PrevSongButton = inflatedView.findViewById(R.id.prevSongButton);
+        SetShuffleButton = inflatedView.findViewById(R.id.SetShuffle);
+        SetRepeatButton = inflatedView.findViewById(R.id.SetRepeat);
+        SpotifyLinkingButton = inflatedView.findViewById(R.id.SpotifyLink);
         songNameTextViewMin = inflatedView.findViewById(R.id.audio_name_text_view_min);
         songNameTextViewMax = inflatedView.findViewById(R.id.audio_name_text_view);
         artistNameTextViewMin = inflatedView.findViewById(R.id.artist_name_text_view_min);
@@ -106,8 +120,7 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
                 if (fromUser) {
-                    amplitudeFactor = value;
-                    attemptStartwave(true);
+                    MainActivity.wave.setVolume(value);
                 }
             }
         });
@@ -136,19 +149,37 @@ public class PlayerFragment extends Fragment {
 //                    Long usage = appUsageDao.fetchTimeForDate(date).getTimeUsed();
 //                    appUsageDao.insert(new AppUsageHistory(date,usage + (end - start)));
                     isPlaying = false;
+                    msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
+                    AlertDialog.Builder alertDialog;
+                    alertDialog = new AlertDialog.Builder(getActivity());
+                    alertDialog
+                            .setTitle("Information")
+                            .setMessage("You can minimize the player to view your analytics or continue listening to music. ")
+
+                            // Specifying a listener allows you to take an action before dismissing the dialog.
+                            // The dialog is automatically dismissed when a dialog button is clicked.
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+
+                            // A null listener allows the button to dismiss the dialog and take no further action.
+                            .setIcon(android.R.drawable.ic_dialog_info)
+                            .show();
                 } else {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_pause_24_white));
                     if (beatFreq > 0.0) {
                         attemptStartwave(false);
                         mSpotifyAppRemote.getPlayerApi().resume();
                         isPlaying = true;
+                        msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
                     }
                     play_pause_image_view.setChecked(false);
                 }
             }
         });
 
-        next_image_view.setOnClickListener(new View.OnClickListener() {
+        NextSongButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -158,12 +189,96 @@ public class PlayerFragment extends Fragment {
             }
         });
 
-        prev_image_view.setOnClickListener(new View.OnClickListener() {
+        PrevSongButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSpotifyAppRemote.getPlayerApi().skipPrevious();
+
+                mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(data -> {
+                    if (data.canPlayOnDemand) {
+                        mSpotifyAppRemote.getPlayerApi().skipPrevious();
+                    } else {
+                        AlertDialog.Builder alertDialog;
+                        alertDialog = new AlertDialog.Builder(getActivity());
+                        alertDialog
+                                .setTitle("Information")
+                                .setMessage("Spotify Premium lets you play any track, ad-free and with better audio quality. Go to spotify.com/premium to try it for free.")
+
+                                // Specifying a listener allows you to take an action before dismissing the dialog.
+                                // The dialog is automatically dismissed when a dialog button is clicked.
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+
+                                // A null listener allows the button to dismiss the dialog and take no further action.
+                                .setIcon(android.R.drawable.ic_dialog_info)
+                                .show();
+                    }
+                });
             }
         });
+//        buttonEffect(SetShuffleButton);
+        SetShuffleButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (SetShuffleButton.isChecked()) {
+                    mSpotifyAppRemote.getPlayerApi().setShuffle(true);
+                    Toast toast = Toast.makeText(getActivity(), "Shuffle Enabled", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    Log.d("shuffle", "unchecked");
+                    mSpotifyAppRemote.getPlayerApi().setShuffle(false);
+                    Toast toast = Toast.makeText(getActivity(), "Shuffle Disabled", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+
+        });
+
+        SetRepeatButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (SetShuffleButton.isChecked()) {
+                    mSpotifyAppRemote.getPlayerApi().setRepeat(Repeat.ALL);
+                    Toast toast = Toast.makeText(getActivity(), "Repeating All Songs", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    Log.d("repeat", "unchecked");
+                    mSpotifyAppRemote.getPlayerApi().setRepeat(Repeat.OFF);
+                    Toast toast = Toast.makeText(getActivity(), "Repeat Disabled", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+
+        });
+
+        SpotifyLinkingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+
+                intent.putExtra(Intent.EXTRA_REFERRER,
+                        Uri.parse("android-app://" + getActivity().getPackageName()));
+                final String[] track1 = {""};
+                mSpotifyAppRemote.getPlayerApi().getPlayerState().setResultCallback(data -> {
+                    intent.setData(Uri.parse(data.track.uri));
+                    startActivity(intent);
+                });
+
+            }
+        });
+
+        ClosePlayerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.wave.stop();
+                mSpotifyAppRemote.getPlayerApi().pause();
+                getActivity().getSupportFragmentManager().beginTransaction().remove(PlayerFragment.this).commit();
+            }
+        });
+
 
         return inflatedView;
     }

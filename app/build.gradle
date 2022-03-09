@@ -66,4 +66,8 @@ dependencies {
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.2.0"
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+
+    implementation 'com.github.AppIntro:AppIntro:6.1.0'
+
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.24'
 }

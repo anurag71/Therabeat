@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -65,6 +67,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
     AppDatabase db;
+
 
     PersonDao appUsageDao;
 
@@ -145,6 +148,26 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     }
 
     private void connected(String uri) {
+        spotifyConnection.mSpotifyAppRemote.getUserApi().getCapabilities().setResultCallback(data -> {
+            if (!data.canPlayOnDemand) {
+                AlertDialog.Builder alertDialog;
+                alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog
+                        .setTitle("Information")
+                        .setMessage("Spotify Premium lets you play any track, ad-free and with better audio quality. Go to spotify.com/premium to try it for free.")
+
+                        // Specifying a listener allows you to take an action before dismissing the dialog.
+                        // The dialog is automatically dismissed when a dialog button is clicked.
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+
+                        // A null listener allows the button to dismiss the dialog and take no further action.
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .show();
+            }
+        });
         spotifyConnection.mSpotifyAppRemote.getPlayerApi().play(uri);
         spotifyConnection.mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
@@ -155,6 +178,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                     }
                 });
         isPlaying = true;
+        msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
         // Subscribe to PlayerState
 
     }
@@ -174,6 +198,10 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                 @Override
                 public void run() {
                     Person p = db.personDao().loadPersonById(date);
+                    if (p == null) {
+                        db.personDao().insertPerson(new Person(date, 0));
+                    }
+                    p = db.personDao().loadPersonById(date);
                     Long usage = Long.valueOf(p.getTimeUsed());
                     usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
                     db.personDao().insertPerson(new Person(date, usage.intValue()));
@@ -191,7 +219,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     }
 
     private void togglePlay(float beatFreq, String playlistId) {
-        connected(playlistId);
         attemptStartWave(beatFreq);
+        connected(playlistId);
     }
 }

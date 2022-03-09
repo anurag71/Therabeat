@@ -5,6 +5,17 @@
     android:layout_width="match_parent"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="100dp"
+        android:text="@string/userMoodChoiceMessage"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp" />
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/ll"
         android:layout_width="match_parent"
@@ -24,11 +35,11 @@
                 android:layout_width="125dp"
                 android:layout_height="125dp"
                 android:layout_margin="5dp"
-                android:background="@color/design_default_color_secondary_variant"
+                android:background="#2A86B6"
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/anxietyChoiceButton"
+                    android:id="@+id/MusicChoiceButton"
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -46,11 +57,11 @@
                 android:layout_width="125dp"
                 android:layout_height="125dp"
                 android:layout_margin="5dp"
-                android:background="@color/design_default_color_secondary_variant"
+                android:background="#2A86B6"
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/attentionChoiceButton"
+                    android:id="@+id/AboutUsChoiceButton"
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -75,15 +86,15 @@
                 android:layout_width="125dp"
                 android:layout_height="125dp"
                 android:layout_margin="5dp"
-                android:background="@color/design_default_color_secondary_variant"
+                android:background="#2A86B6"
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/memoryChoiceButton"
+                    android:id="@+id/FeedbackChoiceButton"
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:backgroundTint="#006200EE"
+                    android:background="#006200EE"
                     android:orientation="horizontal"
                     android:rotation="315"
                     android:text="@string/memoryString"
@@ -96,7 +107,7 @@
                 android:layout_width="125dp"
                 android:layout_height="125dp"
                 android:layout_margin="5dp"
-                android:background="@color/design_default_color_secondary_variant"
+                android:background="#2A86B6"
                 android:orientation="horizontal">
 
             </LinearLayout>
@@ -105,16 +116,6 @@
     </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="100dp"
-        android:text="@string/userMoodChoiceMessage"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="20dp" />
 </LinearLayout>
 
 

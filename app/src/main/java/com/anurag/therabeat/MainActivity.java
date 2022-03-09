@@ -12,9 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import java.io.InputStream;
 
@@ -81,7 +79,11 @@ public class MainActivity extends AppCompatActivity {
         msharedPreferences = this.getSharedPreferences("Therabeat", 0);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
         wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
+        if (msharedPreferences.getBoolean("isPlaying", false)) {
+            Log.d("check", "checking if playing");
+        }
 
         fm.beginTransaction().add(R.id.main_container, searchFragment, "2").hide(searchFragment).commit();
         fm.beginTransaction().add(R.id.main_container, settingsFragment, "3").hide(settingsFragment).commit();
@@ -146,19 +148,20 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onStop() {
-		super.onStop();
+        super.onStop();
 //		SpotifyAppRemote.disconnect(spotifyConnection.mSpotifyAppRemote);
-		if (isChangingConfigurations() && PlayerFragment.newInstance().isPlaying) {
-			Log.d(TAG, "onStop: don't release MediaPlayer as screen is rotating & playing");
-		} else {
-			SpotifyConnection spotifyConnection = new SpotifyConnection(this);
-			spotifyConnection.getPlayerInstance(this);
-			spotifyConnection.mSpotifyAppRemote.getPlayerApi().pause();
-			MainActivity.wave.release();
-			SpotifyAppRemote.disconnect(spotifyConnection.mSpotifyAppRemote);
-		}
+        if (isChangingConfigurations() && PlayerFragment.newInstance().isPlaying) {
+            Log.d(TAG, "onStop: don't release MediaPlayer as screen is rotating & playing");
+        }
+//		else {
+//			SpotifyConnection spotifyConnection = new SpotifyConnection(this);
+//			spotifyConnection.getPlayerInstance(this);
+//			spotifyConnection.mSpotifyAppRemote.getPlayerApi().pause();
+//			MainActivity.wave.release();
+//			SpotifyAppRemote.disconnect(spotifyConnection.mSpotifyAppRemote);
+//		}
 
-	}
+    }
 
 	private void initializeView() {
 //		frequencyCarrierInput = (EditText) findViewById(R.id.etCarrierFrequency);

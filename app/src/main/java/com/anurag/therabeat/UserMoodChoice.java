@@ -45,23 +45,23 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
     }
 
     public void initializeView(){
-        anxietyButton = findViewById(R.id.anxietyChoiceButton);
-        attentionButton = findViewById(R.id.attentionChoiceButton);
-        memoryButton = findViewById(R.id.memoryChoiceButton);
+        anxietyButton = findViewById(R.id.MusicChoiceButton);
+        attentionButton = findViewById(R.id.AboutUsChoiceButton);
+        memoryButton = findViewById(R.id.FeedbackChoiceButton);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.anxietyChoiceButton:
+            case R.id.MusicChoiceButton:
                 Log.d(TAG,"Anxiety Button pressed");
                 editor.putFloat("beatFreq", 4.00F);
                 break;
-            case R.id.attentionChoiceButton:
+            case R.id.AboutUsChoiceButton:
                 Log.d(TAG,"Attention Button pressed");
                 editor.putFloat("beatFreq", 6.00F);
                 break;
-            case R.id.memoryChoiceButton:
+            case R.id.FeedbackChoiceButton:
                 Log.d(TAG, "Memory Button pressed");
                 editor.putFloat("beatFreq", 19.00F);
                 break;

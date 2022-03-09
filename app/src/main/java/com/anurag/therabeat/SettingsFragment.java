@@ -108,34 +108,75 @@ package com.anurag.therabeat;//package com.anurag.therabeat;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 
+import com.anurag.therabeat.connectors.SpotifyConnection;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends Fragment {
+
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+    View view;
+
+    public static SettingsFragment newInstance(String param1, String param2) {
+        SettingsFragment fragment = new SettingsFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setPreferencesFromResource(R.xml.fragment_settings, rootKey);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
+    }
 
-        Preference logoutOption = findPreference("logout");
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        logoutOption.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        return inflater.inflate(R.layout.fragment_settings, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        this.view = view;
+        CardView logout = view.findViewById(R.id.logoutCard);
+        logout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onPreferenceClick(Preference preference) {
+            public void onClick(View view) {
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences("Therabeat", 0).edit();
                 editor.remove("firstTime");
                 editor.remove("playlistId");
                 editor.remove("token");
-                editor.commit();
+                editor.putBoolean("isPlaying", false);
+                editor.apply();
+                SpotifyConnection spotifyConnection = new SpotifyConnection(getActivity().getApplicationContext());
+                spotifyConnection.getPlayerInstance(getActivity());
+                spotifyConnection.mSpotifyAppRemote.getPlayerApi().pause();
+                MainActivity.wave.release();
+                SpotifyAppRemote.disconnect(spotifyConnection.mSpotifyAppRemote);
+
                 AuthorizationClient.clearCookies(getContext());
                 Intent intent = new Intent(getActivity(), SplashActivity.class);
                 startActivity(intent);
                 getActivity().finish();
-                return false;
             }
         });
+    }
+}
 
 //        if (countingPreference != null) {
 //            countingPreference.setSummaryProvider(new Preference.SummaryProvider<EditTextPreference>() {
@@ -146,5 +187,3 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 //                }
 //            });
 //        }
-    }
-}
