@@ -12,7 +12,7 @@ import java.util.List;
 @Dao
 public interface PersonDao {
 
-    @Query("SELECT * FROM PERSON ORDER BY DATE DESC")
+    @Query("SELECT * FROM PERSON ORDER BY DATE DESC LIMIT 7")
     List<Person> loadAllPersons();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

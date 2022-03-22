@@ -16,10 +16,15 @@ import com.anurag.therabeat.Database.AppDatabase;
 import com.anurag.therabeat.Database.Person;
 import com.anurag.therabeat.Database.PersonDao;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import java.text.SimpleDateFormat;
@@ -43,14 +48,14 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
     List<String> axisLabel;
     float barSpace;
     Calendar c;
-    BarChart chart;
+    LineChart chart;
     String date;
     TextView dateTextView;
     float groupSpace;
     SwipeRefreshLayout mSwipeRefreshLayout;
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     TextView textView;
-    List<BarEntry> values;
+    List<Entry> values;
     AppDatabase db;
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -123,18 +128,18 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
 
             public void run() {
                 List<Person> list = db.personDao().loadAllPersons();
+                Log.d("sixe",String.valueOf(list.size()));
                 if (list != null) {
-                    int n = list.size() - 1;
+                    int n = list.size()-1;
                     int n2 = 0;
                     while (n >= 0) {
-                        if (n == 6) {
-                            return;
-                        }
                         Log.d((String) "error", (String) String.valueOf((Object) ((Person) list.get(n)).getTimeUsed()));
                         AppUsageFragment.this.axisLabel.add(list.get(n).getDate());
-                        long usage = list.get(n).getTimeUsed().intValue();
+                        int usage = list.get(n).getTimeUsed().intValue();
+                        Log.d("usage", String.valueOf(usage));
 //                        if (usage >= 3600) {
-                        usage *= (long) 0.000277778;
+                        usage *= 0.000277778;
+                        usage = (int)usage;
 //                        } else if (usage >= 60 && usage < 3600) {
 //                            usage *= (long) 0.0166667;
 //                        }
@@ -148,24 +153,28 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         thread.start();
         try {
             thread.join();
-            BarDataSet barDataSet = new BarDataSet(this.values, "Time Used");
+            LineDataSet barDataSet = new LineDataSet(this.values, "Time Used");
             barDataSet.setValueTextSize(20.0f);
+            barDataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf(Math.round(value)));
             barDataSet.setValueTextColor(ContextCompat.getColor(getActivity(), R.color.white));
-            barDataSet.setColor(Color.rgb((int) 104, (int) 241, (int) 175));
-            BarData barData = new BarData(barDataSet);
+            barDataSet.setColor(Color.rgb((int) 255, (int) 255, (int) 255));
+            LineData barData = new LineData(barDataSet);
             this.chart.setData(barData);
-
+            Description desc = new Description();
+            desc.setText("");
+            this.chart.setDescription(desc);
             this.chart.animateXY(2000, 2000);
             this.chart.getAxisLeft().setDrawGridLines(false);
             this.chart.getAxisRight().setDrawGridLines(false);
             this.chart.getAxisLeft().setTextSize(15);
             this.chart.getAxisRight().setEnabled(false);
+            this.chart.getAxisLeft().setEnabled(false);
             this.chart.getAxisLeft().setGranularity(1.0f);
             this.chart.getAxisLeft().setGranularityEnabled(true);
 
             this.chart.getAxisLeft().setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
             XAxis xAxis = this.chart.getXAxis();
-            xAxis.setTextSize(20.0f);
+            xAxis.setTextSize(15);
             xAxis.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
             xAxis.setDrawGridLines(false);

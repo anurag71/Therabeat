@@ -11,6 +11,7 @@
         android:layout_height="match_parent">
 
         <ImageView
+            android:paddingTop="15dp"
             android:id="@+id/playlistArtwork"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

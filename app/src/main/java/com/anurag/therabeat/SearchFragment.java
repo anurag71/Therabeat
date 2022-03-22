@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -63,7 +65,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     private SharedPreferences msharedPreferences;
     private boolean exception = false;
     private String errorMsg = "";
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
     AppDatabase db;
@@ -117,6 +119,14 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
+        searchEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
 
 
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -181,6 +191,11 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
         // Subscribe to PlayerState
 
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public void onNoteClick(int position) {

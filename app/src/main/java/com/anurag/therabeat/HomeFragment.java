@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     View view;
     private SongService songService;
     private PlaylistService playlistService;
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
 

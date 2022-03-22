@@ -1,20 +1,28 @@
 package com.anurag.therabeat;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.anurag.therabeat.Database.AppDatabase;
+import com.anurag.therabeat.Database.AppExecutors;
+import com.anurag.therabeat.Database.Person;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     final Fragment settingsFragment = new SettingsFragment();
     final Fragment appUsageFragment = new AppUsageFragment();
     Fragment active = homeFragment;
+    AppDatabase db;
 
     //Refresh waveform if user changes frequencies
 
@@ -62,9 +71,27 @@ public class MainActivity extends AppCompatActivity {
                     return true;
 
                 case R.id.settings:
-                    fm.beginTransaction().hide(active).show(settingsFragment).commit();
-                    active = settingsFragment;
-                    return true;
+                    MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(MainActivity.this);
+                    dialog.setTitle("Exit Therabeat")
+                            .setMessage("Would oyu like to view your analytics before closing?")
+
+                            // Specifying a listener allows you to take an action before dismissing the dialog.
+                            // The dialog is automatically dismissed when a dialog button is clicked.
+                            .setPositiveButton("Exit Anyway", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finishAffinity();
+                                }
+                            })
+                            .setNegativeButton("View Analytics", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    fm.beginTransaction().hide(active).show(appUsageFragment).commit();
+                                    active = appUsageFragment;
+                                }
+                            })
+
+                            .setIcon(android.R.drawable.ic_dialog_info)
+                            .show();
             }
 			return false;
 		}
@@ -74,8 +101,24 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = AppDatabase.getInstance(this.getApplicationContext());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         initializeView();
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+
+                int[] a = {10800,14400,7200,21600,28800,32400,3600};
+                for(int i=-6,j=0;i<=0;i++,j++) {
+                    Calendar c = Calendar.getInstance();
+                    c.add(Calendar.DAY_OF_MONTH, i);
+                    Log.d("valueTest", String.valueOf(a[j]));
+                    String date = sdf.format(c.getTime());
+                    db.personDao().insertPerson(new Person(date, a[j]));
+                }
+            }
+        });
         msharedPreferences = this.getSharedPreferences("Therabeat", 0);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -86,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         fm.beginTransaction().add(R.id.main_container, searchFragment, "2").hide(searchFragment).commit();
-        fm.beginTransaction().add(R.id.main_container, settingsFragment, "3").hide(settingsFragment).commit();
         fm.beginTransaction().add(R.id.main_container, appUsageFragment, "3").hide(appUsageFragment).commit();
         fm.beginTransaction().add(R.id.main_container, homeFragment, "1").commit();
     }
