@@ -16,6 +16,7 @@
         android:id="@+id/songSearch"
         android:textColor="@color/black"
         android:layout_width="match_parent"
+        android:padding="10dp"
         android:layout_height="?attr/actionBarSize"
         android:hint="Enter song name"
         android:textColorHint="@color/black"

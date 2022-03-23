@@ -131,6 +131,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
+        mSwipeRefreshLayout.setNestedScrollingEnabled(true);
         mSwipeRefreshLayout.post(new Runnable() {
 
             @Override
@@ -143,8 +144,19 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
             }
         });
 
+        myView.addOnScrollListener(new RecyclerView.OnScrollListener() { //Used to restrict collapsing of recycler view horizontal swipe and swipe refresh layout
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (llm.findFirstCompletelyVisibleItemPosition() == 0)
+                    mSwipeRefreshLayout.setEnabled(true);
+                else
+                    mSwipeRefreshLayout.setEnabled(false);
+            }
+        });
+
 
     }
+
 
     public void onRefresh() {
 

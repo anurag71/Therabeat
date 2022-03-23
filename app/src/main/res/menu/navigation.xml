@@ -12,8 +12,4 @@
         android:id="@+id/appUsage"
         android:icon="@drawable/ic_baseline_bar_chart_24"
         android:title="Statistics" />
-    <item
-        android:id="@+id/settings"
-        android:icon="@drawable/ic_round_exit_to_app_24"
-        android:title="Settings" />
 </menu>

@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -50,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean exception = false;
 	private String errorMsg = "";
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-			= new BottomNavigationView.OnNavigationItemSelectedListener() {
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-		@Override
-		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-			switch (item.getItemId()) {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
                 case R.id.home:
                     fm.beginTransaction().hide(active).show(homeFragment).commit();
                     active = homeFragment;
@@ -69,33 +68,44 @@ public class MainActivity extends AppCompatActivity {
                     fm.beginTransaction().hide(active).show(appUsageFragment).commit();
                     active = appUsageFragment;
                     return true;
-
-                case R.id.settings:
-                    MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(MainActivity.this);
-                    dialog.setTitle("Exit Therabeat")
-                            .setMessage("Would oyu like to view your analytics before closing?")
-
-                            // Specifying a listener allows you to take an action before dismissing the dialog.
-                            // The dialog is automatically dismissed when a dialog button is clicked.
-                            .setPositiveButton("Exit Anyway", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finishAffinity();
-                                }
-                            })
-                            .setNegativeButton("View Analytics", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    fm.beginTransaction().hide(active).show(appUsageFragment).commit();
-                                    active = appUsageFragment;
-                                }
-                            })
-
-                            .setIcon(android.R.drawable.ic_dialog_info)
-                            .show();
             }
-			return false;
-		}
-	};
+            return false;
+        }
+    };
+
+    @Override
+    public void onBackPressed() {
+        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(MainActivity.this);
+        dialog.setTitle("Exit Therabeat")
+                .setMessage("Would would you like to do?")
+
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton("View Your Analytics", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        fm.beginTransaction().hide(active).show(appUsageFragment).commit();
+                        active = appUsageFragment;
+                        BottomNavigationView bottomNavigationView;
+                        bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+                        bottomNavigationView.setSelectedItemId(R.id.appUsage);
+                    }
+                })
+                .setNegativeButton("Switch Cognitive Mode", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MainActivity.super.onBackPressed();
+                    }
+                })
+                .setNeutralButton("Exit Therabeat", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finishAffinity();
+                    }
+                })
+
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .show();
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
