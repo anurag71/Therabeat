@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -19,10 +21,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.anurag.therabeat.Database.AnxietyUsage;
 import com.anurag.therabeat.Database.AppDatabase;
 import com.anurag.therabeat.Database.AppExecutors;
-import com.anurag.therabeat.Database.Person;
-import com.anurag.therabeat.Database.PersonDao;
+import com.anurag.therabeat.Database.AttentionUsage;
+import com.anurag.therabeat.Database.MemoryUsage;
+import com.anurag.therabeat.Database.TotalUsage;
+import com.anurag.therabeat.Database.TotalUsageDao;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.navigation.NavigationBarView;
@@ -63,13 +68,13 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     private SharedPreferences msharedPreferences;
     private boolean exception = false;
     private String errorMsg = "";
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
     AppDatabase db;
 
 
-    PersonDao appUsageDao;
+    TotalUsageDao appUsageDao;
 
 
     public SearchFragment() {
@@ -117,6 +122,14 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
+        searchEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
 
 
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -183,6 +196,11 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
 
     }
 
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
     public void onNoteClick(int position) {
         float beatFreq = msharedPreferences.getFloat("beatFreq", 0.0f);
         Log.d(TAG, playlistArrayList.get(position).getName());
@@ -197,14 +215,50 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
-                    Person p = db.personDao().loadPersonById(date);
+                    TotalUsage p = db.totalUsageDao().getTotalUsageByDate(date);
                     if (p == null) {
-                        db.personDao().insertPerson(new Person(date, 0));
+                        db.totalUsageDao().insertTotalUsage(new TotalUsage(date, 0));
                     }
-                    p = db.personDao().loadPersonById(date);
+                    p = db.totalUsageDao().getTotalUsageByDate(date);
                     Long usage = Long.valueOf(p.getTimeUsed());
                     usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
-                    db.personDao().insertPerson(new Person(date, usage.intValue()));
+                    db.totalUsageDao().insertTotalUsage(new TotalUsage(date, usage.intValue()));
+                }
+            });
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (beatFreq == 19.0) {
+                        MemoryUsage m;
+                        m = db.memoryUsageDao().getMemoryUsageByDate(date);
+                        if (m == null) {
+                            db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, 0));
+                        }
+                        m = db.memoryUsageDao().getMemoryUsageByDate(date);
+                        Long usage = Long.valueOf(m.getTimeUsed());
+                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, usage.intValue()));
+                    } else if (beatFreq == 6.00) {
+                        AttentionUsage attention;
+                        attention = db.attentionUsageDao().getAttentionUsageByDate(date);
+                        if (attention == null) {
+                            db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, 0));
+                        }
+                        attention = db.attentionUsageDao().getAttentionUsageByDate(date);
+                        Long usage = Long.valueOf(attention.getTimeUsed());
+                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, usage.intValue()));
+                    } else {
+                        AnxietyUsage anxiety;
+                        anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
+                        if (anxiety == null) {
+                            db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, 0));
+                        }
+                        anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
+                        Long usage = Long.valueOf(anxiety.getTimeUsed());
+                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, usage.intValue()));
+                    }
                 }
             });
         }

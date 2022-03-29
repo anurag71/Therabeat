@@ -7,31 +7,17 @@
     android:background="@drawable/background_image"
     tools:context=".UserMoodChoice">
 
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/OpeningScreenMessage"
-        android:textAlignment="center"
-        android:textColor="#FFFFFF"
-        android:textSize="20dp"
-        app:layout_constraintBottom_toTopOf="@id/MusicChoiceButton"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/MusicChoiceButton"
-        android:layout_width="0dp"
+        android:layout_width="250dp"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="5dp"
         android:backgroundTint="#2A86B6"
         android:text="@string/MusicButtonString"
         android:textSize="20dp"
         app:layout_constraintBottom_toTopOf="@id/AboutUsChoiceButton"
-        app:layout_constraintLeft_toLeftOf="@id/textView"
-        app:layout_constraintRight_toRightOf="@id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
@@ -45,8 +31,8 @@
         android:text="@string/AboutUsButtonString"
         android:textSize="20dp"
         app:layout_constraintBottom_toTopOf="@id/FeedbackChoiceButton"
-        app:layout_constraintLeft_toLeftOf="@id/textView"
-        app:layout_constraintRight_toRightOf="@id/textView"
+        app:layout_constraintEnd_toEndOf="@id/MusicChoiceButton"
+        app:layout_constraintStart_toStartOf="@id/MusicChoiceButton"
         app:layout_constraintTop_toBottomOf="@+id/MusicChoiceButton"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
 
@@ -59,8 +45,8 @@
         android:text="@string/FeedbackButtonString"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/textView"
-        app:layout_constraintRight_toRightOf="@id/textView"
+        app:layout_constraintEnd_toEndOf="@id/MusicChoiceButton"
+        app:layout_constraintStart_toStartOf="@id/MusicChoiceButton"
         app:layout_constraintTop_toBottomOf="@+id/AboutUsChoiceButton"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
 

@@ -60,12 +60,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 case TOKEN:
                     editor = getSharedPreferences("Therabeat", 0).edit();
+                    Log.d(TAG, response.getAccessToken());
                     editor.putString("token", response.getAccessToken());
                     editor.apply();
                     Log.d(TAG, playlistId);
-                    if (playlistId.equals("")) {
+//                    if (playlistId.equals("")) {
                         waitForUserInfo();
-                    }
+//                    }
                     Intent intent;
 //                    if (msharedPreferences.getFloat("beatFreq", 0.0F) == 0.0F) {
                     intent = new Intent(LoginActivity.this,

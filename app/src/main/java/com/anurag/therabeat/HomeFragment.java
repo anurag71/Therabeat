@@ -19,10 +19,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.anurag.therabeat.Database.AnxietyUsage;
 import com.anurag.therabeat.Database.AppDatabase;
 import com.anurag.therabeat.Database.AppExecutors;
-import com.anurag.therabeat.Database.Person;
-import com.anurag.therabeat.Database.PersonDao;
+import com.anurag.therabeat.Database.AttentionUsage;
+import com.anurag.therabeat.Database.MemoryUsage;
+import com.anurag.therabeat.Database.TotalUsage;
+import com.anurag.therabeat.Database.TotalUsageDao;
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
@@ -61,11 +64,11 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     View view;
     private SongService songService;
     private PlaylistService playlistService;
-    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
 
-    PersonDao appUsageDao;
+    TotalUsageDao appUsageDao;
     AppDatabase db;
 
     public HomeFragment() {
@@ -131,6 +134,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         myView.setLayoutManager(llm);
+        mSwipeRefreshLayout.setNestedScrollingEnabled(true);
         mSwipeRefreshLayout.post(new Runnable() {
 
             @Override
@@ -143,8 +147,19 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
             }
         });
 
+        myView.addOnScrollListener(new RecyclerView.OnScrollListener() { //Used to restrict collapsing of recycler view horizontal swipe and swipe refresh layout
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (llm.findFirstCompletelyVisibleItemPosition() == 0)
+                    mSwipeRefreshLayout.setEnabled(true);
+                else
+                    mSwipeRefreshLayout.setEnabled(false);
+            }
+        });
+
 
     }
+
 
     public void onRefresh() {
 
@@ -166,14 +181,50 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
             AppExecutors.getInstance().diskIO().execute(new Runnable() {
                 @Override
                 public void run() {
-                    Person p = db.personDao().loadPersonById(date);
+                    TotalUsage p = db.totalUsageDao().getTotalUsageByDate(date);
                     if (p == null) {
-                        db.personDao().insertPerson(new Person(date, 0));
+                        db.totalUsageDao().insertTotalUsage(new TotalUsage(date, 0));
                     }
-                    p = db.personDao().loadPersonById(date);
+                    p = db.totalUsageDao().getTotalUsageByDate(date);
                     Long usage = Long.valueOf(p.getTimeUsed());
                     usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
-                    db.personDao().insertPerson(new Person(date, usage.intValue()));
+                    db.totalUsageDao().insertTotalUsage(new TotalUsage(date, usage.intValue()));
+                }
+            });
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (beatFreq == 19.0) {
+                        MemoryUsage m;
+                        m = db.memoryUsageDao().getMemoryUsageByDate(date);
+                        if (m == null) {
+                            db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, 0));
+                        }
+                        m = db.memoryUsageDao().getMemoryUsageByDate(date);
+                        Long usage = Long.valueOf(m.getTimeUsed());
+                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, usage.intValue()));
+                    } else if (beatFreq == 6.00) {
+                        AttentionUsage attention;
+                        attention = db.attentionUsageDao().getAttentionUsageByDate(date);
+                        if (attention == null) {
+                            db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, 0));
+                        }
+                        attention = db.attentionUsageDao().getAttentionUsageByDate(date);
+                        Long usage = Long.valueOf(attention.getTimeUsed());
+                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, usage.intValue()));
+                    } else {
+                        AnxietyUsage anxiety;
+                        anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
+                        if (anxiety == null) {
+                            db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, 0));
+                        }
+                        anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
+                        Long usage = Long.valueOf(anxiety.getTimeUsed());
+                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, usage.intValue()));
+                    }
                 }
             });
 //            appUsageDao.insert(new AppUsageHistory(date,));

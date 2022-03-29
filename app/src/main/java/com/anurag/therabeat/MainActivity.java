@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +13,18 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.anurag.therabeat.Database.AnxietyUsage;
+import com.anurag.therabeat.Database.AppDatabase;
+import com.anurag.therabeat.Database.AppExecutors;
+import com.anurag.therabeat.Database.AttentionUsage;
+import com.anurag.therabeat.Database.MemoryUsage;
+import com.anurag.therabeat.Database.TotalUsage;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     final Fragment settingsFragment = new SettingsFragment();
     final Fragment appUsageFragment = new AppUsageFragment();
     Fragment active = homeFragment;
+    AppDatabase db;
 
     //Refresh waveform if user changes frequencies
 
@@ -41,11 +52,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean exception = false;
 	private String errorMsg = "";
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-			= new BottomNavigationView.OnNavigationItemSelectedListener() {
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-		@Override
-		public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-			switch (item.getItemId()) {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
                 case R.id.home:
                     fm.beginTransaction().hide(active).show(homeFragment).commit();
                     active = homeFragment;
@@ -57,25 +68,113 @@ public class MainActivity extends AppCompatActivity {
                     return true;
 
                 case R.id.appUsage:
-                    fm.beginTransaction().hide(active).show(appUsageFragment).commit();
+                    fm.beginTransaction().hide(active).detach(appUsageFragment).attach(appUsageFragment).show(appUsageFragment).commit();
                     active = appUsageFragment;
                     return true;
-
-                case R.id.settings:
-                    fm.beginTransaction().hide(active).show(settingsFragment).commit();
-                    active = settingsFragment;
-                    return true;
             }
-			return false;
-		}
-	};
+            return false;
+        }
+    };
+
+    @Override
+    public void onBackPressed() {
+        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(MainActivity.this);
+        dialog.setTitle("Exit Therabeat")
+                .setMessage("Would would you like to do?")
+
+                // Specifying a listener allows you to take an action before dismissing the dialog.
+                // The dialog is automatically dismissed when a dialog button is clicked.
+                .setPositiveButton("View Your Analytics", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        fm.beginTransaction().hide(active).show(appUsageFragment).commit();
+                        active = appUsageFragment;
+                        BottomNavigationView bottomNavigationView;
+                        bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+                        bottomNavigationView.setSelectedItemId(R.id.appUsage);
+                    }
+                })
+                .setNegativeButton("Switch Cognitive Mode", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MainActivity.super.onBackPressed();
+                    }
+                })
+                .setNeutralButton("Exit Therabeat", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finishAffinity();
+                    }
+                })
+
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .show();
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = AppDatabase.getInstance(this.getApplicationContext());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         initializeView();
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] a = {10800, 14400, 7200, 21600, 28800, 32400, 3600};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " totalusage " + a[j]);
+                    db.totalUsageDao().insertTotalUsage(new TotalUsage(date, a[j]));
+                }
+            }
+        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] b = {14400, 21600, 7200, 14400, 28800, 3600, 32400};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " memoryusage " + b[j]);
+                    db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, b[j]));
+                }
+            }
+        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] c = {21600, 32400, 14400, 28800, 14400, 3600, 7200};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " anxietyusage " + c[j]);
+                    db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, c[j]));
+                }
+            }
+        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] d = {32400, 3600, 28800, 14400, 21600, 7200, 14400};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("date", date + " attentionusage " + d[j]);
+                    db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, d[j]));
+                }
+            }
+        });
+
+
         msharedPreferences = this.getSharedPreferences("Therabeat", 0);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -86,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         fm.beginTransaction().add(R.id.main_container, searchFragment, "2").hide(searchFragment).commit();
-        fm.beginTransaction().add(R.id.main_container, settingsFragment, "3").hide(settingsFragment).commit();
         fm.beginTransaction().add(R.id.main_container, appUsageFragment, "3").hide(appUsageFragment).commit();
         fm.beginTransaction().add(R.id.main_container, homeFragment, "1").commit();
     }

@@ -111,10 +111,43 @@ public class Binaural implements BeatsEngine {
 
 	}
 
+	private void startFadeOut() {
+		volume = factor/100;
+		final int FADE_DURATION = 3000; //The duration of the fade
+		//The amount of time between volume changes. The smaller this is, the smoother the fade
+		final int FADE_INTERVAL = 1;
+		final float MAX_VOLUME = 0; //The volume will increase from 0 to 1
+		int numberOfSteps = FADE_DURATION / FADE_INTERVAL; //Calculate the number of fade steps
+		//Calculate by how much the volume changes each step
+		final float deltaVolume = volume / (float) numberOfSteps;
+
+		//Create a new Timer and Timer task to run the fading outside the main UI thread
+		final Timer timer = new Timer(true);
+		TimerTask timerTask = new TimerTask() {
+			@Override
+			public void run() {
+				fadeOutStep(deltaVolume); //Do a fade step
+				//Cancel and Purge the Timer if the desired volume has been reached
+				if (volume <= MAX_VOLUME) {
+					mAudio.stop();
+					timer.cancel();
+					timer.purge();
+				}
+			}
+		};
+
+		timer.schedule(timerTask, FADE_INTERVAL, FADE_INTERVAL);
+	}
+
+	private void fadeOutStep(float deltaVolume) {
+		mAudio.setVolume(volume);
+		volume -= deltaVolume;
+
+	}
+
 	public void stop() {
-		mAudio.setVolume(0.0f);
+		startFadeOut();
 		Helpers.napThread();
-		mAudio.stop();
 		isPlaying = false;
 		if (doRelease) {
 			mAudio.flush();
