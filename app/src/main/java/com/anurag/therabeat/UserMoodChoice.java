@@ -54,15 +54,15 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.MusicChoiceButton:
-                Log.d(TAG,"Anxiety Button pressed");
+                Log.d(TAG, "AnxietyUsage Button pressed");
                 editor.putFloat("beatFreq", 4.00F);
                 break;
             case R.id.AboutUsChoiceButton:
-                Log.d(TAG,"Attention Button pressed");
+                Log.d(TAG, "AttentionUsage Button pressed");
                 editor.putFloat("beatFreq", 6.00F);
                 break;
             case R.id.FeedbackChoiceButton:
-                Log.d(TAG, "Memory Button pressed");
+                Log.d(TAG, "MemoryUsage Button pressed");
                 editor.putFloat("beatFreq", 19.00F);
                 break;
             default:

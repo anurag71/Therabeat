@@ -107,6 +107,7 @@ public class SongService {
                     @Override
                     public void onResponse(JSONObject response) {
                         playlistssongs.clear();
+                        Log.d("sample", sharedPreferences.getString("playlistId", ""));
                         Gson gson = new Gson();
                         JSONArray jsonArray = response.optJSONArray("items");
                         for (int n = 0; n < jsonArray.length(); n++) {
@@ -138,6 +139,7 @@ public class SongService {
                             playlistImageView.setVisibility(View.VISIBLE);
                             playlistName.setVisibility(View.VISIBLE);
                         } else {
+                            Log.d("inside", "inaisw");
                             myView.setVisibility(View.GONE);
                             viewById.setVisibility(View.VISIBLE);
                             playlistName.setVisibility(View.GONE);

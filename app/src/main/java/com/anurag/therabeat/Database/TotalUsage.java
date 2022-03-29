@@ -4,15 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "person")
-public class Person {
+@Entity(tableName = "totalusage")
+public class TotalUsage {
     @PrimaryKey
     @NonNull
     String date;
     Integer timeUsed;
 
 
-    public Person(String date, Integer timeUsed) {
+    public TotalUsage(String date, Integer timeUsed) {
         this.date = date;
         this.timeUsed = timeUsed;
     }

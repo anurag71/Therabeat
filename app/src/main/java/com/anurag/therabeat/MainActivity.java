@@ -13,9 +13,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.anurag.therabeat.Database.AnxietyUsage;
 import com.anurag.therabeat.Database.AppDatabase;
 import com.anurag.therabeat.Database.AppExecutors;
-import com.anurag.therabeat.Database.Person;
+import com.anurag.therabeat.Database.AttentionUsage;
+import com.anurag.therabeat.Database.MemoryUsage;
+import com.anurag.therabeat.Database.TotalUsage;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
 
                 case R.id.appUsage:
-                    fm.beginTransaction().hide(active).show(appUsageFragment).commit();
+                    fm.beginTransaction().hide(active).detach(appUsageFragment).attach(appUsageFragment).show(appUsageFragment).commit();
                     active = appUsageFragment;
                     return true;
             }
@@ -118,17 +121,60 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
-
-                int[] a = {10800,14400,7200,21600,28800,32400,3600};
-                for(int i=-6,j=0;i<=0;i++,j++) {
-                    Calendar c = Calendar.getInstance();
-                    c.add(Calendar.DAY_OF_MONTH, i);
-                    Log.d("valueTest", String.valueOf(a[j]));
-                    String date = sdf.format(c.getTime());
-                    db.personDao().insertPerson(new Person(date, a[j]));
+                int[] a = {10800, 14400, 7200, 21600, 28800, 32400, 3600};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " totalusage " + a[j]);
+                    db.totalUsageDao().insertTotalUsage(new TotalUsage(date, a[j]));
                 }
             }
         });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] b = {14400, 21600, 7200, 14400, 28800, 3600, 32400};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " memoryusage " + b[j]);
+                    db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, b[j]));
+                }
+            }
+        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] c = {21600, 32400, 14400, 28800, 14400, 3600, 7200};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " anxietyusage " + c[j]);
+                    db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, c[j]));
+                }
+            }
+        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] d = {32400, 3600, 28800, 14400, 21600, 7200, 14400};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("date", date + " attentionusage " + d[j]);
+                    db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, d[j]));
+                }
+            }
+        });
+
+
         msharedPreferences = this.getSharedPreferences("Therabeat", 0);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);

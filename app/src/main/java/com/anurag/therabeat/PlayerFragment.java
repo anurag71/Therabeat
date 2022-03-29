@@ -19,9 +19,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.anurag.therabeat.Database.AnxietyUsage;
 import com.anurag.therabeat.Database.AppDatabase;
 import com.anurag.therabeat.Database.AppExecutors;
-import com.anurag.therabeat.Database.Person;
+import com.anurag.therabeat.Database.AttentionUsage;
+import com.anurag.therabeat.Database.MemoryUsage;
+import com.anurag.therabeat.Database.TotalUsage;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
@@ -136,14 +139,50 @@ public class PlayerFragment extends Fragment {
                     AppExecutors.getInstance().diskIO().execute(new Runnable() {
                         @Override
                         public void run() {
-                            Person p = db.personDao().loadPersonById(date);
+                            TotalUsage p = db.totalUsageDao().getTotalUsageByDate(date);
                             if (p == null) {
-                                db.personDao().insertPerson(new Person(date, 0));
+                                db.totalUsageDao().insertTotalUsage(new TotalUsage(date, 0));
                             }
-                            p = db.personDao().loadPersonById(date);
+                            p = db.totalUsageDao().getTotalUsageByDate(date);
                             Long usage = Long.valueOf(p.getTimeUsed());
                             usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
-                            db.personDao().insertPerson(new Person(date, usage.intValue()));
+                            db.totalUsageDao().insertTotalUsage(new TotalUsage(date, usage.intValue()));
+                        }
+                    });
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (beatFreq == 19.0) {
+                                MemoryUsage m;
+                                m = db.memoryUsageDao().getMemoryUsageByDate(date);
+                                if (m == null) {
+                                    db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, 0));
+                                }
+                                m = db.memoryUsageDao().getMemoryUsageByDate(date);
+                                Long usage = Long.valueOf(m.getTimeUsed());
+                                usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                                db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, usage.intValue()));
+                            } else if (beatFreq == 6.00) {
+                                AttentionUsage attention;
+                                attention = db.attentionUsageDao().getAttentionUsageByDate(date);
+                                if (attention == null) {
+                                    db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, 0));
+                                }
+                                attention = db.attentionUsageDao().getAttentionUsageByDate(date);
+                                Long usage = Long.valueOf(attention.getTimeUsed());
+                                usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                                db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, usage.intValue()));
+                            } else {
+                                AnxietyUsage anxiety;
+                                anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
+                                if (anxiety == null) {
+                                    db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, 0));
+                                }
+                                anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
+                                Long usage = Long.valueOf(anxiety.getTimeUsed());
+                                usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                                db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, usage.intValue()));
+                            }
                         }
                     });
 //                    Long usage = appUsageDao.fetchTimeForDate(date).getTimeUsed();
