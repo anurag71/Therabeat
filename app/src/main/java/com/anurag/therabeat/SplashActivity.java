@@ -52,7 +52,7 @@ public class SplashActivity extends AppCompatActivity {
 //                    if (msharedPreferences.getFloat("beatFreq", 0.0F) == 0.0F) {
                 intent = new Intent(SplashActivity.this,
 
-                        OpeningScreenActivity.class);
+                        LoginActivity.class);
 
 //                    } else {
 //                        intent = new Intent(LoginActivity.this,

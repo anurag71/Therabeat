@@ -21,6 +21,7 @@ import com.anurag.therabeat.Database.AttentionUsage;
 import com.anurag.therabeat.Database.MemoryUsage;
 import com.anurag.therabeat.Database.TotalUsage;
 import com.anurag.therabeat.Database.TotalUsageDao;
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
@@ -311,6 +312,7 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     public void buildChart() {
         LineDataSet barDataSet = new LineDataSet(values, "Time Used");
+//        barDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         barDataSet.setValueTextSize(20.0f);
         barDataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf(Math.round(value)));
         barDataSet.setValueTextColor(ContextCompat.getColor(getActivity(), R.color.white));
@@ -319,6 +321,7 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         chart.setData(barData);
         Description desc = new Description();
         desc.setText("");
+        chart.animateY(3000, Easing.EasingOption.EaseOutBack);
         chart.setScaleEnabled(false);
         chart.setDescription(desc);
         chart.animateXY(2000, 2000);
@@ -334,7 +337,7 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         XAxis xAxis = chart.getXAxis();
         xAxis.setTextSize(15);
         xAxis.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
         xAxis.setDrawGridLines(false);
         xAxis.setDrawLabels(true);
         xAxis.setValueFormatter(new IndexAxisValueFormatter((Collection<String>) axisLabel));

@@ -17,6 +17,13 @@
             android:background="@color/white"
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/Theme.Therabeat.NoActionBar"/>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/mainLayout"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/toolbar">
 
     <TextView
         android:id="@+id/testTextView1"
@@ -28,7 +35,7 @@
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/test1"
@@ -73,12 +80,22 @@
         app:layout_constraintTop_toBottomOf="@+id/testTextView2"
         app:layout_constraintBottom_toBottomOf="parent"
         android:thicknessRatio="1.9">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+            android:id="@+id/testFrame1" />
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
     <FrameLayout
+        android:id="@+id/searchFrame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="3dp"
-        android:id="@+id/testFrame1"/></androidx.cardview.widget.CardView>
-
-
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
