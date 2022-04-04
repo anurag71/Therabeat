@@ -65,6 +65,8 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
 
     private SharedPreferences.Editor editor;
     RecyclerViewAdapter adapter;
+
+    RecyclerViewAdapter searchadapter;
     private SharedPreferences msharedPreferences;
     private boolean exception = false;
     private String errorMsg = "";
@@ -72,6 +74,13 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
     AppDatabase db;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        wave = MainActivity.wave;
+
+    }
 
 
     TotalUsageDao appUsageDao;
@@ -90,26 +99,8 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        wave = MainActivity.wave;
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View inflatedView = inflater.inflate(R.layout.fragment_search, container, false);
-//        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
-        spotifyConnection = new SpotifyConnection(getActivity());
-        msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
-        AUTH_TOKEN = msharedPreferences.getString("token", "");
-        Log.d(TAG, AUTH_TOKEN);
-//		waitForUserInfo();
-        playlistService = new SongService(getActivity());
-        return inflatedView;
+    public void setData(String data) {
+        searchEditText.setText(data);
     }
 
     @Override
@@ -145,10 +136,36 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                if (s.length() != 0)
+                if (s.length() != 0) {
                     getPlaylists(s.toString());
+                } else {
+
+                    if (adapter != null) {
+                        adapter.myValues.clear();
+                        adapter.notifyDataSetChanged();
+                    }
+                }
             }
         });
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View inflatedView = inflater.inflate(R.layout.fragment_search, container, false);
+//        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
+        spotifyConnection = new SpotifyConnection(getActivity());
+        msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
+        AUTH_TOKEN = msharedPreferences.getString("token", "");
+        Log.d(TAG, AUTH_TOKEN);
+//		waitForUserInfo();
+        playlistService = new SongService(getActivity());
+        return inflatedView;
+    }
+
+    public interface OnDataPass {
+        public void onDataPass(String data);
     }
 
     private void getPlaylists(String searchQuery) {

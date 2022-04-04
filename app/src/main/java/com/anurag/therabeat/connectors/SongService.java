@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +44,7 @@ public class SongService {
     }
 
     public ArrayList<Song> searchSongs(Context context, String searchQuery, RecyclerViewAdapter.OnNoteListener listener, RecyclerViewAdapter adapter) {
+        Log.d("search", "search");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, endpoint + searchQuery, null, new Response.Listener<JSONObject>() {
 
@@ -75,6 +75,7 @@ public class SongService {
                             }
                         }
                         adapter.updateEmployeeListItems(playlists);
+                        Log.d("search", String.valueOf(playlists));
 
 //                            progressDialog.dismiss();
 
@@ -101,7 +102,7 @@ public class SongService {
         return playlists;
     }
 
-    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, SwipeRefreshLayout mSwipeRefreshLayout, TextView viewById, TextView playlistName, ImageView playlistImageView) {
+    public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, SwipeRefreshLayout mSwipeRefreshLayout, TextView viewById) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Request.Method.GET, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks", null, new Response.Listener<JSONObject>() {
                     @Override
@@ -136,14 +137,9 @@ public class SongService {
                             myView.setAdapter(new RecyclerViewAdapter(playlistssongs, listener, R.menu.playlist_list_songs_recycler_view_menu));
                             viewById.setVisibility(View.GONE);
                             myView.setVisibility(View.VISIBLE);
-                            playlistImageView.setVisibility(View.VISIBLE);
-                            playlistName.setVisibility(View.VISIBLE);
                         } else {
-                            Log.d("inside", "inaisw");
                             myView.setVisibility(View.GONE);
                             viewById.setVisibility(View.VISIBLE);
-                            playlistName.setVisibility(View.GONE);
-                            playlistImageView.setVisibility(View.GONE);
                         }
                         mSwipeRefreshLayout.setRefreshing(false);
 //                        adapter.updateEmployeeListItems(playlists);

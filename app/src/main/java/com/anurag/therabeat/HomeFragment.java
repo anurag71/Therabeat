@@ -164,7 +164,7 @@ public class HomeFragment extends Fragment implements RecyclerViewAdapter.OnNote
     public void onRefresh() {
 
         // Fetching data from server
-        playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.textView1), (TextView) view.findViewById(R.id.playlistName), playlistImageView);
+        playlistArrayList = songService.getPlaylistSongs(getActivity().getApplicationContext(), listener, myView, mSwipeRefreshLayout, (TextView) view.findViewById(R.id.NoSongsTextView));
         playlistService.getPlaylist(playlistImageView, getActivity().getApplicationContext());
     }
 

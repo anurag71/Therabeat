@@ -19,6 +19,7 @@
         android:padding="10dp"
         android:layout_height="?attr/actionBarSize"
         android:hint="Enter song name"
+        android:visibility="gone"
         android:textColorHint="@color/black"
         android:imeOptions="actionDone"
         android:inputType="text"
