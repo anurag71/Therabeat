@@ -78,7 +78,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        wave = MainActivity.wave;
+        wave = MainActivity2.wave;
 
     }
 

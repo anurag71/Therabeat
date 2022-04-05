@@ -123,7 +123,7 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
                 if (fromUser) {
-                    MainActivity.wave.setVolume(value);
+                    MainActivity2.wave.setVolume(value);
                 }
             }
         });
@@ -135,7 +135,7 @@ public class PlayerFragment extends Fragment {
                     play_pause_image_view.setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_round_play_arrow_24_white));
 
                     mSpotifyAppRemote.getPlayerApi().pause();
-                    MainActivity.wave.stop();
+                    MainActivity2.wave.stop();
                     AppExecutors.getInstance().diskIO().execute(new Runnable() {
                         @Override
                         public void run() {
@@ -312,7 +312,7 @@ public class PlayerFragment extends Fragment {
         ClosePlayerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.wave.stop();
+                MainActivity2.wave.stop();
                 mSpotifyAppRemote.getPlayerApi().pause();
                 getActivity().getSupportFragmentManager().beginTransaction().remove(PlayerFragment.this).commit();
             }
@@ -349,8 +349,8 @@ public class PlayerFragment extends Fragment {
 
     private void attemptStartwave(boolean calledFromSlider) {
         if (!calledFromSlider) {
-            if (!MainActivity.wave.getIsPlaying()) {
-                MainActivity.wave.start();
+            if (!MainActivity2.wave.getIsPlaying()) {
+                MainActivity2.wave.start();
                 msharedPreferences.edit().putLong("startTime", System.currentTimeMillis() / 1000).apply();
                 play_pause_image_view.setActivated(true);
                 play_pause_image_view.setChecked(true);
@@ -359,9 +359,9 @@ public class PlayerFragment extends Fragment {
                 play_pause_image_view.setChecked(false);
             }
         } else {
-            MainActivity.wave = new Binaural(200, beatFreq, amplitudeFactor);
-            if (MainActivity.wave.getIsPlaying()) {
-                MainActivity.wave.start();
+            MainActivity2.wave = new Binaural(200, beatFreq, amplitudeFactor);
+            if (MainActivity2.wave.getIsPlaying()) {
+                MainActivity2.wave.start();
             }
         }
     }

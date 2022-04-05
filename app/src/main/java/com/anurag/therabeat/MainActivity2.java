@@ -73,6 +73,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     private String TAG = getClass().getSimpleName().toString();
     private SongService songService;
     private PlaylistService playlistService;
+    String greeting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +85,6 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         searchLayout = findViewById(R.id.searchFrame);
         SpotifyConnection spotifyConnection = new SpotifyConnection(this);
         SpotifyAppRemote mSpotifyAppRemote = spotifyConnection.mSpotifyAppRemote;
-        String greeting;
         context = this;
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
@@ -102,8 +102,10 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         } else {
             greeting = "Good Morning";
         }
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(greeting);
+
+        Toolbar toolbar = findViewById(R.id.actualtoolbar);
+        toolbar.setTitle("Therabeat Playlist");
+
         setSupportActionBar(toolbar);
 
     }
@@ -111,6 +113,8 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     @Override
     protected void onResume() {
         super.onResume();
+        TextView GreetingTextView = findViewById(R.id.GreetingtextView);
+        GreetingTextView.setText(greeting);
         spotifyConnection = new SpotifyConnection(this);
 
         songService = new SongService(this);

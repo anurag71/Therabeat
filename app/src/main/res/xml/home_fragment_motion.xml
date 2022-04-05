@@ -2,18 +2,16 @@
 <MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <Transition
-        app:constraintSetEnd="@id/end"
-        app:constraintSetStart="@id/start"
-        app:duration="1000">
+        app:constraintSetEnd="@+id/end"
+        app:constraintSetStart="@+id/start"
+        app:duration="10000"
+        app:motionInterpolator="easeInOut">
+
         <OnSwipe
             app:dragDirection="dragDown"
-            app:maxAcceleration="100"
             app:touchAnchorId="@+id/playlistsongrecyclerview"
-            app:onTouchUp="stop"
             app:touchAnchorSide="top" />
-
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
@@ -27,12 +25,13 @@
         <Constraint
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="150dp"
             android:background="@color/white"
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/Theme.Therabeat.NoActionBar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_editor_absoluteX="-23dp" />
         <Constraint
             android:id="@+id/mainLayout"
             android:layout_width="match_parent"
@@ -41,6 +40,27 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:visibilityMode="ignore" />
+        <Constraint
+            android:id="@+id/searchFrame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:visibilityMode="ignore" />
+
+        <Constraint
+            android:id="@+id/floating_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="bottom|end"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
     </ConstraintSet>
     <ConstraintSet android:id="@+id/end">
 
@@ -63,5 +83,24 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        <Constraint
+            android:id="@+id/searchFrame"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:visibilityMode="ignore" />
+
+        <Constraint
+            android:id="@+id/floating_layout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="bottom|end"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </ConstraintSet>
 </MotionScene>

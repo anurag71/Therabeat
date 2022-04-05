@@ -8,8 +8,11 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/nav_settings"
-        android:title="@string/settings"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_round_settings_24_white" />
+        android:id="@+id/aboutusitem"
+        android:title="@string/AboutUsItem"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/feedbackitem"
+        android:title="@string/SendFeedbackItem"
+        app:showAsAction="never"/>
 </menu>

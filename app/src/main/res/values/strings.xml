@@ -48,5 +48,8 @@
     <string name="refresh_content_heading">Refresh Content</string>
     <string name="refresh_layout_description">Refresh the layout by swiping down from the top of Home Page and Analytics Page to view the latest data</string>
     <string name="logout_string">Click to diconnect your Spotify Account from Therabeat</string>
+    <string name="moreoptions">Options</string>
+    <string name="AboutUsItem">About Us</string>
+    <string name="SendFeedbackItem">Send Feedback</string>
 
 </resources>
