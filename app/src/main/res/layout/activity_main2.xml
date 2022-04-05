@@ -113,6 +113,8 @@
         android:layout_height="0dp"
         android:gravity="bottom|end"
         app:fabMenuStyle="popUp"
+        app:fabAnimateDuration="0"
+        app:fabAnimateMenu="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -124,7 +126,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fabColor="#acdace"
-            app:fabIcon="@drawable/ic_round_shuffle_24" />
+            android:text="Switch Mode" />
 
         <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
             android:id="@+id/fab2"
@@ -133,7 +135,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fabColor="#ff9c10"
-            app:fabIcon="@drawable/ic_round_shuffle_24"
             app:fabSizes="mini" />
 
         <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
@@ -143,7 +144,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fabColor="#0b7bc1"
-            app:fabIcon="@drawable/ic_round_shuffle_24"
             app:fabSizes="mini" />
 
         <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
@@ -153,9 +153,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fabColor="#ea201c"
-            app:fabIcon="@drawable/ic_round_shuffle_24"
             app:fabSizes="mini" />
 
     </com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout>
+
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

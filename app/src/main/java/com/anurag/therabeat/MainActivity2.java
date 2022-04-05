@@ -3,7 +3,12 @@ package com.anurag.therabeat;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -21,7 +26,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +40,8 @@ import com.anurag.therabeat.Database.TotalUsage;
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
+import com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton;
+import com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track;
 
@@ -74,6 +80,8 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     private SongService songService;
     private PlaylistService playlistService;
     String greeting;
+    FloatingLayout floatingLayout;
+    FloatingActionButton floatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,10 +121,11 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     @Override
     protected void onResume() {
         super.onResume();
+        floatingLayout = findViewById(R.id.floating_layout);
         TextView GreetingTextView = findViewById(R.id.GreetingtextView);
         GreetingTextView.setText(greeting);
         spotifyConnection = new SpotifyConnection(this);
-
+        floatingActionButton = findViewById(R.id.fab1);
         songService = new SongService(this);
         playlistService = new PlaylistService(this);
         AUTH_TOKEN = msharedPreferences.getString("token", "");
@@ -156,8 +165,26 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
             }
         });
 
+        floatingLayout.setOnMenuExpandedListener(new FloatingLayout.OnMenuExpandedListener() {
+            @Override
+            public void onMenuExpanded() {
+                floatingActionButton.setFabIcon(getDrawable(R.drawable.ic_round_close_24));
+                floatingActionButton.setText("");
+            }
+
+            @Override
+            public void onMenuCollapsed() {
+                floatingActionButton.setText("Switch Mode");
+                Drawable d = getResources().getDrawable(R.drawable.ic_round_close_24);
+                Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
+                transparentDrawable.setBounds(new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight()));
+                floatingActionButton.setFabIcon(transparentDrawable);
+            }
+        });
+
 
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -165,7 +192,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         final MenuItem searchItem = menu.findItem(R.id.action_search);
 
         if (searchItem != null) {
-            searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+            searchView = (SearchView) searchItem.getActionView();
             searchView.setOnCloseListener(new SearchView.OnCloseListener() {
                 @Override
                 public boolean onClose() {
@@ -209,9 +236,31 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
             });
             SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
+            return true;
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.aboutusitem:
+                Intent intent;
+                intent = new Intent(MainActivity2.this,
+
+                        AboutUsActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.feedbackitem:
+                Intent feedbackEmail = new Intent(Intent.ACTION_SEND);
+                feedbackEmail.setType("text/email");
+                feedbackEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"sampleutd@gmail.com"});
+                feedbackEmail.putExtra(Intent.EXTRA_SUBJECT, "Therabeat Feedback");
+                startActivity(Intent.createChooser(feedbackEmail, "Send Feedback:"));
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 

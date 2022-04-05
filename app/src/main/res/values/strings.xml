@@ -51,5 +51,6 @@
     <string name="moreoptions">Options</string>
     <string name="AboutUsItem">About Us</string>
     <string name="SendFeedbackItem">Send Feedback</string>
+    <string name="analytics">Analytics</string>
 
 </resources>
