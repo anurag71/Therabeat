@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity2"
     android:background="#F8F8FF"
-    app:layoutDescription="@xml/home_fragment_motion">
+    app:layoutDescription="@xml/home_fragment_motion"
+    android:id="@+id/RootLayout">
 
     <FrameLayout
         android:id="@+id/play_screen_frame_layout"
@@ -43,7 +44,6 @@
                 android:layout_marginLeft="15dp"
                 android:fontFamily="@font/roboto_slab_bold"
                 android:textSize="30sp"
-                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/actualtoolbar"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -98,6 +98,19 @@
 </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
+        android:id="@+id/AnalyticsFrame"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+    </FrameLayout>
+
+
+
+
+    <FrameLayout
         android:id="@+id/searchFrame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -107,6 +120,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+
     <com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout
         android:id="@+id/floating_layout"
         android:layout_width="0dp"
@@ -114,7 +128,7 @@
         android:gravity="bottom|end"
         app:fabMenuStyle="popUp"
         app:fabAnimateDuration="0"
-        app:fabAnimateMenu="false"
+        app:fabAnimateMenu="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -129,7 +143,7 @@
             android:text="Switch Mode" />
 
         <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
-            android:id="@+id/fab2"
+            android:id="@+id/AttentionActionButton"
             android:text="Attention"
             android:textColor="@color/white"
             android:layout_width="wrap_content"
@@ -138,7 +152,7 @@
             app:fabSizes="mini" />
 
         <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
-            android:id="@+id/fab3"
+            android:id="@+id/AnxietyActionButton"
             android:text="Anxiety"
             android:textColor="@color/white"
             android:layout_width="wrap_content"
@@ -147,7 +161,7 @@
             app:fabSizes="mini" />
 
         <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
-            android:id="@+id/fab4"
+            android:id="@+id/MemoryActionButton"
             android:text="Memory"
             android:textColor="@color/white"
             android:layout_width="wrap_content"
@@ -156,6 +170,5 @@
             app:fabSizes="mini" />
 
     </com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout>
-
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

@@ -1,5 +1,6 @@
 package com.anurag.therabeat;
 
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,13 +11,19 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +32,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,6 +48,8 @@ import com.anurag.therabeat.Database.TotalUsage;
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton;
 import com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -49,6 +59,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 
 public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdapter.OnNoteListener, SwipeRefreshLayout.OnRefreshListener {
@@ -82,26 +96,33 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     String greeting;
     FloatingLayout floatingLayout;
     FloatingActionButton floatingActionButton;
+    FloatingActionButton AnxietyActionButton;
+    FloatingActionButton AttentionActionButton;
+    FloatingActionButton MemoryActionButton;
+    private static final String SHOWCASE_ID = "FirstTimeTutorial";
+    boolean firstTime;
+    View SearchMenuItem;
+    View AnalyticsMenuItem;
 
+    PopupWindow popUp;
+    boolean click = true;
+    LinearLayout layout;
+
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        msharedPreferences = SingletonInstances.getInstance(this.getApplicationContext()).getSharedPreferencesInstance();
         super.onCreate(savedInstanceState);
-        wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
+        db = AppDatabase.getInstance(this.getApplicationContext());
         setContentView(R.layout.activity_main2);
-        mainLayout = findViewById(R.id.mainLayout);
-        searchLayout = findViewById(R.id.searchFrame);
-        SpotifyConnection spotifyConnection = new SpotifyConnection(this);
-        SpotifyAppRemote mSpotifyAppRemote = spotifyConnection.mSpotifyAppRemote;
-        context = this;
-        Date date = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        AppUsageFragment appUsageFragment = new AppUsageFragment();
+
 //        FrameLayout cardView = findViewById(R.id.testFrame);
 //        getSupportFragmentManager().beginTransaction().replace(R.id.testFrame, appUsageFragment).commit();
 //        getSupportFragmentManager().beginTransaction().replace(R.id.testFrame1,new HomeFragment()).commit();
 //        cardView.addView(appUsageFragment.getView());
+        context = this;
+        Date date = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         if (hour >= 12 && hour < 17) {
             greeting = "Good Afternoon";
@@ -115,17 +136,85 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         toolbar.setTitle("Therabeat Playlist");
 
         setSupportActionBar(toolbar);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] a = {10800, 14400, 7200, 21600, 28800, 32400, 3600};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " totalusage " + a[j]);
+                    db.totalUsageDao().insertTotalUsage(new TotalUsage(date, a[j]));
+                }
+            }
+        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] b = {14400, 21600, 7200, 14400, 28800, 3600, 32400};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " memoryusage " + b[j]);
+                    db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, b[j]));
+                }
+            }
+        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] c = {21600, 32400, 14400, 28800, 14400, 3600, 7200};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("hello", date + " anxietyusage " + c[j]);
+                    db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, c[j]));
+                }
+            }
+        });
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+                int[] d = {32400, 3600, 28800, 14400, 21600, 7200, 14400};
+                for (int i = -6, j = 0; i <= 0; i++, j++) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, i);
+                    String date = sdf.format(calendar.getTime());
+                    Log.d("date", date + " attentionusage " + d[j]);
+                    db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, d[j]));
+                }
+            }
+        });
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        msharedPreferences = SingletonInstances.getInstance(this.getApplicationContext()).getSharedPreferencesInstance();
+        msharedPreferences.edit().putFloat("beatFreq", 19.00F);
+        msharedPreferences.edit().apply();
+        wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
+        // popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
+        mainLayout = findViewById(R.id.mainLayout);
+        searchLayout = findViewById(R.id.searchFrame);
+        SpotifyConnection spotifyConnection = new SpotifyConnection(this);
+        SpotifyAppRemote mSpotifyAppRemote = spotifyConnection.mSpotifyAppRemote;
         floatingLayout = findViewById(R.id.floating_layout);
+
+        AnxietyActionButton = findViewById(R.id.AnxietyActionButton);
+        AttentionActionButton = findViewById(R.id.AttentionActionButton);
+        MemoryActionButton = findViewById(R.id.MemoryActionButton);
         TextView GreetingTextView = findViewById(R.id.GreetingtextView);
         GreetingTextView.setText(greeting);
         spotifyConnection = new SpotifyConnection(this);
-        floatingActionButton = findViewById(R.id.fab1);
         songService = new SongService(this);
         playlistService = new PlaylistService(this);
         AUTH_TOKEN = msharedPreferences.getString("token", "");
@@ -168,7 +257,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         floatingLayout.setOnMenuExpandedListener(new FloatingLayout.OnMenuExpandedListener() {
             @Override
             public void onMenuExpanded() {
-                floatingActionButton.setFabIcon(getDrawable(R.drawable.ic_round_close_24));
+                floatingActionButton.setFabIcon(getDrawable(R.drawable.ic_round_add_24));
                 floatingActionButton.setText("");
             }
 
@@ -182,15 +271,46 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
             }
         });
 
+        AttentionActionButton.setOnClickListener(view -> {
+            msharedPreferences.edit().putFloat("beatFreq", 6.00F);
+            msharedPreferences.edit().apply();
+            Toast.makeText(this, "Switched Cognitive Mode to Attention", Toast.LENGTH_LONG).show();
+        });
 
+        AnxietyActionButton.setOnClickListener(view -> {
+            msharedPreferences.edit().putFloat("beatFreq", 4.00F);
+            msharedPreferences.edit().apply();
+            Toast.makeText(this, "Switched Cognitive Mode to Anxiety", Toast.LENGTH_SHORT).show();
+        });
+
+        MemoryActionButton.setOnClickListener(view -> {
+            msharedPreferences.edit().putFloat("beatFreq", 19.00F);
+            msharedPreferences.edit().apply();
+            Toast.makeText(this, "Switched Cognitive Mode to Memory", Toast.LENGTH_SHORT).show();
+        });
     }
+
+
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.custom_menu, menu);
         final MenuItem searchItem = menu.findItem(R.id.action_search);
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
 
+                SearchMenuItem = findViewById(R.id.action_search);
+                AnalyticsMenuItem = findViewById(R.id.analytics);
+                firstTime = msharedPreferences.getBoolean("firstTime", true);
+                floatingActionButton = findViewById(R.id.fab1);
+                if(firstTime){
+                    presentShowcaseSequence();
+                }
+
+            }
+        });
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
             searchView.setOnCloseListener(new SearchView.OnCloseListener() {
@@ -258,6 +378,13 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                 feedbackEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"sampleutd@gmail.com"});
                 feedbackEmail.putExtra(Intent.EXTRA_SUBJECT, "Therabeat Feedback");
                 startActivity(Intent.createChooser(feedbackEmail, "Send Feedback:"));
+            case R.id.analytics:
+//                MotionLayout tabContent = findViewById(R.id.RootLayout);
+//
+//                View overlay = findViewById(R.id.overlay);
+                AppUsageFragment appUsageFragment = new AppUsageFragment();
+                appUsageFragment.show(getSupportFragmentManager(),"analyticsfrag");
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -271,7 +398,26 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
             searchLayout.setVisibility(View.GONE);
             searchView.onActionViewCollapsed();
         } else {
-            super.onBackPressed();
+            MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(this);
+            dialog.setTitle("Quit Therabeat")
+                    .setMessage("Are you sure you want to exit?")
+
+                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                    // The dialog is automatically dismissed when a dialog button is clicked.
+                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finishAffinity();
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    })
+
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .show();
         }
     }
 
@@ -396,5 +542,34 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         // Subscribe to PlayerState
 
     }
+
+    private void presentShowcaseSequence() {
+
+        ShowcaseConfig config = new ShowcaseConfig();
+        config.setDelay(500); // half second between each showcase view
+
+        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, SHOWCASE_ID);
+
+        sequence.setConfig(config);
+
+        sequence.addSequenceItem(
+                new MaterialShowcaseView.Builder(this)
+                        .setTarget(floatingActionButton)
+                        .setDismissText("GOT IT")
+                        .setContentText("Switch between different cognitive modes and change Binaural Frequency. The default mode is Memory.")
+                        .withOvalShape()
+                        .build()
+        );
+
+        sequence.addSequenceItem(SearchMenuItem, "Search for your favorite songs and add them to your playlist for quicker access.", "GOT IT");
+        sequence.addSequenceItem(AnalyticsMenuItem, "View your analytics for specific cognitive modes.", "GOT IT");
+
+        sequence.start();
+        msharedPreferences.edit().putBoolean("firstTime",false);
+        msharedPreferences.edit().apply();
+
+    }
+
+
 
 }

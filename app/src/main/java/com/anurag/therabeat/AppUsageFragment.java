@@ -1,17 +1,27 @@
 package com.anurag.therabeat;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -30,19 +40,28 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.android.material.button.MaterialButton;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.SelectableChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link AppUsageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemSelectedListener {
+public class AppUsageFragment extends DialogFragment implements SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemSelectedListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -62,9 +81,16 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
     Spinner spinner;
     List<Entry> values;
     AppDatabase db;
+    MaterialButton ShareButton;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    boolean FirstTimeAnalytics;
+
+    private static final String SHOWCASE_ID = "FirstTimeAnalytics";
+
+
+    private SharedPreferences msharedPreferences;
 
 
     public AppUsageFragment() {
@@ -92,12 +118,34 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
 //        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
+    }
+
+//    @Override
+//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//        FirstTimeAnalytics = msharedPreferences.getBoolean("firstTimeAnalytics", true);
+//        if(FirstTimeAnalytics){
+//            presentShowcaseSequence();
+//        }
+//    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Window window = getDialog().getWindow();
+        if(window == null) return;
+        WindowManager.LayoutParams params = window.getAttributes();
+        params.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        params.height = 1000;
+        window.setAttributes(params);
+        window.setBackgroundDrawableResource(android.R.color.transparent);
     }
 
     @Override
@@ -114,6 +162,7 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
+        ShareButton = inflatedView.findViewById(R.id.sharebutton);
         chart = inflatedView.findViewById(R.id.chart);
         spinner.setOnItemSelectedListener(this);
         mSwipeRefreshLayout = (SwipeRefreshLayout) inflatedView.findViewById(R.id.appUsageSwipeContainer);
@@ -132,6 +181,10 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
                 refreshGraph(spinner.getSelectedItem().toString());
             }
         });
+
+        ShareButton.setOnClickListener(view -> {
+            shareImageUri(saveImage(chart.getChartBitmap()));
+        });
         return inflatedView;
     }
 
@@ -145,7 +198,7 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         } else {
             Memory();
         }
-        buildChart();
+        buildChart(selectedOption);
         this.mSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -167,7 +220,7 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         } else {
             Memory();
         }
-        buildChart();
+        buildChart(selectedOption);
     }
 
     @Override
@@ -310,13 +363,13 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
     }
 
-    public void buildChart() {
-        LineDataSet barDataSet = new LineDataSet(values, "Time Used");
+    public void buildChart(String SelectedOption) {
+        LineDataSet barDataSet = new LineDataSet(values, "Time Used - "+ SelectedOption);
 //        barDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         barDataSet.setValueTextSize(20.0f);
         barDataSet.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> String.valueOf(Math.round(value)));
-        barDataSet.setValueTextColor(ContextCompat.getColor(getActivity(), R.color.white));
-        barDataSet.setColor(Color.rgb((int) 255, (int) 255, (int) 255));
+        barDataSet.setValueTextColor(ContextCompat.getColor(getActivity(), R.color.black));
+        barDataSet.setColor(Color.rgb((int) 0, (int) 0, (int) 0));
         LineData barData = new LineData(barDataSet);
         chart.setData(barData);
         Description desc = new Description();
@@ -333,11 +386,11 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         chart.getAxisLeft().setGranularity(1.0f);
         chart.getAxisLeft().setGranularityEnabled(true);
 
-        chart.getAxisLeft().setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
+        chart.getAxisLeft().setTextColor(ContextCompat.getColor(getActivity(), R.color.black));
         XAxis xAxis = chart.getXAxis();
-        xAxis.setTextSize(15);
-        xAxis.setTextColor(ContextCompat.getColor(getActivity(), R.color.white));
-        xAxis.setPosition(XAxis.XAxisPosition.TOP_INSIDE);
+        xAxis.setTextSize(11);
+        xAxis.setTextColor(ContextCompat.getColor(getActivity(), R.color.black));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setDrawLabels(true);
         xAxis.setValueFormatter(new IndexAxisValueFormatter((Collection<String>) axisLabel));
@@ -345,4 +398,57 @@ public class AppUsageFragment extends Fragment implements SwipeRefreshLayout.OnR
         xAxis.setGranularityEnabled(true);
         chart.invalidate();
     }
+
+    private void shareImageUri(Uri uri){
+        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setType("image/png");
+        startActivity(intent);
+    }
+
+
+    private Uri saveImage(Bitmap image) {
+        File imagesFolder = new File(getContext().getCacheDir(), "images");
+        Uri uri = null;
+        try {
+            imagesFolder.mkdirs();
+            File file = new File(imagesFolder, "shared_image.png");
+
+            FileOutputStream stream = new FileOutputStream(file);
+            image.compress(Bitmap.CompressFormat.PNG, 90, stream);
+            stream.flush();
+            stream.close();
+            uri = FileProvider.getUriForFile(getActivity(), "com.anurag.fileprovider", file);
+
+        } catch (IOException e) {
+            Log.d("Share error", "IOException while trying to write file for sharing: " + e.getMessage());
+        }
+        return uri;
+    }
+
+//    private void presentShowcaseSequence() {
+//
+//        ShowcaseConfig config = new ShowcaseConfig();
+//        config.setDelay(500); // half second between each showcase view
+//
+//        MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(getActivity(), SHOWCASE_ID);
+//
+//        sequence.setConfig(config);
+//
+//        sequence.addSequenceItem(
+//                new MaterialShowcaseView.Builder(getActivity())
+//                        .setTarget(spinner)
+//                        .setDismissText("GOT IT")
+//                        .setContentText("Switch between different cognitive modes and change Binaural Frequency. The default mode is Memory.")
+//                        .withOvalShape()
+//                        .build()
+//        );
+//
+//        sequence.addSequenceItem(ShareButton, "Search for your favorite songs and add them to your playlist for quicker access.", "GOT IT");
+//        sequence.start();
+//        msharedPreferences.edit().putBoolean("firstTimeAnalytics",false);
+//        msharedPreferences.edit().apply();
+//
+//    }
 }

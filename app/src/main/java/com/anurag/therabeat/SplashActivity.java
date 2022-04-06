@@ -41,13 +41,13 @@ public class SplashActivity extends AppCompatActivity {
         if(!exception) {
             msharedPreferences = this.getSharedPreferences("Therabeat", 0);
             firstTime = msharedPreferences.getBoolean("firstTime", true);
-            if (firstTime) {
-                Intent intent = new Intent(SplashActivity.this,
-
-                        WelcomeScreen.class);
-                startActivity(intent);
-                destroy();
-            } else {
+//            if (firstTime) {
+//                Intent intent = new Intent(SplashActivity.this,
+//
+//                        WelcomeScreen.class);
+//                startActivity(intent);
+//                destroy();
+//            } else {
                 Intent intent;
 //                    if (msharedPreferences.getFloat("beatFreq", 0.0F) == 0.0F) {
                 intent = new Intent(SplashActivity.this,
@@ -61,7 +61,7 @@ public class SplashActivity extends AppCompatActivity {
 //                    }
                 startActivity(intent);
                 destroy();
-            }
+//            }
         } else {
             displayError();
             if (errorMsg.contains(getResources().getString(R.string.spotifyError))) {
