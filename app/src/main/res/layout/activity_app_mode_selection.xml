@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AppModeSelection">
+
+    <Button
+        android:id="@+id/ConnectToSpotify"
+        android:layout_width="250dp"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="#2A86B6"
+        android:text="@string/MusicButtonString"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@id/UseOfflineButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
+
+    <Button
+        android:id="@+id/UseOfflineButton"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="#2A86B6"
+        android:text="@string/AboutUsButtonString"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/ConnectToSpotify"
+        app:layout_constraintStart_toStartOf="@id/ConnectToSpotify"
+        app:layout_constraintTop_toBottomOf="@+id/ConnectToSpotify"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.screen.portrait" />
 
@@ -24,8 +26,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
-        tools:replace="android:theme"
-        android:theme="@style/Theme.Therabeat">
+        android:theme="@style/Theme.Therabeat"
+        tools:replace="android:theme">
+        <activity
+            android:name=".AppModeSelection"
+            android:exported="false" />
+        <activity
+            android:name=".MusicListActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity2"
             android:exported="false" />

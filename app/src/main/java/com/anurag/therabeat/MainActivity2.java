@@ -19,15 +19,18 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -48,10 +51,13 @@ import com.anurag.therabeat.Database.TotalUsage;
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton;
 import com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout;
+import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
+import com.skydoves.powerspinner.PowerSpinnerView;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track;
 
@@ -67,7 +73,8 @@ import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdapter.OnNoteListener, SwipeRefreshLayout.OnRefreshListener {
 
-
+    ConstraintLayout appBarLayout;
+    Spinner spinner;
     SearchView searchView;
     Context context;
     ConstraintLayout mainLayout;
@@ -94,15 +101,11 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     private SongService songService;
     private PlaylistService playlistService;
     String greeting;
-    FloatingLayout floatingLayout;
-    FloatingActionButton floatingActionButton;
-    FloatingActionButton AnxietyActionButton;
-    FloatingActionButton AttentionActionButton;
-    FloatingActionButton MemoryActionButton;
     private static final String SHOWCASE_ID = "FirstTimeTutorial";
     boolean firstTime;
     View SearchMenuItem;
     View AnalyticsMenuItem;
+    PowerSpinnerView spinnerView;
 
     PopupWindow popUp;
     boolean click = true;
@@ -113,24 +116,47 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = AppDatabase.getInstance(this.getApplicationContext());
+        msharedPreferences = SingletonInstances.getInstance(this.getApplicationContext()).getSharedPreferencesInstance();
         setContentView(R.layout.activity_main2);
-
+// Specify the layout to use when the list of choices appears
 //        FrameLayout cardView = findViewById(R.id.testFrame);
 //        getSupportFragmentManager().beginTransaction().replace(R.id.testFrame, appUsageFragment).commit();
 //        getSupportFragmentManager().beginTransaction().replace(R.id.testFrame1,new HomeFragment()).commit();
 //        cardView.addView(appUsageFragment.getView());
         context = this;
-        Date date = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        if (hour >= 12 && hour < 17) {
-            greeting = "Good Afternoon";
-        } else if (hour >= 16 && hour < 24) {
-            greeting = "Good Evening";
-        } else {
-            greeting = "Good Morning";
+        appBarLayout = findViewById(R.id.toolbarlayout);
+        spinnerView=findViewById(R.id.cognitive_mode_selector);
+        spinnerView.setIsFocusable(false);
+        switch (msharedPreferences.getString("mode","Memory")){
+            case "Memory":
+                spinnerView.selectItemByIndex(0);
+                break;
+            case "Anxiety":
+                spinnerView.selectItemByIndex(1);
+                break;
+            case "Attention":
+                spinnerView.selectItemByIndex(2);
+                break;
         }
+
+        spinnerView.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener<String>() {
+            @Override public void onItemSelected(int oldIndex, @Nullable String oldItem, int newIndex, String newItem) {
+                switch (newIndex){
+                    case 0:
+                        appBarLayout.setBackgroundColor(R.color.light_green);
+                        Toast.makeText(context,newItem + " selected!",Toast.LENGTH_LONG).show();
+                        break;
+                    case 1:
+                        appBarLayout.setBackgroundColor(R.color.light_blue);
+                        Toast.makeText(context,newItem + " selected!",Toast.LENGTH_LONG).show();
+                        break;
+                    case 2:
+                        appBarLayout.setBackgroundColor(R.color.light_red);
+                        Toast.makeText(context,newItem + " selected!",Toast.LENGTH_LONG).show();
+                        break;
+                }
+            }
+        });
 
         Toolbar toolbar = findViewById(R.id.actualtoolbar);
         toolbar.setTitle("Therabeat Playlist");
@@ -198,7 +224,6 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     @Override
     protected void onResume() {
         super.onResume();
-        msharedPreferences = SingletonInstances.getInstance(this.getApplicationContext()).getSharedPreferencesInstance();
         msharedPreferences.edit().putFloat("beatFreq", 19.00F);
         msharedPreferences.edit().apply();
         wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
@@ -207,13 +232,6 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         searchLayout = findViewById(R.id.searchFrame);
         SpotifyConnection spotifyConnection = new SpotifyConnection(this);
         SpotifyAppRemote mSpotifyAppRemote = spotifyConnection.mSpotifyAppRemote;
-        floatingLayout = findViewById(R.id.floating_layout);
-
-        AnxietyActionButton = findViewById(R.id.AnxietyActionButton);
-        AttentionActionButton = findViewById(R.id.AttentionActionButton);
-        MemoryActionButton = findViewById(R.id.MemoryActionButton);
-        TextView GreetingTextView = findViewById(R.id.GreetingtextView);
-        GreetingTextView.setText(greeting);
         spotifyConnection = new SpotifyConnection(this);
         songService = new SongService(this);
         playlistService = new PlaylistService(this);
@@ -254,40 +272,40 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
             }
         });
 
-        floatingLayout.setOnMenuExpandedListener(new FloatingLayout.OnMenuExpandedListener() {
-            @Override
-            public void onMenuExpanded() {
-                floatingActionButton.setFabIcon(getDrawable(R.drawable.ic_round_add_24));
-                floatingActionButton.setText("");
-            }
-
-            @Override
-            public void onMenuCollapsed() {
-                floatingActionButton.setText("Switch Mode");
-                Drawable d = getResources().getDrawable(R.drawable.ic_round_close_24);
-                Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
-                transparentDrawable.setBounds(new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight()));
-                floatingActionButton.setFabIcon(transparentDrawable);
-            }
-        });
-
-        AttentionActionButton.setOnClickListener(view -> {
-            msharedPreferences.edit().putFloat("beatFreq", 6.00F);
-            msharedPreferences.edit().apply();
-            Toast.makeText(this, "Switched Cognitive Mode to Attention", Toast.LENGTH_LONG).show();
-        });
-
-        AnxietyActionButton.setOnClickListener(view -> {
-            msharedPreferences.edit().putFloat("beatFreq", 4.00F);
-            msharedPreferences.edit().apply();
-            Toast.makeText(this, "Switched Cognitive Mode to Anxiety", Toast.LENGTH_SHORT).show();
-        });
-
-        MemoryActionButton.setOnClickListener(view -> {
-            msharedPreferences.edit().putFloat("beatFreq", 19.00F);
-            msharedPreferences.edit().apply();
-            Toast.makeText(this, "Switched Cognitive Mode to Memory", Toast.LENGTH_SHORT).show();
-        });
+//        floatingLayout.setOnMenuExpandedListener(new FloatingLayout.OnMenuExpandedListener() {
+//            @Override
+//            public void onMenuExpanded() {
+//                floatingActionButton.setFabIcon(getDrawable(R.drawable.ic_round_add_24));
+//                floatingActionButton.setText("");
+//            }
+//
+//            @Override
+//            public void onMenuCollapsed() {
+//                floatingActionButton.setText("Switch Mode");
+//                Drawable d = getResources().getDrawable(R.drawable.ic_round_close_24);
+//                Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
+//                transparentDrawable.setBounds(new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight()));
+//                floatingActionButton.setFabIcon(transparentDrawable);
+//            }
+//        });
+//
+//        AttentionActionButton.setOnClickListener(view -> {
+//            msharedPreferences.edit().putFloat("beatFreq", 6.00F);
+//            msharedPreferences.edit().apply();
+//            Toast.makeText(this, "Switched Cognitive Mode to Attention", Toast.LENGTH_LONG).show();
+//        });
+//
+//        AnxietyActionButton.setOnClickListener(view -> {
+//            msharedPreferences.edit().putFloat("beatFreq", 4.00F);
+//            msharedPreferences.edit().apply();
+//            Toast.makeText(this, "Switched Cognitive Mode to Anxiety", Toast.LENGTH_SHORT).show();
+//        });
+//
+//        MemoryActionButton.setOnClickListener(view -> {
+//            msharedPreferences.edit().putFloat("beatFreq", 19.00F);
+//            msharedPreferences.edit().apply();
+//            Toast.makeText(this, "Switched Cognitive Mode to Memory", Toast.LENGTH_SHORT).show();
+//        });
     }
 
 
@@ -304,7 +322,6 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                 SearchMenuItem = findViewById(R.id.action_search);
                 AnalyticsMenuItem = findViewById(R.id.analytics);
                 firstTime = msharedPreferences.getBoolean("firstTime", true);
-                floatingActionButton = findViewById(R.id.fab1);
                 if(firstTime){
                     presentShowcaseSequence();
                 }
@@ -360,6 +377,8 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         }
         return super.onCreateOptionsMenu(menu);
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -554,7 +573,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
 
         sequence.addSequenceItem(
                 new MaterialShowcaseView.Builder(this)
-                        .setTarget(floatingActionButton)
+                        .setTarget(spinnerView)
                         .setDismissText("GOT IT")
                         .setContentText("Switch between different cognitive modes and change Binaural Frequency. The default mode is Memory.")
                         .withOvalShape()

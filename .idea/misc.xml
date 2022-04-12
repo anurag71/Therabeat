@@ -31,11 +31,14 @@
         <entry key="app/src/main/res/drawable-xxhdpi/button_custom.xml" value="0.11979166666666667" />
         <entry key="app/src/main/res/drawable/playcirclebutton.xml" value="0.13020833333333334" />
         <entry key="app/src/main/res/layout/activity_about_us.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_app_mode_selection.xml" value="0.103125" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_main2.xml" value="0.12189054726368159" />
+        <entry key="app/src/main/res/layout/activity_main2.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_music_list.xml" value="0.103125" />
         <entry key="app/src/main/res/layout/activity_settings.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_spotify_login.xml" value="0.1140625" />
+        <entry key="app/src/main/res/layout/activity_user_mood_choice.xml" value="0.1" />
         <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.1140625" />
         <entry key="app/src/main/res/layout/cardview.xml" value="0.1140625" />
         <entry key="app/src/main/res/layout/content_spotify_login.xml" value="0.1140625" />
@@ -45,6 +48,7 @@
         <entry key="app/src/main/res/layout/fragment_play_screen.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.1140625" />
         <entry key="app/src/main/res/layout/fragment_video.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/header_view.xml" value="0.103125" />
         <entry key="app/src/main/res/layout/spinner_item.xml" value="0.103125" />
         <entry key="app/src/main/res/menu/bottom_navigation_menu.xml" value="0.1140625" />
         <entry key="app/src/main/res/menu/custom_menu.xml" value="0.10364583333333334" />
