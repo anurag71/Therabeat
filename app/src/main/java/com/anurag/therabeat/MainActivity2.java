@@ -7,25 +7,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +27,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -51,11 +42,7 @@ import com.anurag.therabeat.Database.TotalUsage;
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton;
-import com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout;
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
 import com.skydoves.powerspinner.PowerSpinnerView;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -64,7 +51,6 @@ import com.spotify.protocol.types.Track;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
@@ -74,7 +60,6 @@ import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdapter.OnNoteListener, SwipeRefreshLayout.OnRefreshListener {
 
     ConstraintLayout appBarLayout;
-    Spinner spinner;
     SearchView searchView;
     Context context;
     ConstraintLayout mainLayout;
@@ -86,14 +71,14 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     SwipeRefreshLayout mSwipeRefreshLayout;
     ImageView playlistImageView;
     RecyclerViewAdapter.OnNoteListener listener;
-    View view;
     AppDatabase db;
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
     Calendar c = Calendar.getInstance();
     String date = sdf.format(c.getTime());
     // TODO: Rename and change types of parameters
     private RecyclerView myView;
-    private SharedPreferences msharedPreferences;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor editor;
     private String AUTH_TOKEN = "";
     private boolean isInitial = true;
     private boolean isPlaying = false;
@@ -116,7 +101,8 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         db = AppDatabase.getInstance(this.getApplicationContext());
-        msharedPreferences = SingletonInstances.getInstance(this.getApplicationContext()).getSharedPreferencesInstance();
+        mSharedPreferences = this.getSharedPreferences("Therabeat", 0);
+        editor = this.getSharedPreferences("Therabeat", 0).edit();
         setContentView(R.layout.activity_main2);
 // Specify the layout to use when the list of choices appears
 //        FrameLayout cardView = findViewById(R.id.testFrame);
@@ -125,36 +111,54 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
 //        cardView.addView(appUsageFragment.getView());
         context = this;
         appBarLayout = findViewById(R.id.toolbarlayout);
-        spinnerView=findViewById(R.id.cognitive_mode_selector);
+        spinnerView = findViewById(R.id.cognitive_mode_selector);
         spinnerView.setIsFocusable(false);
-        switch (msharedPreferences.getString("mode","Memory")){
+        String mode = mSharedPreferences.getString("mode", "");
+        switch (mode) {
             case "Memory":
                 spinnerView.selectItemByIndex(0);
+                appBarLayout.setBackgroundColor(Color.parseColor("#c8e6c9"));
+                getWindow().setStatusBarColor(Color.parseColor("#c8e6c9"));
                 break;
             case "Anxiety":
                 spinnerView.selectItemByIndex(1);
+                appBarLayout.setBackgroundColor(Color.parseColor("#bbdefb"));
+                getWindow().setStatusBarColor(Color.parseColor("#bbdefb"));
                 break;
             case "Attention":
                 spinnerView.selectItemByIndex(2);
+                appBarLayout.setBackgroundColor(Color.parseColor("#ffcdd2"));
+                getWindow().setStatusBarColor(Color.parseColor("#ffcdd2"));
                 break;
         }
 
         spinnerView.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener<String>() {
             @Override public void onItemSelected(int oldIndex, @Nullable String oldItem, int newIndex, String newItem) {
-                switch (newIndex){
+                switch (newIndex) {
+
                     case 0:
-                        appBarLayout.setBackgroundColor(R.color.light_green);
-                        Toast.makeText(context,newItem + " selected!",Toast.LENGTH_LONG).show();
+                        appBarLayout.setBackgroundColor(Color.parseColor("#c8e6c9"));
+                        getWindow().setStatusBarColor(Color.parseColor("#c8e6c9"));
+                        editor.putFloat("beatFreq", 19.00F);
+                        editor.putString("mode", "Memory");
+                        editor.apply();
                         break;
                     case 1:
-                        appBarLayout.setBackgroundColor(R.color.light_blue);
-                        Toast.makeText(context,newItem + " selected!",Toast.LENGTH_LONG).show();
+                        appBarLayout.setBackgroundColor(Color.parseColor("#bbdefb"));
+                        getWindow().setStatusBarColor(Color.parseColor("#bbdefb"));
+                        editor.putFloat("beatFreq", 4.00F);
+                        editor.putString("mode", "Anxiety");
+                        editor.apply();
                         break;
                     case 2:
-                        appBarLayout.setBackgroundColor(R.color.light_red);
-                        Toast.makeText(context,newItem + " selected!",Toast.LENGTH_LONG).show();
+                        appBarLayout.setBackgroundColor(Color.parseColor("#ffcdd2"));
+                        getWindow().setStatusBarColor(Color.parseColor("#ffcdd2"));
+                        editor.putFloat("beatFreq", 6.00F);
+                        editor.putString("mode", "Attention");
+                        editor.apply();
                         break;
                 }
+
             }
         });
 
@@ -224,9 +228,9 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     @Override
     protected void onResume() {
         super.onResume();
-        msharedPreferences.edit().putFloat("beatFreq", 19.00F);
-        msharedPreferences.edit().apply();
-        wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
+        editor.putFloat("beatFreq", 19.00F);
+        editor.apply();
+        wave = new Binaural(200, mSharedPreferences.getFloat("beatFreq", 0.0F), 50);
         // popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
         mainLayout = findViewById(R.id.mainLayout);
         searchLayout = findViewById(R.id.searchFrame);
@@ -235,7 +239,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         spotifyConnection = new SpotifyConnection(this);
         songService = new SongService(this);
         playlistService = new PlaylistService(this);
-        AUTH_TOKEN = msharedPreferences.getString("token", "");
+        AUTH_TOKEN = mSharedPreferences.getString("token", "");
         listener = this;
         playlistImageView = findViewById(R.id.playlistArtwork);
         myView = (RecyclerView) findViewById(R.id.playlistsongrecyclerview);
@@ -290,20 +294,20 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
 //        });
 //
 //        AttentionActionButton.setOnClickListener(view -> {
-//            msharedPreferences.edit().putFloat("beatFreq", 6.00F);
-//            msharedPreferences.edit().apply();
+//            editor.putFloat("beatFreq", 6.00F);
+//            editor.apply();
 //            Toast.makeText(this, "Switched Cognitive Mode to Attention", Toast.LENGTH_LONG).show();
 //        });
 //
 //        AnxietyActionButton.setOnClickListener(view -> {
-//            msharedPreferences.edit().putFloat("beatFreq", 4.00F);
-//            msharedPreferences.edit().apply();
+//            editor.putFloat("beatFreq", 4.00F);
+//            editor.apply();
 //            Toast.makeText(this, "Switched Cognitive Mode to Anxiety", Toast.LENGTH_SHORT).show();
 //        });
 //
 //        MemoryActionButton.setOnClickListener(view -> {
-//            msharedPreferences.edit().putFloat("beatFreq", 19.00F);
-//            msharedPreferences.edit().apply();
+//            editor.putFloat("beatFreq", 19.00F);
+//            editor.apply();
 //            Toast.makeText(this, "Switched Cognitive Mode to Memory", Toast.LENGTH_SHORT).show();
 //        });
     }
@@ -321,7 +325,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
 
                 SearchMenuItem = findViewById(R.id.action_search);
                 AnalyticsMenuItem = findViewById(R.id.analytics);
-                firstTime = msharedPreferences.getBoolean("firstTime", true);
+                firstTime = mSharedPreferences.getBoolean("firstTime", true);
                 if(firstTime){
                     presentShowcaseSequence();
                 }
@@ -448,7 +452,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     }
 
     public void onNoteClick(int position) {
-        float beatFreq = msharedPreferences.getFloat("beatFreq", 0.0f);
+        float beatFreq = mSharedPreferences.getFloat("beatFreq", 0.0f);
         Log.d(TAG, playlistArrayList.get(position).getName());
         togglePlay(beatFreq, playlistArrayList.get(position).getUri());
     }
@@ -466,7 +470,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                     }
                     p = db.totalUsageDao().getTotalUsageByDate(date);
                     Long usage = Long.valueOf(p.getTimeUsed());
-                    usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                    usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                     db.totalUsageDao().insertTotalUsage(new TotalUsage(date, usage.intValue()));
                 }
             });
@@ -481,7 +485,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                         }
                         m = db.memoryUsageDao().getMemoryUsageByDate(date);
                         Long usage = Long.valueOf(m.getTimeUsed());
-                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                         db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, usage.intValue()));
                     } else if (beatFreq == 6.00) {
                         AttentionUsage attention;
@@ -491,7 +495,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                         }
                         attention = db.attentionUsageDao().getAttentionUsageByDate(date);
                         Long usage = Long.valueOf(attention.getTimeUsed());
-                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                         db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, usage.intValue()));
                     } else {
                         AnxietyUsage anxiety;
@@ -501,7 +505,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                         }
                         anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
                         Long usage = Long.valueOf(anxiety.getTimeUsed());
-                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                         db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, usage.intValue()));
                     }
                 }
@@ -513,7 +517,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         Log.d(TAG, String.valueOf(beatFreq));
         wave.start();
         Long start = System.currentTimeMillis() / 1000;
-        msharedPreferences.edit().putLong("startTime", start).apply();
+        editor.putLong("startTime", start).apply();
         getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment) (new PlayerFragment())).setReorderingAllowed(true).commitAllowingStateLoss();
     }
 
@@ -557,7 +561,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                     }
                 });
         isPlaying = true;
-        msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
+        editor.putBoolean("isPlaying", isPlaying).apply();
         // Subscribe to PlayerState
 
     }
@@ -575,8 +579,8 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                 new MaterialShowcaseView.Builder(this)
                         .setTarget(spinnerView)
                         .setDismissText("GOT IT")
-                        .setContentText("Switch between different cognitive modes and change Binaural Frequency. The default mode is Memory.")
-                        .withOvalShape()
+                        .setContentText("Switch between different cognitive modes and change Binaural Frequency.")
+                        .withRectangleShape()
                         .build()
         );
 
@@ -584,8 +588,8 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         sequence.addSequenceItem(AnalyticsMenuItem, "View your analytics for specific cognitive modes.", "GOT IT");
 
         sequence.start();
-        msharedPreferences.edit().putBoolean("firstTime",false);
-        msharedPreferences.edit().apply();
+        editor.putBoolean("firstTime", false);
+        editor.apply();
 
     }
 

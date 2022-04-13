@@ -63,7 +63,8 @@ public class PlayerFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     SpotifyConnection spotifyConnection;
-    private SharedPreferences msharedPreferences;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor editor;
     private SpotifyAppRemote mSpotifyAppRemote;
 
     private float amplitudeFactor;
@@ -97,7 +98,9 @@ public class PlayerFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         db = AppDatabase.getInstance(getActivity().getApplicationContext());
-        msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
+        mSharedPreferences = getActivity().getSharedPreferences("Therabeat", 0);
+        editor = getActivity().getSharedPreferences("Therabeat", 0).edit();
+        Log.d("checkmode", String.valueOf(mSharedPreferences.getFloat("beatFreq", 0.0F)));
         View inflatedView = inflater.inflate(R.layout.fragment_player, container, false);
         play_pause_image_view = inflatedView.findViewById(R.id.play_pause_image_view);
         ClosePlayerButton = inflatedView.findViewById(R.id.closePlayerButton);
@@ -115,7 +118,7 @@ public class PlayerFragment extends Fragment {
         beatVolumeSlider.setValue(50);
 
         amplitudeFactor = beatVolumeSlider.getValue();
-        beatFreq = beatFreq = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance().getFloat("beatFreq", 0.0f);
+        beatFreq = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance().getFloat("beatFreq", 0.0f);
 
         updateTextViews();
 
@@ -145,7 +148,7 @@ public class PlayerFragment extends Fragment {
                             }
                             p = db.totalUsageDao().getTotalUsageByDate(date);
                             Long usage = Long.valueOf(p.getTimeUsed());
-                            usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                            usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                             db.totalUsageDao().insertTotalUsage(new TotalUsage(date, usage.intValue()));
                         }
                     });
@@ -160,7 +163,7 @@ public class PlayerFragment extends Fragment {
                                 }
                                 m = db.memoryUsageDao().getMemoryUsageByDate(date);
                                 Long usage = Long.valueOf(m.getTimeUsed());
-                                usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                                usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                                 db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, usage.intValue()));
                             } else if (beatFreq == 6.00) {
                                 AttentionUsage attention;
@@ -170,7 +173,7 @@ public class PlayerFragment extends Fragment {
                                 }
                                 attention = db.attentionUsageDao().getAttentionUsageByDate(date);
                                 Long usage = Long.valueOf(attention.getTimeUsed());
-                                usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                                usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                                 db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, usage.intValue()));
                             } else {
                                 AnxietyUsage anxiety;
@@ -180,7 +183,7 @@ public class PlayerFragment extends Fragment {
                                 }
                                 anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
                                 Long usage = Long.valueOf(anxiety.getTimeUsed());
-                                usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                                usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                                 db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, usage.intValue()));
                             }
                         }
@@ -188,7 +191,7 @@ public class PlayerFragment extends Fragment {
 //                    Long usage = appUsageDao.fetchTimeForDate(date).getTimeUsed();
 //                    appUsageDao.insert(new AppUsageHistory(date,usage + (end - start)));
                     isPlaying = false;
-                    msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
+                    editor.putBoolean("isPlaying", isPlaying).apply();
 //                    AlertDialog.Builder alertDialog;
 //                    alertDialog = new AlertDialog.Builder(getActivity());
 //                    alertDialog
@@ -211,7 +214,7 @@ public class PlayerFragment extends Fragment {
                         attemptStartwave(false);
                         mSpotifyAppRemote.getPlayerApi().resume();
                         isPlaying = true;
-                        msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
+                        editor.putBoolean("isPlaying", isPlaying).apply();
                     }
                     play_pause_image_view.setChecked(false);
                 }
@@ -351,7 +354,7 @@ public class PlayerFragment extends Fragment {
         if (!calledFromSlider) {
             if (!MainActivity2.wave.getIsPlaying()) {
                 MainActivity2.wave.start();
-                msharedPreferences.edit().putLong("startTime", System.currentTimeMillis() / 1000).apply();
+                editor.putLong("startTime", System.currentTimeMillis() / 1000).apply();
                 play_pause_image_view.setActivated(true);
                 play_pause_image_view.setChecked(true);
             } else {

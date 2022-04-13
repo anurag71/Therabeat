@@ -1,28 +1,32 @@
 package com.anurag.therabeat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.AudioViewHolder> {
 
     private List<AudioModel> audioDataSet;
     private LayoutInflater mInflater;
+    private List<AudioModel> itemsCopy;
     Context mContext;
 
-    public AudioListAdapter(Context context, List<AudioModel> audioModelList){
+    public AudioListAdapter(Context context, List<AudioModel> audioModelList) {
 
         mInflater = LayoutInflater.from(context);
         mContext = context;
         audioDataSet = audioModelList;
+        itemsCopy = new ArrayList<>();
+        itemsCopy.addAll(audioDataSet);
     }
 
     @NonNull
@@ -45,12 +49,27 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.Audi
         return audioDataSet.size();
     }
 
-    public static class AudioViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public void filter(String text) {
+        audioDataSet.clear();
+        if (text.isEmpty()) {
+            audioDataSet.addAll(itemsCopy);
+        } else {
+            text = text.toLowerCase();
+            for (AudioModel item : itemsCopy) {
+                if (item.getaName().toLowerCase().contains(text) || item.getaAlbum().toLowerCase().contains(text) || item.getaArtist().toLowerCase().contains(text)) {
+                    audioDataSet.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public static class AudioViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         Context nContext;
         List<AudioModel> audioList;
         public TextView mTextView;
 
-        public AudioViewHolder(Context context,List<AudioModel> audioModelList, View v) {
+        public AudioViewHolder(Context context, List<AudioModel> audioModelList, View v) {
             super(v);
             nContext = context;
             audioList = audioModelList;
@@ -60,16 +79,14 @@ public class AudioListAdapter extends RecyclerView.Adapter<AudioListAdapter.Audi
         }
 
         @Override
-        public void onClick(View view){
+        public void onClick(View view) {
 
             int itemPosition = getAdapterPosition();
 
-            Toast.makeText(nContext,"Clicked "+itemPosition, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(nContext, MusicPlayerActivity.class);
+            intent.putExtra("audio", audioList.get(itemPosition));
 
-//            Intent intent = new Intent(nContext,MusicPlayerActivity.class);
-//            intent.putExtra("audio",audioList.get(itemPosition));
-//
-//            nContext.startActivity(intent);
+            nContext.startActivity(intent);
 
         }
     }

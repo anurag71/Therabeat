@@ -31,8 +31,8 @@
     <string name="attentionString">Attention</string>
     <string name="networkError">Could not connect to the internet</string>
     <string name="welcomeMsg">Welcome</string>
-    <string name="MusicButtonString">Music</string>
-    <string name="AboutUsButtonString">About Us</string>
+    <string name="ConnectToSpotifyString">Connect to Spotify</string>
+    <string name="UseOfflineString">Use Offline</string>
     <string name="FeedbackButtonString">Give Feedback</string>
 
     <string name="AboutUsText">
@@ -52,5 +52,7 @@
     <string name="AboutUsItem">About Us</string>
     <string name="SendFeedbackItem">Send Feedback</string>
     <string name="analytics">Analytics</string>
+    <string name="MusicButtonString">Music</string>
+    <string name="AboutUsButtonString">About Us</string>
 
 </resources>

@@ -29,6 +29,9 @@
         android:theme="@style/Theme.Therabeat"
         tools:replace="android:theme">
         <activity
+            android:name=".MusicPlayerActivity"
+            android:exported="false" />
+        <activity
             android:name=".AppModeSelection"
             android:exported="false" />
         <activity

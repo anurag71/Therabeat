@@ -62,12 +62,11 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     private String TAG = getClass().getSimpleName().toString();
     private boolean isInitial = true;
     private boolean isPlaying = false;
-
-    private SharedPreferences.Editor editor;
     RecyclerViewAdapter adapter;
 
     RecyclerViewAdapter searchadapter;
-    private SharedPreferences msharedPreferences;
+    private SharedPreferences mSharedPreferences;
+    private SharedPreferences.Editor editor;
     private boolean exception = false;
     private String errorMsg = "";
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
@@ -156,8 +155,9 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         View inflatedView = inflater.inflate(R.layout.fragment_search, container, false);
 //        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
         spotifyConnection = new SpotifyConnection(getActivity());
-        msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
-        AUTH_TOKEN = msharedPreferences.getString("token", "");
+        mSharedPreferences = getActivity().getSharedPreferences("Therabeat", 0);
+        editor = getActivity().getSharedPreferences("Therabeat", 0).edit();
+        AUTH_TOKEN = mSharedPreferences.getString("token", "");
         Log.d(TAG, AUTH_TOKEN);
 //		waitForUserInfo();
         playlistService = new SongService(getActivity());
@@ -208,7 +208,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                     }
                 });
         isPlaying = true;
-        msharedPreferences.edit().putBoolean("isPlaying", isPlaying).apply();
+        editor.putBoolean("isPlaying", isPlaying).apply();
         // Subscribe to PlayerState
 
     }
@@ -219,7 +219,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
     }
 
     public void onNoteClick(int position) {
-        float beatFreq = msharedPreferences.getFloat("beatFreq", 0.0f);
+        float beatFreq = mSharedPreferences.getFloat("beatFreq", 0.0f);
         Log.d(TAG, playlistArrayList.get(position).getName());
         togglePlay(beatFreq, playlistArrayList.get(position).getUri());
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.play_screen_frame_layout, (Fragment) (new PlayerFragment())).setReorderingAllowed(true).commitAllowingStateLoss();
@@ -238,7 +238,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                     }
                     p = db.totalUsageDao().getTotalUsageByDate(date);
                     Long usage = Long.valueOf(p.getTimeUsed());
-                    usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                    usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                     db.totalUsageDao().insertTotalUsage(new TotalUsage(date, usage.intValue()));
                 }
             });
@@ -253,7 +253,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                         }
                         m = db.memoryUsageDao().getMemoryUsageByDate(date);
                         Long usage = Long.valueOf(m.getTimeUsed());
-                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                         db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, usage.intValue()));
                     } else if (beatFreq == 6.00) {
                         AttentionUsage attention;
@@ -263,7 +263,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                         }
                         attention = db.attentionUsageDao().getAttentionUsageByDate(date);
                         Long usage = Long.valueOf(attention.getTimeUsed());
-                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                         db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, usage.intValue()));
                     } else {
                         AnxietyUsage anxiety;
@@ -273,7 +273,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
                         }
                         anxiety = db.anxietyUsageDao().getAnxietyUsageByDate(date);
                         Long usage = Long.valueOf(anxiety.getTimeUsed());
-                        usage = usage + ((System.currentTimeMillis() / 1000) - msharedPreferences.getLong("startTime", (long) 0.0));
+                        usage = usage + ((System.currentTimeMillis() / 1000) - mSharedPreferences.getLong("startTime", (long) 0.0));
                         db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, usage.intValue()));
                     }
                 }
@@ -282,7 +282,7 @@ public class SearchFragment extends Fragment implements RecyclerViewAdapter.OnNo
         Log.d(TAG, String.valueOf(beatFreq));
         wave.start();
         Long start = System.currentTimeMillis() / 1000;
-        msharedPreferences.edit().putLong("startTime", start).apply();
+        editor.putLong("startTime", start).apply();
     }
 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
