@@ -105,85 +105,52 @@ package com.anurag.therabeat;//package com.anurag.therabeat;
 //
 //}
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreferenceCompat;
 
-import com.anurag.therabeat.connectors.SpotifyConnection;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.sdk.android.auth.AuthorizationClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-public class SettingsFragment extends Fragment {
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    View view;
-
-    public static SettingsFragment newInstance(String param1, String param2) {
-        SettingsFragment fragment = new SettingsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+public class Settings extends PreferenceFragmentCompat {
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        appUsageDao = SingletonInstances.getInstance(getActivity().getApplicationContext()).getDbInstance().appUsageDao();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.fragment_settings, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        this.view = view;
-        CardView logout = view.findViewById(R.id.logoutCard);
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor editor = getActivity().getSharedPreferences("Therabeat", 0).edit();
-                editor.remove("firstTime");
-                editor.remove("playlistId");
-                editor.remove("token");
-                editor.putBoolean("isPlaying", false);
-                editor.apply();
-                SpotifyConnection spotifyConnection = new SpotifyConnection(getActivity().getApplicationContext());
-                spotifyConnection.getPlayerInstance(getActivity());
-                spotifyConnection.mSpotifyAppRemote.getPlayerApi().pause();
-                MainActivity.wave.release();
-                SpotifyAppRemote.disconnect(spotifyConnection.mSpotifyAppRemote);
-
-                AuthorizationClient.clearCookies(getContext());
-                Intent intent = new Intent(getActivity(), SplashActivity.class);
-                startActivity(intent);
-                getActivity().finish();
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.activity_settings, rootKey);
+        SwitchPreferenceCompat analytics = findPreference("notifications_analytics");
+        analytics.setChecked(getPreferenceManager().getSharedPreferences().getBoolean("notifications_analytics", false));
+        analytics.setOnPreferenceChangeListener((preference, newValue) -> {
+            if ((Boolean) newValue) {
+                FirebaseMessaging.getInstance().subscribeToTopic("UsageReminders")
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(getContext(), "Successfully Subscribed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            } else {
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("UsageReminders")
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                Toast.makeText(getContext(), "Successfully Unsubscribed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
+            return true;
         });
     }
-}
 
-//        if (countingPreference != null) {
-//            countingPreference.setSummaryProvider(new Preference.SummaryProvider<EditTextPreference>() {
-//                @Override
-//                public CharSequence provideSummary(EditTextPreference preference) {
-//                    String text = Long.toString(getActivity().getSharedPreferences("Therabeat", 0).getLong("timeListened", (long) 0.0));
-//                    return text;
-//                }
-//            });
-//        }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.setBackgroundColor(getResources().getColor(R.color.white));
+        return view;
+    }
+}

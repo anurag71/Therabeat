@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -31,20 +32,34 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.slider.Slider;
 
 import java.io.File;
 import java.util.Formatter;
 import java.util.Locale;
 
-public class MusicPlayerActivity extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link BlankFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class BlankFragment extends Fragment {
 
     private static final String TAG = "MainActivity";
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
     public static BeatsEngine wave;
     AudioModel audio;
+    TextView TrackName;
+    TextView ArtistName;
+    TextView TrackNameMin;
+    TextView ArtistNameMin;
     private SimpleExoPlayer exoPlayer;
     private SeekBar seekPlayerProgress;
     private Handler handler;
-    TextView TrackName;
+    private MaterialButton btnPlay;
     private TextView txtCurrentTime, txtEndTime;
     private boolean isPlaying = false;
     private ExoPlayer.EventListener eventListener = new ExoPlayer.EventListener() {
@@ -90,36 +105,61 @@ public class MusicPlayerActivity extends Fragment {
         }
     };
     private SharedPreferences msharedPreferences;
-    TextView ArtistName;
-    TextView TrackNameMin;
-    TextView ArtistNameMin;
-    private MaterialButton btnPlay;
+    private Slider beatVolumeSlider;
+    private Button ClosePlayerButton;
+    private SharedPreferences mSharedPreferences;
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
 
-    public MusicPlayerActivity() {
+    public BlankFragment() {
         // Required empty public constructor
     }
 
-    public static MusicPlayerActivity newInstance(AudioModel audio) {
-        MusicPlayerActivity fragment = new MusicPlayerActivity();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("audio", audio);
-
-        fragment.setArguments(bundle);
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment BlankFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static BlankFragment newInstance(AudioModel param2) {
+        BlankFragment fragment = new BlankFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_PARAM1, param2);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-
-        Log.d("here", "here");
-
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            audio = (AudioModel) getArguments().getSerializable(ARG_PARAM1);
+            Log.d("name", audio.getaName());
+        }
+        mSharedPreferences = getActivity().getSharedPreferences("Therabeat", 0);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View inflatedView = inflater.inflate(R.layout.activity_music_player, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View inflatedView = inflater.inflate(R.layout.fragment_blank, container, false);
+//        CardView PlayerBackground = inflatedView.findViewById(R.id.player_background_view);
+//        String mode = mSharedPreferences.getString("mode", "Memory");
+//        switch (mode) {
+//            case "Memory":
+//                PlayerBackground.setBackgroundColor(Color.parseColor("#c8e6c9"));
+//                break;
+//            case "Anxiety":
+//                PlayerBackground.setBackgroundColor(Color.parseColor("#bbdefb"));
+//                break;
+//            case "Attention":
+//                PlayerBackground.setBackgroundColor(Color.parseColor("#ffcdd2"));
+//                break;
+//        }
         TrackName = inflatedView.findViewById(R.id.audio_name_text_view);
         ArtistName = inflatedView.findViewById(R.id.artist_name_text_view);
         TrackNameMin = inflatedView.findViewById(R.id.audio_name_text_view_min);
@@ -128,16 +168,45 @@ public class MusicPlayerActivity extends Fragment {
         txtEndTime = (TextView) inflatedView.findViewById(R.id.player_end_time);
         btnPlay = inflatedView.findViewById(R.id.btnPlay);
         seekPlayerProgress = (SeekBar) inflatedView.findViewById(R.id.mediacontroller_progress);
+        beatVolumeSlider = inflatedView.findViewById(R.id.beatVolumeSlider);
+        ClosePlayerButton = inflatedView.findViewById(R.id.closePlayerButton);
+        beatVolumeSlider.setValue(50);
         msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
-        File file = new File(audio.getaPath());
-        prepareExoPlayerFromFileUri(Uri.fromFile(file));
+        return inflatedView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         TrackName.setText(audio.getaName());
         ArtistName.setText(audio.getaArtist());
         TrackNameMin.setText(audio.getaName());
         ArtistNameMin.setText(audio.getaArtist());
         TrackName.setSelected(true);
-        return super.onCreateView(inflater, container, savedInstanceState);
+        File file = new File(audio.getaPath());
+        prepareExoPlayerFromFileUri(Uri.fromFile(file));
+        beatVolumeSlider.addOnChangeListener(new Slider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                if (fromUser) {
+                    wave.setVolume(value);
+                }
+            }
+        });
+
+        ClosePlayerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (exoPlayer != null) {
+                    exoPlayer.setPlayWhenReady(false);
+                    exoPlayer.stop();
+                    wave.stop();
+                    exoPlayer.seekTo(0);
+                }
+                getActivity().getSupportFragmentManager().beginTransaction().remove(BlankFragment.this).commit();
+            }
+        });
     }
 
     private void prepareExoPlayerFromFileUri(Uri uri) {

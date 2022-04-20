@@ -31,6 +31,7 @@
 
     <Button
         android:id="@+id/ConnectToSpotify"
+        style="@style/Widget.App.Button.OutlinedButton.IconOnly"
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="5dp"
@@ -47,6 +48,7 @@
 
     <Button
         android:id="@+id/UseOfflineButton"
+        style="@style/Widget.App.Button.OutlinedButton.IconOnly"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="5dp"
@@ -59,5 +61,51 @@
         app:layout_constraintStart_toStartOf="@id/ConnectToSpotify"
         app:layout_constraintTop_toBottomOf="@+id/ConnectToSpotify"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ButtonLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/UseOfflineButton">
+
+        <Button
+            android:id="@+id/InfoButton"
+            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:backgroundTint="#006200EE"
+            app:icon="@drawable/ic_round_info_48"
+            app:layout_constraintEnd_toStartOf="@id/SettingsButton"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
+
+        <Button
+            android:id="@+id/SettingsButton"
+            style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="#006200EE"
+            android:textColor="#FFFFFF"
+            app:icon="@drawable/ic_round_settings_48"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/InfoButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+
+        android:id="@+id/settings_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

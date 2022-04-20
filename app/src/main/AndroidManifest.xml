@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -19,7 +20,7 @@
     <uses-feature android:name="android.hardware.screen.portrait" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:configChanges="orientation|screenSize"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -29,14 +30,13 @@
         android:theme="@style/Theme.Therabeat"
         tools:replace="android:theme">
         <activity
-            android:name=".MusicPlayerActivity"
-            android:exported="false" />
-        <activity
             android:name=".AppModeSelection"
             android:exported="false" />
         <activity
             android:name=".MusicListActivity"
-            android:exported="false" />
+            android:exported="true">
+
+        </activity>
         <activity
             android:name=".MainActivity2"
             android:exported="false" />
@@ -79,6 +79,13 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_round_play_arrow_24_white" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/light_red" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.anurag.fileprovider"
@@ -88,6 +95,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

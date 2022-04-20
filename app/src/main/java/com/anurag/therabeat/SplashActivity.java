@@ -5,11 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -29,6 +33,21 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        adjustFontScale(getResources().getConfiguration());
+
+    }
+
+    public void adjustFontScale(Configuration configuration) {
+        Log.d("font", String.valueOf(configuration.fontScale));
+        if (configuration.fontScale > 1.30) {
+            Log.d("font", String.valueOf(configuration.fontScale));
+            configuration.fontScale = 1.30f;
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+            wm.getDefaultDisplay().getMetrics(metrics);
+            metrics.scaledDensity = configuration.fontScale * metrics.density;
+            getBaseContext().getResources().updateConfiguration(configuration, metrics);
+        }
     }
 
     @Override
@@ -38,7 +57,7 @@ public class SplashActivity extends AppCompatActivity {
         PackageManager pm = this.getPackageManager();
         isPackageInstalled("com.spotify.music", pm);
         isNetworkAvailable();
-        if(!exception) {
+        if (!exception) {
             msharedPreferences = this.getSharedPreferences("Therabeat", 0);
             firstTime = msharedPreferences.getBoolean("firstTime", true);
 //            if (firstTime) {
@@ -48,19 +67,24 @@ public class SplashActivity extends AppCompatActivity {
 //                startActivity(intent);
 //                destroy();
 //            } else {
-                Intent intent;
+            Intent intent;
 //                    if (msharedPreferences.getFloat("beatFreq", 0.0F) == 0.0F) {
-                intent = new Intent(SplashActivity.this,
+            intent = new Intent(SplashActivity.this,
 
-                        AppModeSelection.class);
+                    AppModeSelection.class);
 
 //                    } else {
 //                        intent = new Intent(LoginActivity.this,
 //
 //                                MainActivity.class);
 //                    }
-                startActivity(intent);
-                destroy();
+            if (getIntent().getExtras() != null) {
+                Bundle bundle = getIntent().getExtras();
+                Log.d("value", bundle.getString("pushnotification"));
+                intent.putExtra("pushnotification", "true");
+            }
+            startActivity(intent);
+            destroy();
 //            }
         } else {
             displayError();

@@ -7,6 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +45,6 @@ import com.anurag.therabeat.Database.TotalUsage;
 import com.anurag.therabeat.connectors.PlaylistService;
 import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
 import com.skydoves.powerspinner.PowerSpinnerView;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -58,6 +60,7 @@ import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 
 public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdapter.OnNoteListener, SwipeRefreshLayout.OnRefreshListener {
+
 
     ConstraintLayout appBarLayout;
     SearchView searchView;
@@ -86,8 +89,8 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     private SongService songService;
     private PlaylistService playlistService;
     String greeting;
-    private static final String SHOWCASE_ID = "FirstTimeTutorial";
-    boolean firstTime;
+    private static final String SHOWCASE_ID = "FirstTimeSpotify";
+    boolean firstTimeSpotify;
     View SearchMenuItem;
     View AnalyticsMenuItem;
     PowerSpinnerView spinnerView;
@@ -95,6 +98,42 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     PopupWindow popUp;
     boolean click = true;
     LinearLayout layout;
+    boolean isConnected = false;
+    NetworkRequest networkRequest = new NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .build();
+    ConnectivityManager connectivityManager;
+    FrameLayout ErrorFrame;
+    private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+        @Override
+        public void onAvailable(@NonNull Network network) {
+            super.onAvailable(network);
+            isConnected = true;
+            runOnUiThread(() -> {
+                ErrorFrame.setVisibility(View.GONE);
+            });
+            Log.d("Network State", "Network Connected");
+        }
+
+        @Override
+        public void onLost(@NonNull Network network) {
+            super.onLost(network);
+            isConnected = false;
+            Log.d("Network State", "Network Lost");
+            runOnUiThread(() -> {
+                ErrorFrame.setVisibility(View.VISIBLE);
+            });
+            Log.d("hello", String.valueOf(ErrorFrame.getVisibility()));
+        }
+
+        @Override
+        public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
+            super.onCapabilitiesChanged(network, networkCapabilities);
+            final boolean unmetered = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+        }
+    };
 
     @SuppressLint("ResourceType")
     @Override
@@ -103,7 +142,10 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         db = AppDatabase.getInstance(this.getApplicationContext());
         mSharedPreferences = this.getSharedPreferences("Therabeat", 0);
         editor = this.getSharedPreferences("Therabeat", 0).edit();
+        connectivityManager =
+                (ConnectivityManager) getSystemService(ConnectivityManager.class);
         setContentView(R.layout.activity_main2);
+        ErrorFrame = findViewById(R.id.ErrorFrame);
 // Specify the layout to use when the list of choices appears
 //        FrameLayout cardView = findViewById(R.id.testFrame);
 //        getSupportFragmentManager().beginTransaction().replace(R.id.testFrame, appUsageFragment).commit();
@@ -113,7 +155,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         appBarLayout = findViewById(R.id.toolbarlayout);
         spinnerView = findViewById(R.id.cognitive_mode_selector);
         spinnerView.setIsFocusable(false);
-        String mode = mSharedPreferences.getString("mode", "");
+        String mode = mSharedPreferences.getString("mode", "Memory");
         switch (mode) {
             case "Memory":
                 spinnerView.selectItemByIndex(0);
@@ -163,71 +205,16 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         });
 
         Toolbar toolbar = findViewById(R.id.actualtoolbar);
-        toolbar.setTitle("Therabeat Playlist");
+        toolbar.setTitle("Therabeat");
 
         setSupportActionBar(toolbar);
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
-                int[] a = {10800, 14400, 7200, 21600, 28800, 32400, 3600};
-                for (int i = -6, j = 0; i <= 0; i++, j++) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.DAY_OF_MONTH, i);
-                    String date = sdf.format(calendar.getTime());
-                    Log.d("hello", date + " totalusage " + a[j]);
-                    db.totalUsageDao().insertTotalUsage(new TotalUsage(date, a[j]));
-                }
-            }
-        });
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
-                int[] b = {14400, 21600, 7200, 14400, 28800, 3600, 32400};
-                for (int i = -6, j = 0; i <= 0; i++, j++) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.DAY_OF_MONTH, i);
-                    String date = sdf.format(calendar.getTime());
-                    Log.d("hello", date + " memoryusage " + b[j]);
-                    db.memoryUsageDao().insertMemoryUsage(new MemoryUsage(date, b[j]));
-                }
-            }
-        });
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
-                int[] c = {21600, 32400, 14400, 28800, 14400, 3600, 7200};
-                for (int i = -6, j = 0; i <= 0; i++, j++) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.DAY_OF_MONTH, i);
-                    String date = sdf.format(calendar.getTime());
-                    Log.d("hello", date + " anxietyusage " + c[j]);
-                    db.anxietyUsageDao().insertAnxietyUsage(new AnxietyUsage(date, c[j]));
-                }
-            }
-        });
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
-                int[] d = {32400, 3600, 28800, 14400, 21600, 7200, 14400};
-                for (int i = -6, j = 0; i <= 0; i++, j++) {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.DAY_OF_MONTH, i);
-                    String date = sdf.format(calendar.getTime());
-                    Log.d("date", date + " attentionusage " + d[j]);
-                    db.attentionUsageDao().insertAttentionUsage(new AttentionUsage(date, d[j]));
-                }
-            }
-        });
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        connectivityManager.requestNetwork(networkRequest, networkCallback);
         editor.putFloat("beatFreq", 19.00F);
         editor.apply();
         wave = new Binaural(200, mSharedPreferences.getFloat("beatFreq", 0.0F), 50);
@@ -275,41 +262,6 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                     mSwipeRefreshLayout.setEnabled(false);
             }
         });
-
-//        floatingLayout.setOnMenuExpandedListener(new FloatingLayout.OnMenuExpandedListener() {
-//            @Override
-//            public void onMenuExpanded() {
-//                floatingActionButton.setFabIcon(getDrawable(R.drawable.ic_round_add_24));
-//                floatingActionButton.setText("");
-//            }
-//
-//            @Override
-//            public void onMenuCollapsed() {
-//                floatingActionButton.setText("Switch Mode");
-//                Drawable d = getResources().getDrawable(R.drawable.ic_round_close_24);
-//                Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
-//                transparentDrawable.setBounds(new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight()));
-//                floatingActionButton.setFabIcon(transparentDrawable);
-//            }
-//        });
-//
-//        AttentionActionButton.setOnClickListener(view -> {
-//            editor.putFloat("beatFreq", 6.00F);
-//            editor.apply();
-//            Toast.makeText(this, "Switched Cognitive Mode to Attention", Toast.LENGTH_LONG).show();
-//        });
-//
-//        AnxietyActionButton.setOnClickListener(view -> {
-//            editor.putFloat("beatFreq", 4.00F);
-//            editor.apply();
-//            Toast.makeText(this, "Switched Cognitive Mode to Anxiety", Toast.LENGTH_SHORT).show();
-//        });
-//
-//        MemoryActionButton.setOnClickListener(view -> {
-//            editor.putFloat("beatFreq", 19.00F);
-//            editor.apply();
-//            Toast.makeText(this, "Switched Cognitive Mode to Memory", Toast.LENGTH_SHORT).show();
-//        });
     }
 
 
@@ -325,8 +277,8 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
 
                 SearchMenuItem = findViewById(R.id.action_search);
                 AnalyticsMenuItem = findViewById(R.id.analytics);
-                firstTime = mSharedPreferences.getBoolean("firstTime", true);
-                if(firstTime){
+                firstTimeSpotify = mSharedPreferences.getBoolean("firstTimeSpotify", true);
+                if (firstTimeSpotify) {
                     presentShowcaseSequence();
                 }
 
@@ -363,15 +315,18 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     // use this method when query submitted
-                    searchFragment.setData(query);
-                    Toast.makeText(context, query, Toast.LENGTH_SHORT).show();
+                    if (isConnected) {
+                        searchFragment.setData(query);
+                    }
                     return false;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     // use this method for auto complete search process
-                    searchFragment.setData(newText);
+                    if (isConnected) {
+                        searchFragment.setData(newText);
+                    }
                     return false;
                 }
             });
@@ -388,25 +343,27 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.aboutusitem:
-                Intent intent;
-                intent = new Intent(MainActivity2.this,
-
-                        AboutUsActivity.class);
-                startActivity(intent);
-                return true;
             case R.id.feedbackitem:
                 Intent feedbackEmail = new Intent(Intent.ACTION_SEND);
                 feedbackEmail.setType("text/email");
                 feedbackEmail.putExtra(Intent.EXTRA_EMAIL, new String[]{"sampleutd@gmail.com"});
                 feedbackEmail.putExtra(Intent.EXTRA_SUBJECT, "Therabeat Feedback");
                 startActivity(Intent.createChooser(feedbackEmail, "Send Feedback:"));
+                return true;
             case R.id.analytics:
 //                MotionLayout tabContent = findViewById(R.id.RootLayout);
 //
 //                View overlay = findViewById(R.id.overlay);
                 AppUsageFragment appUsageFragment = new AppUsageFragment();
-                appUsageFragment.show(getSupportFragmentManager(),"analyticsfrag");
+                appUsageFragment.show(getSupportFragmentManager(), "analyticsfrag");
+                return true;
+            case R.id.settingsitem:
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .addToBackStack("settings")
+                        .replace(R.id.SpotifySettingsFragment, new Settings())
+                        .commit();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -416,31 +373,14 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
 
     @Override
     public void onBackPressed() {
-        if (!searchView.isIconified()) {
-            mainLayout.setVisibility(View.VISIBLE);
-            searchLayout.setVisibility(View.GONE);
-            searchView.onActionViewCollapsed();
-        } else {
-            MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(this);
-            dialog.setTitle("Quit Therabeat")
-                    .setMessage("Are you sure you want to exit?")
-
-                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                    // The dialog is automatically dismissed when a dialog button is clicked.
-                    .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finishAffinity();
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                        }
-                    })
-
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .show();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+            getSupportFragmentManager().popBackStackImmediate();
+        else {
+            if (!searchView.isIconified()) {
+                mainLayout.setVisibility(View.VISIBLE);
+                searchLayout.setVisibility(View.GONE);
+                searchView.onActionViewCollapsed();
+            }
         }
     }
 
@@ -454,7 +394,9 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     public void onNoteClick(int position) {
         float beatFreq = mSharedPreferences.getFloat("beatFreq", 0.0f);
         Log.d(TAG, playlistArrayList.get(position).getName());
-        togglePlay(beatFreq, playlistArrayList.get(position).getUri());
+        if (isConnected) {
+            togglePlay(beatFreq, playlistArrayList.get(position).getUri());
+        }
     }
 
     private void attemptStartWave(float beatFreq) {
@@ -588,7 +530,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         sequence.addSequenceItem(AnalyticsMenuItem, "View your analytics for specific cognitive modes.", "GOT IT");
 
         sequence.start();
-        editor.putBoolean("firstTime", false);
+        editor.putBoolean("firstTimeSpotify", false);
         editor.apply();
 
     }

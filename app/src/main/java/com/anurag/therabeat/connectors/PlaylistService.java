@@ -2,6 +2,8 @@ package com.anurag.therabeat.connectors;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -121,6 +123,7 @@ public class PlaylistService {
     }
 
     public void removeFromPlaylist(String uri, Context context) throws IOException {
+        int reponsecode;
         Thread deleteThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -166,15 +169,38 @@ public class PlaylistService {
                         int responseCode = connection.getResponseCode();
                         // To handle web services which server responds with response code
                         // only
+                        Log.d("response", String.valueOf(responseCode));
+                        if (responseCode == 200) {
+                            Handler handler = new Handler(Looper.getMainLooper());
+                            handler.post(new Runnable() {
+                                public void run() {
+                                    Toast toast = Toast.makeText(context, "The song has been deleted from your playlist, please swipe down to refresh", Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
+                            });
+                        } else {
+                            Handler handler = new Handler(Looper.getMainLooper());
+                            handler.post(new Runnable() {
+                                public void run() {
+                                    Toast toast = Toast.makeText(context, "There was an error removing the song", Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
+                            });
+
+                        }
                         try {
                             String response = connection.getResponseMessage();
                         } catch (Exception e) {
                             Log.e("delete request", "Cannot convert the input stream to string for the url= , Code response=" + responseCode + "for the JsonObject: " + mainObj.toString());
                         }
-                    } catch (
-                            Exception e
-                    ) {
-
+                    } catch (Exception e) {
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+                            public void run() {
+                                Toast toast = Toast.makeText(context, "There was an error removing the song", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        });
                         throw e;
                     } finally {
 
@@ -193,8 +219,6 @@ public class PlaylistService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Toast toast = Toast.makeText(context, "The song has been deleted from your playlist, please swipe down to refresh", Toast.LENGTH_LONG);
-        toast.show();
     }
 
     public void getPlaylists(String userId, Context context, SharedPreferences.Editor editor) {
@@ -227,15 +251,12 @@ public class PlaylistService {
                         if (!flag) {
                             createPlaylist(userId, context, editor);
                         }
-
-//                            progressDialog.dismiss();
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("Volley", error.toString());
-//                        progressDialog.dismiss();
 
                     }
                 }) {

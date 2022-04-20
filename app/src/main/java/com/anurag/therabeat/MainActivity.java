@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     final Fragment homeFragment = new HomeFragment();
     final Fragment searchFragment = new SearchFragment();
     final FragmentManager fm = getSupportFragmentManager();
-    final Fragment settingsFragment = new SettingsFragment();
+    final Fragment settingsFragment = new Settings();
     final Fragment appUsageFragment = new AppUsageFragment();
     Fragment active = homeFragment;
     AppDatabase db;

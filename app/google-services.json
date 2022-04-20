@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "368142979598",
+    "project_id": "therabeat-9042e",
+    "storage_bucket": "therabeat-9042e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368142979598:android:0697a0a352ac2d9b4c625f",
+        "android_client_info": {
+          "package_name": "com.anurag.therabeat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "368142979598-2v8e4r67v30pk3lqlpqp1lh7330s8bcf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.anurag.therabeat",
+            "certificate_hash": "757e299c426f25892549a565857010207ab75d90"
+          }
+        },
+        {
+          "client_id": "368142979598-unciu75sat3u7d1gr0gp4hrp3uomhf6m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBT6DfPNFVW2FCm7bGA__XHEwq5DaX1HyM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "368142979598-unciu75sat3u7d1gr0gp4hrp3uomhf6m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
