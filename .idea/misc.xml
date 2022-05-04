@@ -4,8 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.140625" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/divider.xml" value="0.167" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/ic_baseline_bar_chart_24.xml" value="0.1885" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/ic_round_info_48.xml" value="0.167" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/drawable/toggle_button_selector.xml" value="0.167" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/font/.xml" value="0.2203125" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_app_mode_selection.xml" value="0.22552083333333334" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_main.xml" value="0.19114583333333332" />
@@ -16,25 +18,32 @@
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_splash.xml" value="0.18177083333333333" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_user_mood_choice.xml" value="0.1" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/activity_welcome_screen.xml" value="0.3659942363112392" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/add_playlist_modal_row_item.xml" value="0.38315217391304346" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/audio_list_row.xml" value="0.19583333333333333" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/cardview.xml" value="0.184375" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/content_main.xml" value="0.21354166666666666" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/create_playlist_dialog.xml" value="0.38315217391304346" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/exo_playback_control_view.xml" value="0.22552083333333334" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_app_usage.xml" value="0.1" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_blank.xml" value="0.19583333333333333" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_collection_object.xml" value="0.19583333333333333" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_home.xml" value="0.22" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_player.xml" value="0.16893115942028986" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_playlist_view.xml" value="0.18177083333333333" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_search.xml" value="0.33" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/fragment_settings.xml" value="0.19114583333333332" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/modal_bottom_sheet_content.xml" value="0.1" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/modal_playlist_songs_sheet.xml" value="0.20208333333333334" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/music_player_layout.xml" value="0.375" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/notification_layout.xml" value="0.375" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/layout/playlist_row.xml" value="0.19583333333333333" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/preferences_category.xml" value="0.19635416666666666" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/refresh_layout.xml" value="0.21354166666666666" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/spinner_item.xml" value="0.19635416666666666" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/layout/video_item_view.xml" value="0.22552083333333334" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/menu/custom_menu.xml" value="0.19114583333333332" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/menu/navigation.xml" value="0.21354166666666666" />
+        <entry key="..\:/Android/Therabeat/app/src/main/res/menu/offline_audio_list_menu.xml" value="0.19583333333333333" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/menu/recycler_view_options_menu.xml" value="0.17864583333333334" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1885" />
         <entry key="..\:/Android/Therabeat/app/src/main/res/xml/activity_settings.xml" value="0.38315217391304346" />

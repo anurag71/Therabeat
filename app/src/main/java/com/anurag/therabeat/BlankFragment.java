@@ -17,17 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.TracksInfo;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.FileDataSource;
@@ -56,54 +50,43 @@ public class BlankFragment extends Fragment {
     TextView ArtistName;
     TextView TrackNameMin;
     TextView ArtistNameMin;
-    private SimpleExoPlayer exoPlayer;
+    private Button NextSongButton;
+    private Button PrevSongButton;
+    private Button SetShuffleButton;
+    private Button SetRepeatButton;
+    private ExoPlayer exoPlayer;
     private SeekBar seekPlayerProgress;
     private Handler handler;
     private MaterialButton btnPlay;
     private TextView txtCurrentTime, txtEndTime;
     private boolean isPlaying = false;
-    private ExoPlayer.EventListener eventListener = new ExoPlayer.EventListener() {
-
+    private Player.Listener eventListener = new Player.Listener() {
         @Override
-        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-            Log.i(TAG, "onTracksChanged");
+        public void onEvents(Player player, Player.Events events) {
+            Player.Listener.super.onEvents(player, events);
+            Log.d("ExoPlayer", events.toString());
         }
 
         @Override
-        public void onLoadingChanged(boolean isLoading) {
-            Log.i(TAG, "onLoadingChanged");
-        }
-
-        @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            Log.i(TAG, "onPlayerStateChanged: playWhenReady = " + String.valueOf(playWhenReady)
-                    + " playbackState = " + playbackState);
-            switch (playbackState) {
-                case ExoPlayer.STATE_ENDED:
-                    Log.i(TAG, "Playback ended!");
-                    //Stop playback and return to start position
-                    setPlayPause(false);
-                    exoPlayer.seekTo(0);
-                    break;
-                case ExoPlayer.STATE_READY:
-                    Log.i(TAG, "ExoPlayer ready! pos: " + exoPlayer.getCurrentPosition()
-                            + " max: " + stringForTime((int) exoPlayer.getDuration()));
-                    setProgress();
-                    break;
-                case ExoPlayer.STATE_BUFFERING:
-                    Log.i(TAG, "Playback buffering!");
-                    break;
-                case ExoPlayer.STATE_IDLE:
-                    Log.i(TAG, "ExoPlayer idle!");
-                    break;
+        public void onMediaItemTransition(
+                @Nullable MediaItem mediaItem, @Player.MediaItemTransitionReason int reason) {
+            if (reason != Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED) {
+                updateUiForPlayingMediaItem(mediaItem);
             }
         }
 
         @Override
-        public void onPlayerError(ExoPlaybackException error) {
-            Log.i(TAG, "onPlaybackError: " + error.getMessage());
+        public void onPlayerError(PlaybackException error) {
+            Player.Listener.super.onPlayerError(error);
+            Log.d("ExoPlayer Error", error.getMessage());
+        }
+
+        @Override
+        public void onTracksInfoChanged(TracksInfo tracksInfo) {
+            // Update UI using current TracksInf
         }
     };
+
     private SharedPreferences msharedPreferences;
     private Slider beatVolumeSlider;
     private Button ClosePlayerButton;
@@ -160,6 +143,8 @@ public class BlankFragment extends Fragment {
 //                PlayerBackground.setBackgroundColor(Color.parseColor("#ffcdd2"));
 //                break;
 //        }
+        exoPlayer = SingletonInstances.getInstance(getActivity().getApplicationContext()).getExoPlayer();
+        exoPlayer.stop();
         TrackName = inflatedView.findViewById(R.id.audio_name_text_view);
         ArtistName = inflatedView.findViewById(R.id.artist_name_text_view);
         TrackNameMin = inflatedView.findViewById(R.id.audio_name_text_view_min);
@@ -170,20 +155,34 @@ public class BlankFragment extends Fragment {
         seekPlayerProgress = (SeekBar) inflatedView.findViewById(R.id.mediacontroller_progress);
         beatVolumeSlider = inflatedView.findViewById(R.id.beatVolumeSlider);
         ClosePlayerButton = inflatedView.findViewById(R.id.closePlayerButton);
+        NextSongButton = inflatedView.findViewById(R.id.nextSongButton);
+        PrevSongButton = inflatedView.findViewById(R.id.prevSongButton);
+        SetShuffleButton = inflatedView.findViewById(R.id.SetShuffle);
+        SetRepeatButton = inflatedView.findViewById(R.id.SetRepeat);
         beatVolumeSlider.setValue(50);
         msharedPreferences = SingletonInstances.getInstance(getActivity().getApplicationContext()).getSharedPreferencesInstance();
         wave = new Binaural(200, msharedPreferences.getFloat("beatFreq", 0.0F), 50);
         return inflatedView;
     }
 
+    private void updateUiForPlayingMediaItem(MediaItem mediaItem) {
+
+        AudioModel metadata = (AudioModel) mediaItem.localConfiguration.tag;
+
+        TrackName.setText(metadata.getaName());
+        ArtistName.setText(metadata.getaArtist());
+        TrackNameMin.setText(metadata.getaName());
+        ArtistNameMin.setText(metadata.getaArtist());
+
+        seekPlayerProgress.setProgress(0);
+        seekPlayerProgress.setMax((int) exoPlayer.getDuration() / 1000);
+        txtCurrentTime.setText(stringForTime((int) exoPlayer.getCurrentPosition()));
+        txtEndTime.setText(stringForTime((int) exoPlayer.getDuration()));
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TrackName.setText(audio.getaName());
-        ArtistName.setText(audio.getaArtist());
-        TrackNameMin.setText(audio.getaName());
-        ArtistNameMin.setText(audio.getaArtist());
-        TrackName.setSelected(true);
         File file = new File(audio.getaPath());
         prepareExoPlayerFromFileUri(Uri.fromFile(file));
         beatVolumeSlider.addOnChangeListener(new Slider.OnChangeListener() {
@@ -195,14 +194,51 @@ public class BlankFragment extends Fragment {
             }
         });
 
+        NextSongButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("mediaPlayer", String.valueOf(exoPlayer.getMediaItemCount()));
+                if (exoPlayer.hasNextMediaItem()) {
+                    exoPlayer.seekToNextMediaItem();
+                }
+            }
+        });
+
+        PrevSongButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (exoPlayer.hasPreviousMediaItem()) {
+                    exoPlayer.seekToPreviousMediaItem();
+                }
+            }
+        });
+
+        SetShuffleButton.setOnClickListener(view1 -> {
+            SetShuffleButton.setActivated(!SetShuffleButton.isActivated());
+            if (SetShuffleButton.isActivated()) {
+                exoPlayer.setShuffleModeEnabled(true);
+            } else {
+                exoPlayer.setShuffleModeEnabled(false);
+            }
+        });
+
+        SetRepeatButton.setOnClickListener(view1 -> {
+            SetRepeatButton.setActivated(!SetRepeatButton.isActivated());
+            if (SetRepeatButton.isActivated()) {
+                exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+            } else {
+                exoPlayer.setRepeatMode(Player.REPEAT_MODE_OFF);
+            }
+        });
+
         ClosePlayerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (exoPlayer != null) {
                     exoPlayer.setPlayWhenReady(false);
+                    exoPlayer.clearMediaItems();
                     exoPlayer.stop();
                     wave.stop();
-                    exoPlayer.seekTo(0);
                 }
                 getActivity().getSupportFragmentManager().beginTransaction().remove(BlankFragment.this).commit();
             }
@@ -210,8 +246,12 @@ public class BlankFragment extends Fragment {
     }
 
     private void prepareExoPlayerFromFileUri(Uri uri) {
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), new DefaultTrackSelector(), new DefaultLoadControl());
         exoPlayer.addListener(eventListener);
+
+        MediaItem firstItem = new MediaItem.Builder()
+                .setUri(uri)
+                .setTag(audio)
+                .build();
 
         DataSpec dataSpec = new DataSpec(uri);
         final FileDataSource fileDataSource = new FileDataSource();
@@ -227,10 +267,11 @@ public class BlankFragment extends Fragment {
                 return fileDataSource;
             }
         };
-        MediaSource audioSource = new ExtractorMediaSource(fileDataSource.getUri(),
-                factory, new DefaultExtractorsFactory(), null, null);
-
-        exoPlayer.prepare(audioSource);
+//        MediaSource audioSource = new ExtractorMediaSource(fileDataSource.getUri(),
+//                factory, new DefaultExtractorsFactory(), null, null);
+//        MediaBrowser.MediaItem item = MediaBrowser.MediaItem.fromUri
+        updateUiForPlayingMediaItem(firstItem);
+        exoPlayer.prepare();
         initMediaControls();
     }
 
@@ -292,10 +333,6 @@ public class BlankFragment extends Fragment {
     }
 
     private void setProgress() {
-        seekPlayerProgress.setProgress(0);
-        seekPlayerProgress.setMax((int) exoPlayer.getDuration() / 1000);
-        txtCurrentTime.setText(stringForTime((int) exoPlayer.getCurrentPosition()));
-        txtEndTime.setText(stringForTime((int) exoPlayer.getDuration()));
 
         if (handler == null) handler = new Handler();
         //Make sure you update Seekbar on UI thread

@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,19 +33,24 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton;
+import com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout;
 import com.sevenshifts.sideheaderdecorator.SideHeaderDecorator;
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
 import com.skydoves.powerspinner.PowerSpinnerView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +65,11 @@ public class MusicListActivity extends AppCompatActivity {
 
     Context context;
     public static List<AudioModel> allAudioFiles;
+    public static List<AudioModel> artistList = new ArrayList<>();
+    public static List<AudioModel> albumList = new ArrayList<>();
+
     public static List<AudioModel> FavList;
+    public static List<Integer> FavListIds;
     static AudioListAdapter adapter;
     static AudioListAdapter FavAdaptor;
     static RecyclerView FavRecyclerView;
@@ -77,6 +89,12 @@ public class MusicListActivity extends AppCompatActivity {
     private boolean isPlaying = false;
     private String TAG = getClass().getSimpleName().toString();
 
+    FloatingLayout floatingLayout;
+    FloatingActionButton floatingActionButton;
+    FloatingActionButton AnxietyActionButton;
+    FloatingActionButton AttentionActionButton;
+    FloatingActionButton MemoryActionButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,18 +107,28 @@ public class MusicListActivity extends AppCompatActivity {
 //        getSongs();
         mSharedPreferences = this.getSharedPreferences("Therabeat", 0);
         String FList = mSharedPreferences.getString("FavList", "");
+        String FListIds = mSharedPreferences.getString("FavListIds", "");
         if (FList.equals("")) {
             FavList = new ArrayList<>();
+            FavListIds = new ArrayList<>();
         } else {
-            TypeToken<ArrayList<AudioModel>> token = new TypeToken<ArrayList<AudioModel>>() {
+            TypeToken<ArrayList<AudioModel>> favList = new TypeToken<ArrayList<AudioModel>>() {
+            };
+            TypeToken<ArrayList<Integer>> favListIds = new TypeToken<ArrayList<Integer>>() {
             };
             Gson gson = new Gson();
-            FavList = gson.fromJson(FList, token.getType());
+            FavList = gson.fromJson(FList, favList.getType());
+            FavListIds = gson.fromJson(FListIds, favListIds.getType());
         }
         editor = this.getSharedPreferences("Therabeat", 0).edit();
         context = this;
         appBarLayout = findViewById(R.id.toolbarlayout);
         spinnerView = findViewById(R.id.cognitive_mode_selector);
+        floatingLayout = findViewById(R.id.floating_layout);
+        floatingActionButton = findViewById(R.id.fab1);
+        AnxietyActionButton = findViewById(R.id.AnxietyActionButton);
+        AttentionActionButton = findViewById(R.id.AttentionActionButton);
+        MemoryActionButton = findViewById(R.id.MemoryActionButton);
         spinnerView.setIsFocusable(false);
         String mode = mSharedPreferences.getString("mode", "Memory");
         Log.d("mode", mode);
@@ -108,7 +136,6 @@ public class MusicListActivity extends AppCompatActivity {
         ViewPager2 viewPager;
         switch (mode) {
             case "Memory":
-                Log.d("insdie", "memory");
                 spinnerView.selectItemByIndex(0);
                 appBarLayout.setBackgroundColor(Color.parseColor("#c8e6c9"));
                 getWindow().setStatusBarColor(Color.parseColor("#c8e6c9"));
@@ -128,32 +155,40 @@ public class MusicListActivity extends AppCompatActivity {
         spinnerView.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener<String>() {
             @Override
             public void onItemSelected(int oldIndex, @Nullable String oldItem, int newIndex, String newItem) {
-                switch (newIndex) {
-
-                    case 0:
-                        appBarLayout.setBackgroundColor(Color.parseColor("#c8e6c9"));
-                        getWindow().setStatusBarColor(Color.parseColor("#c8e6c9"));
-                        editor.putFloat("beatFreq", 19.00F);
-                        editor.putString("mode", "Memory");
-                        editor.apply();
-                        break;
-                    case 1:
-                        appBarLayout.setBackgroundColor(Color.parseColor("#bbdefb"));
-                        getWindow().setStatusBarColor(Color.parseColor("#bbdefb"));
-                        editor.putFloat("beatFreq", 4.00F);
-                        editor.putString("mode", "Anxiety");
-                        editor.apply();
-                        break;
-                    case 2:
-                        appBarLayout.setBackgroundColor(Color.parseColor("#ffcdd2"));
-                        getWindow().setStatusBarColor(Color.parseColor("#ffcdd2"));
-                        editor.putFloat("beatFreq", 6.00F);
-                        editor.putString("mode", "Attention");
-                        editor.apply();
-                        break;
-                }
+                ChangeMode(newIndex);
 
             }
+        });
+        floatingLayout.setOnMenuExpandedListener(new FloatingLayout.OnMenuExpandedListener() {
+            @Override
+            public void onMenuExpanded() {
+                floatingActionButton.setFabIcon(getDrawable(R.drawable.ic_round_add_24));
+                floatingActionButton.setText("");
+            }
+
+            @Override
+            public void onMenuCollapsed() {
+                floatingActionButton.setText("Switch Mode");
+                Drawable d = getResources().getDrawable(R.drawable.ic_round_close_24);
+                Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
+                transparentDrawable.setBounds(new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight()));
+                floatingActionButton.setFabIcon(transparentDrawable);
+            }
+        });
+
+        AttentionActionButton.setOnClickListener(view -> {
+            ChangeMode(2);
+            spinnerView.selectItemByIndex(2);
+        });
+
+        AnxietyActionButton.setOnClickListener(view -> {
+            ChangeMode(1);
+            spinnerView.selectItemByIndex(1);
+        });
+
+        MemoryActionButton.setOnClickListener(view -> {
+            ChangeMode(0);
+            spinnerView.selectItemByIndex(0);
         });
         getSongs();
         Toolbar toolbar = findViewById(R.id.actualtoolbar);
@@ -180,12 +215,41 @@ public class MusicListActivity extends AppCompatActivity {
                         case 3:
                             tab.setText("ALBUMS");
                             break;
+                        case 4:
+                            tab.setText("PLAYLISTS");
+                            break;
                     }
                 }).attach();
 
     }
 
-    public void getSongs(){
+    private void ChangeMode(int newIndex) {
+        switch (newIndex) {
+            case 0:
+                appBarLayout.setBackgroundColor(Color.parseColor("#c8e6c9"));
+                getWindow().setStatusBarColor(Color.parseColor("#c8e6c9"));
+                editor.putFloat("beatFreq", 19.00F);
+                editor.putString("mode", "Memory");
+                editor.apply();
+                break;
+            case 1:
+                appBarLayout.setBackgroundColor(Color.parseColor("#bbdefb"));
+                getWindow().setStatusBarColor(Color.parseColor("#bbdefb"));
+                editor.putFloat("beatFreq", 4.00F);
+                editor.putString("mode", "Anxiety");
+                editor.apply();
+                break;
+            case 2:
+                appBarLayout.setBackgroundColor(Color.parseColor("#ffcdd2"));
+                getWindow().setStatusBarColor(Color.parseColor("#ffcdd2"));
+                editor.putFloat("beatFreq", 6.00F);
+                editor.putString("mode", "Attention");
+                editor.apply();
+                break;
+        }
+    }
+
+    public void getSongs() {
 
         allAudioFiles = getAllAudioFromDevice(context);
     }
@@ -205,7 +269,7 @@ public class MusicListActivity extends AppCompatActivity {
                 Log.d("firstTimeOffline", String.valueOf(firstTimeOffline));
                 if (firstTimeOffline) {
                     Log.d("inside", "oinside");
-//                    presentShowcaseSequence();
+                    presentShowcaseSequence();
                 }
 
             }
@@ -293,6 +357,7 @@ public class MusicListActivity extends AppCompatActivity {
         Cursor cursor = contentResolver.query(uri, null, selection, null, null);
 //        Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(cursor));
         if (cursor != null && cursor.getCount() > 0) {
+            int i = 0;
             while (cursor.moveToNext()) {
                 String path = cursor.getString(32);
                 String title = cursor.getString(22);
@@ -302,11 +367,13 @@ public class MusicListActivity extends AppCompatActivity {
 
                     // Save to audioList
                     AudioModel audioModel = new AudioModel();
+                    audioModel.setId(i);
                     audioModel.setaName(title);
                     audioModel.setaAlbum(album);
                     audioModel.setaArtist(artist);
                     audioModel.setaPath(path);
                     tempAudioList.add(audioModel);
+                    i++;
                 }
             }
         }
@@ -315,11 +382,15 @@ public class MusicListActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStackImmediate();
-        else {
+            Log.d("hello", "here");
+            loadColorFromPreference();
+        } else {
             if (!searchView.isIconified()) {
                 searchView.onActionViewCollapsed();
+            } else {
+                super.onBackPressed();
             }
         }
     }
@@ -333,6 +404,7 @@ public class MusicListActivity extends AppCompatActivity {
             AppUsageFragment appUsageFragment = new AppUsageFragment();
             appUsageFragment.show(getSupportFragmentManager(), "analyticsfrag");
         }
+        loadColorFromPreference();
     }
 
     private void presentShowcaseSequence() {
@@ -362,6 +434,28 @@ public class MusicListActivity extends AppCompatActivity {
 
     }
 
+    private void loadColorFromPreference() {
+        Log.d("ViewType", PreferenceManager.getDefaultSharedPreferences(this).getString("CognitiveModeViewType", getString(R.string.SpinnerOption)));
+        changeTextColor(PreferenceManager.getDefaultSharedPreferences(this).getString("CognitiveModeViewType", getString(R.string.SpinnerOption)));
+    }
+
+    // Method to set Color of Text.
+    private void changeTextColor(String pref_color_value) {
+        Log.d("value", pref_color_value);
+        if (pref_color_value.equals(getString(R.string.SpinnerOption))) {
+            runOnUiThread(() -> {
+                floatingLayout.setVisibility(View.GONE);
+                spinnerView.setClickable(true);
+            });
+        } else {
+            runOnUiThread(() -> {
+                floatingLayout.setVisibility(View.VISIBLE);
+                spinnerView.setClickable(false);
+            });
+
+        }
+    }
+
     public static class DemoObjectFragment extends Fragment implements AudioListAdapter.ItemClickListener {
         public static final String ARG_OBJECT = "object";
         RecyclerView audioListView;
@@ -373,51 +467,51 @@ public class MusicListActivity extends AppCompatActivity {
                                  @Nullable Bundle savedInstanceState) {
             View inflatedView = inflater.inflate(R.layout.fragment_collection_object, container, false);
             audioListView = inflatedView.findViewById(R.id.audioListView);
-            return inflatedView;
-        }
-
-        @Override
-        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             Bundle args = getArguments();
             switch (args.getInt(ARG_OBJECT)) {
                 case 2:
-                    Collections.sort(allAudioFiles, (AudioModel a1, AudioModel a2) -> a1.aArtist.toUpperCase().compareTo(a2.aArtist.toUpperCase()));
+                    artistList.addAll(allAudioFiles);
+                    Collections.sort(artistList, (AudioModel a1, AudioModel a2) -> a1.aAlbum.toUpperCase().compareTo(a2.aAlbum.toUpperCase()));
+                    audioListAdapter = new AudioListAdapter(getActivity(), artistList, this, args.getInt(ARG_OBJECT), true);
                     break;
                 case 3:
-                    Collections.sort(allAudioFiles, (AudioModel a1, AudioModel a2) -> a1.aAlbum.toUpperCase().compareTo(a2.aAlbum.toUpperCase()));
+                    albumList.addAll(allAudioFiles);
+                    Collections.sort(albumList, (AudioModel a1, AudioModel a2) -> a1.aAlbum.toUpperCase().compareTo(a2.aAlbum.toUpperCase()));
+                    audioListAdapter = new AudioListAdapter(getActivity(), albumList, this, args.getInt(ARG_OBJECT), true);
                     break;
-                default:
+                case 1:
                     Collections.sort(allAudioFiles, (AudioModel a1, AudioModel a2) -> a1.aName.toUpperCase().compareTo(a2.aName.toUpperCase()));
+                    audioListAdapter = new AudioListAdapter(getActivity(), allAudioFiles, this, args.getInt(ARG_OBJECT), true);
                     break;
 
             }
             if (args.getInt(ARG_OBJECT) == 0) {
-                FavAdaptor = new AudioListAdapter(getActivity(), FavList, this, args.getInt(ARG_OBJECT));
+                FavAdaptor = new AudioListAdapter(getActivity(), FavList, this, args.getInt(ARG_OBJECT), true);
                 adapter = FavAdaptor;
                 audioListView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 audioListView.setAdapter(FavAdaptor);
                 FavRecyclerView = audioListView;
             } else {
-                audioListAdapter = new AudioListAdapter(getActivity(), allAudioFiles, this, args.getInt(ARG_OBJECT));
                 adapter = audioListAdapter;
                 audioListView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 audioListView.setAdapter(audioListAdapter);
             }
-            CheckBox mCheckBox = view.findViewById(R.id.favorite);
+            CheckBox mCheckBox = inflatedView.findViewById(R.id.favorite);
             SideHeaderDecorator.HeaderProvider headerProvider = new SideHeaderDecorator.HeaderProvider() {
                 @Override
                 public Object getHeader(int i) {
                     Object header;
                     switch (args.getInt(ARG_OBJECT)) {
                         case 2:
-                            header = allAudioFiles.get(i).getaArtist().toUpperCase().charAt(0);
+                            header = artistList.get(i).getaArtist().toUpperCase().charAt(0);
                             break;
                         case 3:
-                            header = allAudioFiles.get(i).getaAlbum().toUpperCase().charAt(0);
+                            header = albumList.get(i).getaAlbum().toUpperCase().charAt(0);
                             break;
 
                         default:
                             header = allAudioFiles.get(i).getaName().toUpperCase().charAt(0);
+                            break;
                     }
                     return header;
                 }
@@ -434,15 +528,19 @@ public class MusicListActivity extends AppCompatActivity {
                 }
             };
             audioListView.addItemDecoration(sideHeaderDecorator);
+            return inflatedView;
         }
 
         @Override
         public void onItemClicked(AudioModel audio) {
             Log.d("name", audio.getaName());
-//        MusicPlayerActivity fragment = MusicPlayerActivity.newInstance(audio);
-//        FragmentManager fm = getSupportFragmentManager();
-//        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-//        fragmentTransaction.replace(R.id.offline_play_screen_frame_layout, (Fragment) MusicPlayerActivity.newInstance(audio));
+            SingletonInstances.getInstance(getContext().getApplicationContext()).getExoPlayer().clearMediaItems();
+            MediaItem NextSong = new MediaItem.Builder()
+                    .setUri(Uri.fromFile(new File(audio.getaPath())))
+                    .setTag(audio)
+                    .build();
+
+            SingletonInstances.getInstance(getContext().getApplicationContext()).getExoPlayer().addMediaItem(NextSong);
             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.offline_play_screen_frame_layout, (Fragment) BlankFragment.newInstance(audio)).setReorderingAllowed(true).commitAllowingStateLoss();
 //        fragmentTransaction.commit();
         }
@@ -458,17 +556,22 @@ public class MusicListActivity extends AppCompatActivity {
         @Override
         public Fragment createFragment(int position) {
             // Return a NEW fragment instance in createFragment(int)
-            Fragment fragment = new DemoObjectFragment();
-            Bundle args = new Bundle();
-            // Our object is just an integer :-P
-            args.putInt(DemoObjectFragment.ARG_OBJECT, position);
-            fragment.setArguments(args);
-            return fragment;
+            if (position == 4) {
+                Fragment fragment = new PlaylistView();
+                return fragment;
+            } else {
+                Fragment fragment = new DemoObjectFragment();
+                Bundle args = new Bundle();
+                // Our object is just an integer :-P
+                args.putInt(DemoObjectFragment.ARG_OBJECT, position);
+                fragment.setArguments(args);
+                return fragment;
+            }
         }
 
         @Override
         public int getItemCount() {
-            return 4;
+            return 5;
         }
     }
 //

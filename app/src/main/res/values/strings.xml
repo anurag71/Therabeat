@@ -55,6 +55,9 @@
     <string name="MusicButtonString">Music</string>
     <string name="AboutUsButtonString">About Us</string>
 
+    <string name="SpinnerOption">Spinner</string>
+    <string name="FloatingActionButton">FloatingActionButton</string>
+
     //Firebase
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <!--
@@ -66,5 +69,8 @@
     <!-- [END fcm_default_icon_string] -->
     <string name="fcm_message">Incoming Notification</string>
     <string name="SettingsItem">Settings</string>
+    <string name="add_to_quuee_string">Add to Quuee</string>
+    <string name="add_to_playlist_string">Add to Playlist</string>
+    <string name="choose_playlist_string">Choose playlist</string>
 
 </resources>

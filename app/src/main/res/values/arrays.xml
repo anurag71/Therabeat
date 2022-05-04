@@ -5,4 +5,14 @@
         <item>Anxiety</item>
         <item>Attention</item>
     </string-array>
+
+    <array name="pref_color_option_labels">
+        <item>@string/SpinnerOption</item>
+        <item>@string/FloatingActionButton</item>
+    </array>
+
+    <array name="pref_color_option_values">
+        <item>@string/SpinnerOption</item>
+        <item>@string/FloatingActionButton</item>
+    </array>
 </resources>

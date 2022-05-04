@@ -9,6 +9,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.anurag.therabeat.Database.AppDatabase;
+import com.google.android.exoplayer2.ExoPlayer;
 
 public class SingletonInstances {
     private static SingletonInstances instance;
@@ -17,6 +18,7 @@ public class SingletonInstances {
     private SharedPreferences.Editor editor;
     AppDatabase db;
     private static Context ctx;
+    ExoPlayer exoPlayer;
 
     private SingletonInstances(Context context) {
         ctx = context;
@@ -39,6 +41,13 @@ public class SingletonInstances {
             requestQueue = Volley.newRequestQueue(ctx.getApplicationContext());
         }
         return requestQueue;
+    }
+
+    public ExoPlayer getExoPlayer() {
+        if (exoPlayer == null) {
+            exoPlayer = new ExoPlayer.Builder(ctx.getApplicationContext()).build();
+        }
+        return exoPlayer;
     }
 
     public SharedPreferences getSharedPreferencesInstance() {

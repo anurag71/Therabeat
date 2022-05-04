@@ -4,10 +4,19 @@ import java.io.Serializable;
 
 public class AudioModel implements Serializable {
 
+    int id;
     String aPath;
     String aName;
     String aAlbum;
     String aArtist;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getaPath() {
         return aPath;

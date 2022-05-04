@@ -143,7 +143,6 @@ public class AppModeSelection extends AppCompatActivity {
         ConnectToSpotify.setOnClickListener(view -> {
             Intent intent = new Intent(AppModeSelection.this, LoginActivity.class);
             startActivity(intent);
-            destroy();
         });
 
         UseOfflineButton.setOnClickListener(view -> {

@@ -16,17 +16,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.FileDataSource;
@@ -41,52 +34,23 @@ public class MusicPlayerActivity extends Fragment {
     private static final String TAG = "MainActivity";
     public static BeatsEngine wave;
     AudioModel audio;
-    private SimpleExoPlayer exoPlayer;
+    private ExoPlayer exoPlayer;
     private SeekBar seekPlayerProgress;
     private Handler handler;
     TextView TrackName;
     private TextView txtCurrentTime, txtEndTime;
     private boolean isPlaying = false;
-    private ExoPlayer.EventListener eventListener = new ExoPlayer.EventListener() {
-
+    private Player.Listener eventListener = new Player.Listener() {
         @Override
-        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-            Log.i(TAG, "onTracksChanged");
+        public void onEvents(Player player, Player.Events events) {
+            Player.Listener.super.onEvents(player, events);
+            Log.d("ExoPlayer", events.toString());
         }
 
         @Override
-        public void onLoadingChanged(boolean isLoading) {
-            Log.i(TAG, "onLoadingChanged");
-        }
-
-        @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            Log.i(TAG, "onPlayerStateChanged: playWhenReady = " + String.valueOf(playWhenReady)
-                    + " playbackState = " + playbackState);
-            switch (playbackState) {
-                case ExoPlayer.STATE_ENDED:
-                    Log.i(TAG, "Playback ended!");
-                    //Stop playback and return to start position
-                    setPlayPause(false);
-                    exoPlayer.seekTo(0);
-                    break;
-                case ExoPlayer.STATE_READY:
-                    Log.i(TAG, "ExoPlayer ready! pos: " + exoPlayer.getCurrentPosition()
-                            + " max: " + stringForTime((int) exoPlayer.getDuration()));
-                    setProgress();
-                    break;
-                case ExoPlayer.STATE_BUFFERING:
-                    Log.i(TAG, "Playback buffering!");
-                    break;
-                case ExoPlayer.STATE_IDLE:
-                    Log.i(TAG, "ExoPlayer idle!");
-                    break;
-            }
-        }
-
-        @Override
-        public void onPlayerError(ExoPlaybackException error) {
-            Log.i(TAG, "onPlaybackError: " + error.getMessage());
+        public void onPlayerError(PlaybackException error) {
+            Player.Listener.super.onPlayerError(error);
+            Log.d("ExoPlayer Error", error.getMessage());
         }
     };
     private SharedPreferences msharedPreferences;
@@ -141,9 +105,9 @@ public class MusicPlayerActivity extends Fragment {
     }
 
     private void prepareExoPlayerFromFileUri(Uri uri) {
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), new DefaultTrackSelector(), new DefaultLoadControl());
+        exoPlayer = new ExoPlayer.Builder(getActivity()).build();
         exoPlayer.addListener(eventListener);
-
+        MediaItem firstItem = MediaItem.fromUri(uri);
         DataSpec dataSpec = new DataSpec(uri);
         final FileDataSource fileDataSource = new FileDataSource();
         try {
@@ -158,10 +122,10 @@ public class MusicPlayerActivity extends Fragment {
                 return fileDataSource;
             }
         };
-        MediaSource audioSource = new ExtractorMediaSource(fileDataSource.getUri(),
-                factory, new DefaultExtractorsFactory(), null, null);
-
-        exoPlayer.prepare(audioSource);
+//        MediaSource audioSource = new Exre(fileDataSource.getUri(),
+//                factory, new DefaultExtractorsFactory(), null, null);
+        exoPlayer.addMediaItem(firstItem);
+        exoPlayer.prepare();
         initMediaControls();
     }
 
