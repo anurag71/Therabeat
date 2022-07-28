@@ -186,7 +186,7 @@ private val viewToDetectTouch by lazy {
 
     private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
         override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-            transitionToStart()
+            transitionToEnd();
             return false
         }
     })

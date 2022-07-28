@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -46,7 +46,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton;
 import com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout;
-import com.sevenshifts.sideheaderdecorator.SideHeaderDecorator;
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
 import com.skydoves.powerspinner.PowerSpinnerView;
 
@@ -405,6 +404,10 @@ public class MusicListActivity extends AppCompatActivity {
             appUsageFragment.show(getSupportFragmentManager(), "analyticsfrag");
         }
         loadColorFromPreference();
+        ExoPlayer player = SingletonInstances.getInstance(this.getApplicationContext()).getExoPlayer();
+        if (player.isPlaying()) {
+            this.getSupportFragmentManager().beginTransaction().replace(R.id.offline_play_screen_frame_layout, (Fragment) BlankFragment.newInstance((AudioModel) player.getCurrentMediaItem().localConfiguration.tag)).setReorderingAllowed(true).commitAllowingStateLoss();
+        }
     }
 
     private void presentShowcaseSequence() {
@@ -497,37 +500,6 @@ public class MusicListActivity extends AppCompatActivity {
                 audioListView.setAdapter(audioListAdapter);
             }
             CheckBox mCheckBox = inflatedView.findViewById(R.id.favorite);
-            SideHeaderDecorator.HeaderProvider headerProvider = new SideHeaderDecorator.HeaderProvider() {
-                @Override
-                public Object getHeader(int i) {
-                    Object header;
-                    switch (args.getInt(ARG_OBJECT)) {
-                        case 2:
-                            header = artistList.get(i).getaArtist().toUpperCase().charAt(0);
-                            break;
-                        case 3:
-                            header = albumList.get(i).getaAlbum().toUpperCase().charAt(0);
-                            break;
-
-                        default:
-                            header = allAudioFiles.get(i).getaName().toUpperCase().charAt(0);
-                            break;
-                    }
-                    return header;
-                }
-            };
-
-            SideHeaderDecorator sideHeaderDecorator = new SideHeaderDecorator(headerProvider) {
-                @NonNull
-                @Override
-                public View getHeaderView(Object o, @NonNull RecyclerView recyclerView) {
-                    TextView textView = (TextView) LayoutInflater.from(recyclerView.getContext()).inflate(R.layout.header_view, recyclerView, false);
-                    textView.setText(o.toString());
-
-                    return textView;
-                }
-            };
-            audioListView.addItemDecoration(sideHeaderDecorator);
             return inflatedView;
         }
 

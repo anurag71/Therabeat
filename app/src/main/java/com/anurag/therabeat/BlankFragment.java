@@ -59,7 +59,7 @@ public class BlankFragment extends Fragment {
     private Handler handler;
     private MaterialButton btnPlay;
     private TextView txtCurrentTime, txtEndTime;
-    private boolean isPlaying = false;
+    private boolean isPlaying = true;
     private Player.Listener eventListener = new Player.Listener() {
         @Override
         public void onEvents(Player player, Player.Events events) {
@@ -272,6 +272,11 @@ public class BlankFragment extends Fragment {
 //        MediaBrowser.MediaItem item = MediaBrowser.MediaItem.fromUri
         updateUiForPlayingMediaItem(firstItem);
         exoPlayer.prepare();
+        setProgress();
+        if (!exoPlayer.isPlaying()) {
+            wave.start();
+            exoPlayer.setPlayWhenReady(isPlaying);
+        }
         initMediaControls();
     }
 
@@ -299,13 +304,13 @@ public class BlankFragment extends Fragment {
     private void setPlayPause(boolean play) {
         isPlaying = play;
         exoPlayer.setPlayWhenReady(play);
-        if (!isPlaying) {
-            btnPlay.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_round_play_arrow_24_white));
-            wave.stop();
-        } else {
+        if (isPlaying) {
             setProgress();
             wave.start();
             btnPlay.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_round_pause_24_white));
+        } else {
+            btnPlay.setIcon(ContextCompat.getDrawable(getActivity(), R.drawable.ic_round_play_arrow_24_white));
+            wave.stop();
         }
     }
 

@@ -56,14 +56,17 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
             case R.id.MusicChoiceButton:
                 Log.d(TAG, "AnxietyUsage Button pressed");
                 editor.putFloat("beatFreq", 4.00F);
+                editor.putString("mode", "Anxiety");
                 break;
             case R.id.AboutUsChoiceButton:
                 Log.d(TAG, "AttentionUsage Button pressed");
                 editor.putFloat("beatFreq", 6.00F);
+                editor.putString("mode", "Attention");
                 break;
             case R.id.FeedbackChoiceButton:
                 Log.d(TAG, "MemoryUsage Button pressed");
                 editor.putFloat("beatFreq", 19.00F);
+                editor.putString("mode", "Memory");
                 break;
             default:
                 break;
@@ -71,7 +74,7 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
         editor.apply();
         Intent intent = new Intent(UserMoodChoice.this,
 
-                LoginActivity.class);
+                AppModeSelection.class);
         startActivity(intent);
     }
 }

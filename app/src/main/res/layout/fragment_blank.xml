@@ -203,7 +203,7 @@
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            app:icon="@drawable/ic_round_play_arrow_24_white"
+            app:icon="@drawable/ic_round_pause_24_white"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconSize="32dp"

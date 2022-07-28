@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,11 +29,6 @@ public class OpeningScreenActivity extends AppCompatActivity implements View.OnC
         anxietyButton.setOnClickListener(this);
         attentionButton.setOnClickListener(this);
         memoryButton.setOnClickListener(this);
-
-        if (!mSharedPreferences.getString("token", "").equals("")) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Successfully Connected to Spotify", Toast.LENGTH_SHORT);
-            toast.show();
-        }
     }
 
 
