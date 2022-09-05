@@ -2,6 +2,7 @@ package com.anurag.therabeat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,7 +15,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 public class UserMoodChoice extends AppCompatActivity implements View.OnClickListener {
 
     //Class Variables
-    private String TAG = getClass().getSimpleName().toString();
+    private String TAG = getClass().getSimpleName();
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor editor;
 
@@ -36,11 +37,6 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
         anxietyButton.setOnClickListener(this);
         attentionButton.setOnClickListener(this);
         memoryButton.setOnClickListener(this);
-
-        if (!mSharedPreferences.getString("token", "").equals("")) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Successfully Connected to Spotify", Toast.LENGTH_SHORT);
-            toast.show();
-        }
 
     }
 
@@ -72,9 +68,32 @@ public class UserMoodChoice extends AppCompatActivity implements View.OnClickLis
                 break;
         }
         editor.apply();
-        Intent intent = new Intent(UserMoodChoice.this,
+        Intent intent;
+        if (getIntent().getBooleanExtra("spotify", false)) {
+            intent = new Intent(UserMoodChoice.this,
 
-                AppModeSelection.class);
+                    LoginActivity.class);
+        } else {
+            intent = new Intent(UserMoodChoice.this,
+
+                    MusicListActivity.class);
+        }
         startActivity(intent);
+    }
+
+    //Handling callback
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(UserMoodChoice.this, MusicListActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "Read Storage Permission is required", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 }

@@ -42,16 +42,16 @@ public class PlaylistService {
 
     public void createPlaylist(String userId, Context context, SharedPreferences.Editor editor) {
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("name", "Therabeat");
-        params.put("description", "Your therabeat playlist");
+        params.put("name", "TherabeatAttention");
+        params.put("description", "Your therabeat playlist for Attention");
         params.put("public", "false");
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+        JsonObjectRequest AttentionCreationRequest = new JsonObjectRequest
                 (Request.Method.POST, endpoint + userId + "/playlists", new JSONObject(params), new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            editor.putString("playlistId", response.get("id").toString());
+                            editor.putString("AttentionplaylistId", response.get("id").toString());
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -81,14 +81,97 @@ public class PlaylistService {
                 return headers;
             }
         };
-        SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(jsonObjectRequest);
+        params = new HashMap<String, String>();
+        params.put("name", "TherabeatMemory");
+        params.put("description", "Your therabeat playlist for Memory");
+        params.put("public", "false");
+        JsonObjectRequest MemoryCreationRequest = new JsonObjectRequest
+                (Request.Method.POST, endpoint + userId + "/playlists", new JSONObject(params), new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            editor.putString("MemoryplaylistId", response.get("id").toString());
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        editor.apply();
+                        Gson gson = new Gson();
+                        JSONObject jsonObject = response.optJSONObject("tracks");
+
+//                            progressDialog.dismiss();
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley", error.toString());
+//                        progressDialog.dismiss();
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = sharedPreferences.getString("token", "");
+                String auth = "Bearer " + token;
+                headers.put("Authorization", auth);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        params = new HashMap<String, String>();
+        params.put("name", "TherabeatAnxiety");
+        params.put("description", "Your therabeat playlist for Anxiety");
+        params.put("public", "false");
+        JsonObjectRequest AnxietyCreationRequest = new JsonObjectRequest
+                (Request.Method.POST, endpoint + userId + "/playlists", new JSONObject(params), new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            editor.putString("AnxietyplaylistId", response.get("id").toString());
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        editor.apply();
+                        Gson gson = new Gson();
+                        JSONObject jsonObject = response.optJSONObject("tracks");
+
+//                            progressDialog.dismiss();
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Volley", error.toString());
+//                        progressDialog.dismiss();
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String token = sharedPreferences.getString("token", "");
+                String auth = "Bearer " + token;
+                headers.put("Authorization", auth);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(AttentionCreationRequest);
+        SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(MemoryCreationRequest);
+        SingletonInstances.getInstance(context.getApplicationContext()).addToRequestQueue(AnxietyCreationRequest);
     }
 
     public void addToPlaylist(String uri, Context context) {
+        String mode = sharedPreferences.getString("mode", "Memory");
         HashMap<String, String[]> params = new HashMap<String, String[]>();
         params.put("uris", new String[]{uri});
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.POST, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks", new JSONObject(params), new Response.Listener<JSONObject>() {
+                (Request.Method.POST, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString(mode + "playlistId", "") + "/tracks", new JSONObject(params), new Response.Listener<JSONObject>() {
 
                     @Override
                     public void onResponse(JSONObject response) {
@@ -124,11 +207,12 @@ public class PlaylistService {
 
     public void removeFromPlaylist(String uri, Context context) throws IOException {
         int reponsecode;
+        String mode = sharedPreferences.getString("mode", "Memory");
         Thread deleteThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    URL url = new URL("https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks");
+                    URL url = new URL("https://api.spotify.com/v1/playlists/" + sharedPreferences.getString(mode + "playlistId", "") + "/tracks");
                     HttpURLConnection connection = null;
                     JSONObject jo = new JSONObject();
                     try {
@@ -240,11 +324,25 @@ public class PlaylistService {
                             }
                         }
                         boolean flag = false;
+                        int count = 0;
                         for (Playlist p : playlists) {
-                            if (p.getName().equals("Therabeat")) {
-                                editor.putString("playlistId", p.getId());
+                            if (p.getName().equals("TherabeatMemory")) {
+                                editor.putString("MemoryplaylistId", p.getId());
                                 editor.apply();
+                                count++;
                                 flag = true;
+                            } else if (p.getName().equals("TherabeatAttention")) {
+                                editor.putString("AttentionplaylistId", p.getId());
+                                editor.apply();
+                                count++;
+                                flag = true;
+                            } else if (p.getName().equals("TherabeatAnxiety")) {
+                                editor.putString("AnxietyplaylistId", p.getId());
+                                editor.apply();
+                                count++;
+                                flag = true;
+                            }
+                            if (count == 3) {
                                 break;
                             }
                         }
@@ -274,9 +372,9 @@ public class PlaylistService {
     }
 
     public void getPlaylist(ImageView playlistImageView, Context context) {
+        String mode = sharedPreferences.getString("mode", "Memory");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, "\thttps://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", ""), null, new Response.Listener<JSONObject>() {
-
+                (Request.Method.GET, "\thttps://api.spotify.com/v1/playlists/" + sharedPreferences.getString(mode + "playlistId", ""), null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Gson gson = new Gson();

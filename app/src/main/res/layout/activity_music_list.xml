@@ -52,35 +52,25 @@
                 android:fontFamily="@font/roboto_slab_bold"
                 android:text="Cogntive Mode"
                 android:textSize="22sp"
-                app:layout_constraintBottom_toTopOf="@id/cognitive_mode_selector"
+                app:layout_constraintBottom_toTopOf="@id/CognitiveModeDisplay"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed" />
 
-            <com.skydoves.powerspinner.PowerSpinnerView
-                android:id="@+id/cognitive_mode_selector"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/CognitiveModeDisplay"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:foreground="?attr/selectableItemBackground"
-                android:padding="10dp"
-                android:textAlignment="center"
-                android:textColor="@color/black"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/roboto_slab_bold"
                 android:textSize="22sp"
-                app:layout_constraintEnd_toEndOf="@id/GreetingtextView"
-                app:layout_constraintStart_toStartOf="@id/GreetingtextView"
-                app:layout_constraintTop_toBottomOf="@id/GreetingtextView"
-                app:spinner_arrow_gravity="end"
-                app:spinner_arrow_padding="8dp"
-                app:spinner_arrow_show="false"
-                app:spinner_divider_color="@color/black"
-                app:spinner_divider_show="true"
-                app:spinner_divider_size="0.4dp"
-                app:spinner_item_array="@array/CognitiveModes"
-                app:layout_constraintBottom_toTopOf="@id/actualtoolbar"
-                app:spinner_popup_animation="fade"
-                app:spinner_popup_background="@color/white"
-                app:spinner_popup_elevation="14dp" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/GreetingtextView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/actualtoolbar"
@@ -89,7 +79,7 @@
                 android:minHeight="?attr/actionBarSize"
                 android:backgroundTint="#006200EE"
                 android:theme="@style/Theme.Therabeat.NoActionBar"
-                app:layout_constraintTop_toBottomOf="@id/cognitive_mode_selector"
+                app:layout_constraintTop_toBottomOf="@id/CognitiveModeDisplay"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -135,56 +125,6 @@
 
 
     </FrameLayout>
-
-    <com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout
-        android:id="@+id/floating_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="bottom|end"
-        app:fabAnimateDuration="0"
-        app:fabAnimateMenu="true"
-        app:fabMenuStyle="popUp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
-            android:id="@+id/fab1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Switch Mode"
-            android:textColor="@color/white"
-            app:fabColor="#acdace" />
-
-        <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
-            android:id="@+id/AttentionActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Attention"
-            android:textColor="@color/white"
-            app:fabColor="#ff9c10"
-            app:fabSizes="mini" />
-
-        <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
-            android:id="@+id/AnxietyActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Anxiety"
-            android:textColor="@color/white"
-            app:fabColor="#0b7bc1"
-            app:fabSizes="mini" />
-
-        <com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton
-            android:id="@+id/MemoryActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Memory"
-            android:textColor="@color/white"
-            app:fabColor="#ea201c"
-            app:fabSizes="mini" />
-
-    </com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout>
 
     <FrameLayout
         android:id="@+id/searchFrame"

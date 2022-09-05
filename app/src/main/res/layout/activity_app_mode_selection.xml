@@ -3,31 +3,24 @@
     android:id="@+id/rootContainer"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/background_image"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AppModeSelection">
 
     <TextView
-        android:id="@+id/WelcomeTextView"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:textSize="32sp"
-        app:layout_constraintBottom_toTopOf="@+id/ConnectToSpotify"
-        app:layout_constraintEnd_toStartOf="@id/TimeOfDayGIF"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/AppModeSelectionMessage"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toTopOf="@id/ConnectToSpotify"
         app:layout_constraintStart_toStartOf="@id/ConnectToSpotify"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/TimeOfDayGIF"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginLeft="5dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="@+id/WelcomeTextView"
         app:layout_constraintEnd_toEndOf="@id/ConnectToSpotify"
-        app:layout_constraintStart_toEndOf="@+id/WelcomeTextView"
-        app:layout_constraintTop_toTopOf="@+id/WelcomeTextView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/ConnectToSpotify"
@@ -35,10 +28,11 @@
         android:layout_width="wrap_content"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="5dp"
-        android:backgroundTint="#006200EE"
+        android:backgroundTint="#2A86B6"
         android:text="@string/ConnectToSpotifyString"
         android:textAllCaps="true"
         android:textSize="20dp"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/UseOfflineButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,9 +46,10 @@
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         android:layout_marginTop="5dp"
-        android:backgroundTint="#006200EE"
+        android:backgroundTint="#2A86B6"
         android:text="@string/UseOfflineString"
         android:textAllCaps="true"
+        android:textColor="@color/white"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/ConnectToSpotify"
@@ -65,6 +60,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ButtonLayout"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

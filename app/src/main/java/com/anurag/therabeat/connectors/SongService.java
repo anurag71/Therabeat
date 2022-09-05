@@ -103,12 +103,13 @@ public class SongService {
     }
 
     public ArrayList<Song> getPlaylistSongs(Context context, RecyclerViewAdapter.OnNoteListener listener, RecyclerView myView, SwipeRefreshLayout mSwipeRefreshLayout, TextView viewById) {
+        String mode = sharedPreferences.getString("mode", "Memory");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
-                (Request.Method.GET, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString("playlistId", "") + "/tracks", null, new Response.Listener<JSONObject>() {
+                (Request.Method.GET, "https://api.spotify.com/v1/playlists/" + sharedPreferences.getString(mode + "playlistId", "") + "/tracks", null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         playlistssongs.clear();
-                        Log.d("sample", sharedPreferences.getString("playlistId", ""));
+                        Log.d("sample", sharedPreferences.getString(mode + "playlistId", ""));
                         Gson gson = new Gson();
                         JSONArray jsonArray = response.optJSONArray("items");
                         for (int n = 0; n < jsonArray.length(); n++) {

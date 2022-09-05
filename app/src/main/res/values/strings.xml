@@ -72,5 +72,6 @@
     <string name="add_to_quuee_string">Add to Quuee</string>
     <string name="add_to_playlist_string">Add to Playlist</string>
     <string name="choose_playlist_string">Choose playlist</string>
+    <string name="AppModeSelectionMessage">How would you like your music?</string>
 
 </resources>

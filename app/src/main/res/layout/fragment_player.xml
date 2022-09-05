@@ -105,7 +105,7 @@
             android:backgroundTint="@color/white"
             android:text="Listen on Spotify"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toTopOf="@id/play_pause_layout"
+            app:layout_constraintBottom_toTopOf="@id/play_pause_top_space"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/artist_name_text_view"

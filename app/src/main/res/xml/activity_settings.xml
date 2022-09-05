@@ -12,19 +12,4 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        app:key="cognitive_mode_category"
-        app:title="Cognitive Mode View">
-
-
-        <ListPreference
-            app:defaultValue="@string/SpinnerOption"
-            app:entries="@array/pref_color_option_labels"
-            app:entryValues="@array/pref_color_option_values"
-            app:key="CognitiveModeViewType"
-            app:summary="How do you want to choose your cognitive mode?"
-            app:title="Cognitive Mode Selection" />
-
-    </PreferenceCategory>
-
 </PreferenceScreen>

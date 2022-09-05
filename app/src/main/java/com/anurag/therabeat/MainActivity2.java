@@ -7,9 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -28,14 +25,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -51,8 +46,6 @@ import com.anurag.therabeat.connectors.SongService;
 import com.anurag.therabeat.connectors.SpotifyConnection;
 import com.robertlevonyan.views.customfloatingactionbutton.FloatingActionButton;
 import com.robertlevonyan.views.customfloatingactionbutton.FloatingLayout;
-import com.skydoves.powerspinner.OnSpinnerItemSelectedListener;
-import com.skydoves.powerspinner.PowerSpinnerView;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track;
 
@@ -99,7 +92,7 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     boolean firstTimeSpotify;
     View SearchMenuItem;
     View AnalyticsMenuItem;
-    PowerSpinnerView spinnerView;
+    TextView CognitiveModeDisplay;
 
     FloatingLayout floatingLayout;
     FloatingActionButton floatingActionButton;
@@ -165,70 +158,24 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
 //        cardView.addView(appUsageFragment.getView());
         context = this;
         appBarLayout = findViewById(R.id.toolbarlayout);
-        spinnerView = findViewById(R.id.cognitive_mode_selector);
-        spinnerView.setIsFocusable(false);
+        CognitiveModeDisplay = findViewById(R.id.CognitiveModeDisplay);
         floatingLayout = findViewById(R.id.floating_layout);
-        floatingActionButton = findViewById(R.id.fab1);
-        AnxietyActionButton = findViewById(R.id.AnxietyActionButton);
-        AttentionActionButton = findViewById(R.id.AttentionActionButton);
-        MemoryActionButton = findViewById(R.id.MemoryActionButton);
         String mode = mSharedPreferences.getString("mode", "Memory");
+        CognitiveModeDisplay.setText(mode);
         switch (mode) {
             case "Memory":
-                spinnerView.selectItemByIndex(0);
                 appBarLayout.setBackgroundColor(Color.parseColor("#c8e6c9"));
                 getWindow().setStatusBarColor(Color.parseColor("#c8e6c9"));
                 break;
             case "Anxiety":
-                spinnerView.selectItemByIndex(1);
                 appBarLayout.setBackgroundColor(Color.parseColor("#bbdefb"));
                 getWindow().setStatusBarColor(Color.parseColor("#bbdefb"));
                 break;
             case "Attention":
-                spinnerView.selectItemByIndex(2);
                 appBarLayout.setBackgroundColor(Color.parseColor("#ffcdd2"));
                 getWindow().setStatusBarColor(Color.parseColor("#ffcdd2"));
                 break;
         }
-
-        spinnerView.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener<String>() {
-            @Override
-            public void onItemSelected(int oldIndex, @Nullable String oldItem, int newIndex, String newItem) {
-                ChangeMode(newIndex);
-
-            }
-        });
-        floatingLayout.setOnMenuExpandedListener(new FloatingLayout.OnMenuExpandedListener() {
-            @Override
-            public void onMenuExpanded() {
-                floatingActionButton.setFabIcon(getDrawable(R.drawable.ic_round_add_24));
-                floatingActionButton.setText("");
-            }
-
-            @Override
-            public void onMenuCollapsed() {
-                floatingActionButton.setText("Switch Mode");
-                Drawable d = getResources().getDrawable(R.drawable.ic_round_close_24);
-                Drawable transparentDrawable = new ColorDrawable(Color.TRANSPARENT);
-                transparentDrawable.setBounds(new Rect(0, 0, d.getMinimumWidth(), d.getMinimumHeight()));
-                floatingActionButton.setFabIcon(transparentDrawable);
-            }
-        });
-
-        AttentionActionButton.setOnClickListener(view -> {
-            ChangeMode(2);
-            spinnerView.selectItemByIndex(2);
-        });
-
-        AnxietyActionButton.setOnClickListener(view -> {
-            ChangeMode(1);
-            spinnerView.selectItemByIndex(1);
-        });
-
-        MemoryActionButton.setOnClickListener(view -> {
-            ChangeMode(0);
-            spinnerView.selectItemByIndex(0);
-        });
 
         Toolbar toolbar = findViewById(R.id.actualtoolbar);
         toolbar.setTitle("Therabeat");
@@ -240,7 +187,6 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     @Override
     protected void onResume() {
         super.onResume();
-        loadColorFromPreference();
         connectivityManager.requestNetwork(networkRequest, networkCallback);
         editor.putFloat("beatFreq", 19.00F);
         editor.apply();
@@ -402,7 +348,6 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
     public void onBackPressed() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStackImmediate();
-            loadColorFromPreference();
         } else {
             if (!searchView.isIconified()) {
                 mainLayout.setVisibility(View.VISIBLE);
@@ -549,9 +494,9 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
 
         sequence.addSequenceItem(
                 new MaterialShowcaseView.Builder(this)
-                        .setTarget(spinnerView)
+                        .setTarget(CognitiveModeDisplay)
                         .setDismissText("GOT IT")
-                        .setContentText("Switch between different cognitive modes and change Binaural Frequency.")
+                        .setContentText("Current cognitive mode is displayed here")
                         .withRectangleShape()
                         .build()
         );
@@ -563,28 +508,6 @@ public class MainActivity2 extends AppCompatActivity implements RecyclerViewAdap
         editor.putBoolean("firstTimeSpotify", false);
         editor.apply();
 
-    }
-
-    private void loadColorFromPreference() {
-        Log.d("ViewType", PreferenceManager.getDefaultSharedPreferences(this).getString("CognitiveModeViewType", getString(R.string.SpinnerOption)));
-        changeTextColor(PreferenceManager.getDefaultSharedPreferences(this).getString("CognitiveModeViewType", getString(R.string.SpinnerOption)));
-    }
-
-    // Method to set Color of Text.
-    private void changeTextColor(String pref_color_value) {
-        Log.d("value", pref_color_value);
-        if (pref_color_value.equals(getString(R.string.SpinnerOption))) {
-            runOnUiThread(() -> {
-                floatingLayout.setVisibility(View.GONE);
-                spinnerView.setClickable(true);
-            });
-        } else {
-            runOnUiThread(() -> {
-                floatingLayout.setVisibility(View.VISIBLE);
-                spinnerView.setClickable(false);
-            });
-
-        }
     }
 
     private void ChangeMode(int newIndex) {
